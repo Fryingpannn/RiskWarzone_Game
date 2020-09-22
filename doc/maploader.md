@@ -9,7 +9,7 @@ Implement a group of C++ classes that reads and loads a map file in the .maptext
 **Part 2 Requirements**
 - Map loader can read any Domination map file.
 - Map loader creates a map object as a graph data structure (see Part 1).
-- Map loader should be ableto read any text file (even invalid ones).
+- Map loader should be able to read any text file (even invalid ones).
 - Driver reads many different map files, creates a graph object for the valid ones and rejects the invalid ones.
 
 **Project Requirements**
@@ -24,15 +24,36 @@ Implement a group of C++ classes that reads and loads a map file in the .maptext
 ---
 ---
 
+# Questions
+- Should continents have a vector of countries?
+- How to create subgraphs of each continent?
+- How to link two countries from different continents in the graph structure?
+
 # Todo List
 - [ ] Create several invalid map files with varying problems
-- [ ] Create ```MapFile``` class
+- [ ] Create `MapFile` class
+- [ ] MapLoader reads file line by line into a string vector
+- [ ] Finalize the `mapfiles` class
+- [ ] Finalize the `country` class
+- [ ] Finalize the `continent` class
 
 # Requirements Checklist
 **Map loader can read any domination file**
 - [ ] Driver file asks user for filename
 - [ ] (Optional) Driver file presents list of all found .map files in 'maps' directory
-- [ ] 
+- [ ] Invalid map files are rejected with a reason displayed to console
+
+**Map loader creates a map object as a graph data structure (see Part 1).**
+
+
+**Map loader should be able to read any text file (even invalid ones).**
+- [ ] Driver reads and loads several invalid map files
+- [ ] Driver reads and loads several valid map files
+
+**Driver reads many different map files, creates a graph object for the valid ones and rejects the invalid ones.**
+- [ ] Driver reads and loads several invalid map files
+- [ ] Driver reads and loads several valid map files
+
 
 # Valididation Checklist
 **General**
@@ -51,11 +72,15 @@ Implement a group of C++ classes that reads and loads a map file in the .maptext
 - [ ] Contains exactly one line beginning with 'pic'
 - [ ] Contains exactly one line beginning with 'map'
 - [ ] Contains exactly one line beginning with 'crd'
-- [ ] Contains exactly one line beginning with 'prv'
+- [ ] Contains at most one line beginning with 'prv'
 - [ ] Lines beginning with 'pic' are in the format 'string string' with spaces as delimiters
 - [ ] Lines beginning with 'map' are in the format 'string string' with spaces as delimiters
 - [ ] Lines beginning with 'crd' are in the format 'string string' with spaces as delimiters
 - [ ] Lines beginning with 'prv' are in the format 'string string' with spaces as delimiters
+- [ ] 'pic' file exists
+- [ ] 'map' file exists
+- [ ] 'crd' file exists
+- [ ] 'prv' file exists
 
 **Continents Section**
 - [ ] Section is not empty
