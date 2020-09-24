@@ -4,39 +4,42 @@
 
 //1) the map is a connected graph, 2) continents are connected subgraphs and 3) each country
 //belongs to oneand only one continent.The driver must provide test cases for various valid / invalid maps.
-struct Country
-{
-    std::string* Name;
-    int* CountryID; //country ID will act as vertices
 
-    //the graph
+#include <iostream>
+using namespace std;
+// stores adjacency list items
+struct CountryNode {
+    int CountryID;
+    //cost means how much need to travel etc. Might not be needed at all
+    int Cost;
+    std::string Name;
+    CountryNode* Next;
 };
+// structure to store edges
+struct graphEdge {
+    int start_ver, end_ver, weight;
+    std::string Name;
+};
+class Map {
 
-class Map
-{
-    int* Vertices;    
-    // No. of vertices 
-
-    //std::string* Country;
-
-    Map* Continent;
-
-    // Pointer to an array containing adjacency lists 
-    std::vector<struct::Country>* ListOfCountries;
+    // insert new nodes into adjacency list from given graph
+    CountryNode* getAdjListNode(int value, int weight, std::string Name, CountryNode* head);
 
 
+    int N;  // number of nodes in the graph
 
-    // A function used by DFS 
-    //void DFSUtil(int Vertices, bool Visited[]);
+    //Map *Continent;
 public:
-    //initializing the vertices, and the list of countries
-    //if the list of countries doesn't match the vertices it will return error :D 
-    Map(int &Vertices,std::vector<struct::Country>& Countries, Map &Continent);   // Constructor 
-    Map();//default Constructor
+    CountryNode** head;                //adjacency list as array of pointers
+    // Constructor
+    Map(graphEdge edges[], int n, int N);
+    
+    // Destructor
     ~Map();
-    void addEdge(struct::Country &Country, int &W);
-    void connectedComponents();
 
-    void DisplayGraph();
+    
+
+    void Display();
 };
+// print all adjacent vertices of given vertex
 

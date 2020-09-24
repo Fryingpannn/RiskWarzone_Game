@@ -1,44 +1,61 @@
 #include "Map.h"
 #include <iostream>
 
-Map::Map(int& Vertices, std::vector<struct::Country>& Countries, Map &Continent)
-{
-	this->Vertices = &Vertices;
-	this->Continent = &Continent;
-	this->ListOfCountries = new std::vector<struct::Country>;
-	ListOfCountries = &Countries;
 
+CountryNode* Map::getAdjListNode(int value, int weight, std::string Name, CountryNode* head)
+{
+    CountryNode* newNode = new CountryNode;
+    newNode->CountryID = value;
+    newNode->Cost = weight;
+    newNode->Name = Name;
+    newNode->Next = head;   // point new node to current head
+    return newNode;
 }
 
-Map::Map()
+Map::Map(graphEdge edges[], int n, int N)
 {
+        // allocate new node
+        head = new CountryNode * [N]();
+        this->N = N;
+        // initialize head pointer for all vertices
+        for (int i = 0; i < N; ++i)
+            head[i] = nullptr;
+        // construct directed graph by adding edges to it
+        for (unsigned i = 0; i < n; i++) {
+            int start_ver = edges[i].start_ver;
+            int end_ver = edges[i].end_ver;
+            int weight = edges[i].weight;
 
-}
+            std::string name = edges[i].Name;
+            // insert in the beginning
+            CountryNode* newNode = getAdjListNode(end_ver, weight, name, head[start_ver]);
 
-Map::Map(Map& Map)
-{
-}
+            // point head pointer to new node
+            head[start_ver] = newNode;
+        }
+ }
 
 Map::~Map()
 {
+    for (int i = 0; i < N; i++)
+        delete[] head[i];
+    delete[] head;
 }
 
-void Map::addEdge(struct::Country &Country, int& W)
-{
-}
 
-void Map::connectedComponents()
+void Map::Display()
 {
-}
-
-void Map::DisplayGraph()
-{
-    for (int i = 0; i < *Vertices; ++i)
+    for (int i = 0; i < N; i++)
     {
-        std::cout << "\n Adjacency list of vertex "
-            << i << "\n head ";
-        for (auto x = ListOfCountries->begin(); x != ListOfCountries->end(); x++)
-            std::cout << "-> "<< (struct::Country*) x->CountryID;
-        printf("\n");
+        CountryNode* ptr = head[i];
+        cout << "Country No: " << i <<"\nCountry Name: "<< ptr->Name<< std::endl;
+        while (ptr != nullptr)
+        {
+            cout << "->" << ptr->CountryID;
+            ptr = ptr->Next;
+        }
+        cout<<std::endl;
     }
 }
+
+

@@ -1,27 +1,23 @@
+#include "Map.h"
 
+int main()
+{
+    // graph edges array.
+    graphEdge edges[] = {
+        // (x, y, w) -> edge from x to y with weight w
+        {0,1,2, "Malaysia"},{0,2,4, "Malaysia"},{1,4,3, "Indonesia"},{2,3,2, "No idea"},{3,1,4, "Mars"},{4,3,3, "England"}
+    };
+    
+    int Vertices = 6;      // Number of vertices in the graph
+    // calculate number of edges
+    int n = sizeof(edges) / sizeof(edges[0]);
+    // construct graph
+    Map diagraph(edges, n, Vertices);
+    // print adjacency list representation of graph
+    
 
-//int main()
-//{
-//    sf::RenderWindow window(sf::VideoMode(200, 200), "SFML works!");
-//    sf::Sprite Something;
-//
-//
-//    sf::CircleShape shape(100.f);
-//    shape.setFillColor(sf::Color::Green);
-//
-//    while (window.isOpen())
-//    {
-//        sf::Event event;
-//        while (window.pollEvent(event))
-//        {
-//            if (event.type == sf::Event::Closed)
-//                window.close();
-//        }
-//
-//        window.clear();
-//        window.draw(shape);
-//        window.display();
-//    }
-//
-//    return 0;
-//}
+    diagraph.Display();
+   
+
+    return 0;
+}
