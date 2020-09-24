@@ -145,11 +145,23 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\Cards.cpp" />
+    <ClCompile Include="src\CardsDriver.cpp" />
     <ClCompile Include="src\Map.cpp" />
     <ClCompile Include="src\MapDriver.cpp" />
+    <ClCompile Include="src\MapLoader.cpp" />
+    <ClCompile Include="src\MapLoaderDriver.cpp" />
+    <ClCompile Include="src\Orders.cpp" />
+    <ClCompile Include="src\OrdersDriver.cpp" />
+    <ClCompile Include="src\Player.cpp" />
+    <ClCompile Include="src\PlayerDriver.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Cards.h" />
     <ClInclude Include="src\Map.h" />
+    <ClInclude Include="src\MapLoader.h" />
+    <ClInclude Include="src\Orders.h" />
+    <ClInclude Include="src\Player.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
