@@ -21,9 +21,6 @@
     <ClCompile Include="src\MapDriver.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Map.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\Cards.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -48,14 +45,11 @@
     <ClCompile Include="src\PlayerDriver.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Map2.cpp">
+    <ClCompile Include="src\Map.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\Map.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\Cards.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -68,7 +62,7 @@
     <ClInclude Include="src\Player.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Map2.h">
+    <ClInclude Include="src\Map.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

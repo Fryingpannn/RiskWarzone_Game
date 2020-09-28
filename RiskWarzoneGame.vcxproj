@@ -148,7 +148,6 @@
     <ClCompile Include="src\Cards.cpp" />
     <ClCompile Include="src\CardsDriver.cpp" />
     <ClCompile Include="src\Map.cpp" />
-    <ClCompile Include="src\Map2.cpp" />
     <ClCompile Include="src\MapDriver.cpp" />
     <ClCompile Include="src\MapLoader.cpp" />
     <ClCompile Include="src\MapLoaderDriver.cpp" />
@@ -160,7 +159,6 @@
   <ItemGroup>
     <ClInclude Include="src\Cards.h" />
     <ClInclude Include="src\Map.h" />
-    <ClInclude Include="src\Map2.h" />
     <ClInclude Include="src\MapLoader.h" />
     <ClInclude Include="src\Orders.h" />
     <ClInclude Include="src\Player.h" />

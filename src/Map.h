@@ -2,50 +2,49 @@
 #include <vector>
 #include <string>
 
-//1) the map is a connected graph, 2) continents are connected subgraphs and 3) each country
-//belongs to oneand only one continent.The driver must provide test cases for various valid / invalid maps.
 
-#include <iostream>
-using namespace std;
+//country only need name, a unique ID and a continent
+//is a struct and not a class, so do what you need to do :)
+struct Country {
+	std::string Name;
+	int CountryID;
+	std::string Continent;
+	bool operator==(Country& country) const { return this->CountryID == country.CountryID; }
 
-
-
-//version 2
-// stores adjacency list items
-struct CountryNode {
-    int CountryID;
-    //cost means how much need to travel etc. Might not be needed at all
-    int Cost;
-    std::string Name;
-    CountryNode* Next;
 };
-// structure to store edges
-struct graphEdge {
-    int start_ver, end_ver, weight;
-    std::string Name;
-};
-class Map {
 
-    //version 1
-    // insert new nodes into adjacency list from given graph
-    CountryNode* getAdjListNode(int value, int weight, std::string Name, CountryNode* head);
-    int N;  // number of nodes in the graph
+class Map
+{
+	
+	std::string* MapName;
+	std::vector<struct::Country> **ListOfCountries;
+	int* NumberOfCountries;
 
+	
 
-    //version 2
-    
+	
 public:
-    CountryNode** head;                //adjacency list as array of pointers
-    // Constructor
-    Map(graphEdge edges[], int n, int N);
-    
-    Map();
-    // Destructor
-    ~Map();
+	//minimal Constructor
+	Map();
 
-    
+	//another minimal constructor
+	Map(int size, std::string mapName);
+	//full constructor
+	Map(std::vector<struct::Country> **listOfCountries, std::string mapName,int size, Map &continent);
+	//partial constructor when the country doesn't have other maps
+	Map(std::vector<struct::Country> **listOfCountries, std::string mapName, int size);
 
-    void Display();
+
+	Map(Map &Copy);
+
+	~Map();
+
+	void AddEdges(Country country1, Country country2);
+	void Display();
+	void Display(std::string continent);
+	void SetMapName(std::string mapName);
+
+	bool Validate();
+	
 };
-// print all adjacent vertices of given vertex
 

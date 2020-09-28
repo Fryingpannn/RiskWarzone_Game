@@ -1,5 +1,5 @@
+#include <iostream>
 #include "Map.h"
-#include "Map2.h"
 
 int main()
 {
@@ -44,19 +44,28 @@ int main()
     };
 
     Country Japan{
-        "Japan", 6, "East Asia"
+        "Japan", 6, "EastAsia"
     };
 
     Country Korea{
-        "Korea", 7, "East Asia"
+        "Korea", 7, "EastAsia"
     };
 
     Country China{
-        "China", 8, "East Asia"
+        "China", 8, "EastAsia"
+    };
+
+    //incorrect country naming cases
+    Country Germany{
+        "Germany", 8, "EastAsia"
+    };
+
+    Country France{
+        "France", 8, "Europe"
     };
 
     std::cout << "test" << std::endl;
-    Map2 *WorldMap = new Map2(9, "WorldMap");
+    Map *WorldMap = new Map(9, "WorldMap");
     
 
     WorldMap->AddEdges(Malaysia, Vietnam);
@@ -78,9 +87,39 @@ int main()
 
     WorldMap->Display();
 
-    WorldMap->Display("East Asia");
+    WorldMap->Display("EastAsia");
 
-    /*Map2* WorldMap = new Map2();
+    if (WorldMap->Validate())
+    {
+        std::cout << "Success" << std::endl;
+    }
+
+    //delete WorldMap;
+
+
+    //fail cases where the country won't register due to having same ID
+    // the country ID will causes the algorithm to think that it is another country and will treat it the same
+    Map* WorldMap2 = new Map(*WorldMap);
+    WorldMap2->AddEdges(Japan,Korea);
+    WorldMap2->AddEdges(China, Korea);
+    WorldMap2->AddEdges(Malaysia, Korea);
+    WorldMap2->AddEdges(Germany, Korea);
+    WorldMap2->AddEdges(France, Korea);
+    WorldMap2->AddEdges(France, Malaysia);
+    WorldMap2->Display();
+
+    if (WorldMap2->Validate())
+    {
+        std::cout << "Success" << std::endl;
+    }
+    else {
+        std::cout << "Failed" << std::endl;
+
+    }
+
+
+
+    /*Map* WorldMap = new Map();
     WorldMap->AddContinent(EastAsia);
     WorldMap->AddContinent(ASEAN);
 
