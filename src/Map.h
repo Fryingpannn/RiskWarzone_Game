@@ -7,6 +7,10 @@
 
 #include <iostream>
 using namespace std;
+
+
+
+//version 2
 // stores adjacency list items
 struct CountryNode {
     int CountryID;
@@ -22,18 +26,20 @@ struct graphEdge {
 };
 class Map {
 
+    //version 1
     // insert new nodes into adjacency list from given graph
     CountryNode* getAdjListNode(int value, int weight, std::string Name, CountryNode* head);
-
-
     int N;  // number of nodes in the graph
 
-    //Map *Continent;
+
+    //version 2
+    
 public:
     CountryNode** head;                //adjacency list as array of pointers
     // Constructor
     Map(graphEdge edges[], int n, int N);
     
+    Map();
     // Destructor
     ~Map();
 
