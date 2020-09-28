@@ -19,46 +19,73 @@ int main()
 
     //diagraph.Display();
 
+    //one way to optimise is to put enum
     Country Malaysia{
-        "Malaysia", 0
+        "Malaysia", 0, "ASEAN"
     };
 
     Country Indonesia{
-        "Indonesia", 1
+        "Indonesia", 1, "ASEAN"
     };
     Country Singapore{
-        "Singapore", 2
+        "Singapore", 2, "ASEAN"
     };
 
     Country Philippine{
-        "Philippine", 3
+        "Philippine", 3, "ASEAN"
     };
 
     Country Thailand{
-        "Thailand", 4
+        "Thailand", 4, "ASEAN"
     };
 
     Country Vietnam{
-        "Vietnam", 5
+        "Vietnam", 5, "ASEAN"
+    };
+
+    Country Japan{
+        "Japan", 6, "East Asia"
+    };
+
+    Country Korea{
+        "Korea", 7, "East Asia"
+    };
+
+    Country China{
+        "China", 8, "East Asia"
     };
 
     std::cout << "test" << std::endl;
-    Map2 *ASEAN = new Map2(6);
-    std::cout << "test" << std::endl;
+    Map2 *WorldMap = new Map2(9, "WorldMap");
     
-    ASEAN->SetMapName("ASEAN");
-    ASEAN->AddEdges(Malaysia, Vietnam);
-    ASEAN->AddEdges(Malaysia, Indonesia);
-    ASEAN->AddEdges(Indonesia, Malaysia);
-    ASEAN->AddEdges(Indonesia, Philippine);
-    ASEAN->AddEdges(Singapore, Vietnam);
-    ASEAN->AddEdges(Singapore, Malaysia);
+
+    WorldMap->AddEdges(Malaysia, Vietnam);
+    WorldMap->AddEdges(Malaysia, Indonesia);
+    WorldMap->AddEdges(Indonesia, Malaysia);
+    WorldMap->AddEdges(Indonesia, Philippine);
+    WorldMap->AddEdges(Singapore, Vietnam);
+    WorldMap->AddEdges(Singapore, Malaysia);
     
-    /*ASEAN->AddEdges(Vietnam, Malaysia);
-    ASEAN->AddEdges(Vietnam, Thailand);*/
+    WorldMap->AddEdges(Vietnam, Malaysia);
+    WorldMap->AddEdges(Vietnam, Thailand);
 
+    WorldMap->Display();
 
-    ASEAN->Display();
+    
+    WorldMap->AddEdges(Japan, Korea);
+    WorldMap->AddEdges(China, Korea);
+    WorldMap->AddEdges(Malaysia, Japan);
+
+    WorldMap->Display();
+
+    WorldMap->Display("East Asia");
+
+    /*Map2* WorldMap = new Map2();
+    WorldMap->AddContinent(EastAsia);
+    WorldMap->AddContinent(ASEAN);
+
+    WorldMap->Display();*/
+
 
     return 0;
 }

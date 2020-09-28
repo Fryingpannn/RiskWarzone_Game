@@ -5,19 +5,19 @@
 struct Country {
 	std::string Name;
 	int CountryID;
-
+	std::string Continent;
 	bool operator==(Country& country) const { return this->CountryID == country.CountryID; }
 
 };
 
 class Map2
 {
-	Map2* Continent;
+	
 	std::string* MapName;
 	std::vector<struct::Country> **ListOfCountries;
 	int* NumberOfCountries;
 
-	bool Equals(Country country2);
+	bool Validate();
 
 	
 public:
@@ -25,7 +25,7 @@ public:
 	Map2();
 
 	//another minimal constructor
-	Map2(int size);
+	Map2(int size, std::string mapName);
 	//full constructor
 	Map2(std::vector<struct::Country> **listOfCountries, std::string mapName,int size, Map2 &continent);
 	//partial constructor when the country doesn't have other maps
@@ -38,7 +38,7 @@ public:
 
 	void AddEdges(Country country1, Country country2);
 	void Display();
-
+	void Display(std::string continent);
 	void SetMapName(std::string mapName);
 
 	

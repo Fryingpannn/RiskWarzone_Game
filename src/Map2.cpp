@@ -6,24 +6,24 @@
 Map2::Map2()
 {
 	NumberOfCountries = new int(5);
-	*ListOfCountries = new std::vector<struct::Country>[5] ;
-	MapName = new std::string ("None");
-	Continent = NULL;
+	*ListOfCountries = new std::vector<struct::Country>[100] ;
+	MapName = new std::string ("World");
+	
 }
 
-Map2::Map2(int size)
+Map2::Map2(int size, std::string name)
 {
 	std::cout << "It passed" << std::endl;
 	NumberOfCountries = new int (size);
 
-	ListOfCountries = new std::vector<Country> *[size];
-	for (int i = 0; i < size; i++)
+	ListOfCountries = new std::vector<Country> *[100];
+	for (int i = 0; i < 100; i++)
 		ListOfCountries[i] = new std::vector<struct::Country>;
 
 	
 	std::cout << "It passed 2" << std:: endl;
-	MapName = new std::string ("None");
-	Continent = NULL;
+	MapName = new std::string (name);
+	
 
 }
 
@@ -32,7 +32,7 @@ Map2::Map2(std::vector<struct::Country> **listOfCountries, std::string mapName, 
 	NumberOfCountries = new int (size);
 	ListOfCountries = listOfCountries;
 	MapName = new std::string (mapName);
-	Continent = new Map2(continent);
+	
 }
 
 Map2::Map2(std::vector<struct::Country> **listOfCountries, std::string mapName, int size)
@@ -40,14 +40,14 @@ Map2::Map2(std::vector<struct::Country> **listOfCountries, std::string mapName, 
 	NumberOfCountries = new int(size);
 	ListOfCountries = listOfCountries;
 	MapName = new std::string(mapName);
-	Continent = NULL;
+	
 }
 
 Map2::Map2(Map2 &Copy)
 {
 	MapName = Copy.MapName;
 	ListOfCountries = Copy.ListOfCountries;
-	Continent = NULL;
+	
 	NumberOfCountries = Copy.NumberOfCountries;
 }
 
@@ -60,7 +60,7 @@ Map2::~Map2()
 
 	delete NumberOfCountries;
 	delete MapName;
-	delete Continent;
+	
 	//will make it into pointer later on
 	/*delete MapName;*/
 }
@@ -122,6 +122,39 @@ void Map2::Display()
 				std::cout << "-> ";
 				std::cout << "Country ID: " << country.CountryID << " ";
 				std::cout << country.Name;
+				j++;
+			}
+		}
+		j = 0;
+		std::cout << std::endl;
+	}
+}
+
+void Map2::Display(std::string continent)
+{
+	std::cout << "\n\nMap Name: " << continent << std::endl;
+
+	for (int i = 0; i < *this->NumberOfCountries; i++)
+	{
+		int j = 0;
+
+		for (Country country : *this->ListOfCountries[i])
+		{
+			if (j == 0) {
+				if (continent == country.Continent) {
+					std::cout << "Continent: " << country.Continent << std::endl;
+					std::cout << "Country: " << j << std::endl;
+					std::cout << "Name: " << country.Name << std::endl;
+					std::cout << "Adjacent Countries " << std::endl;
+					j++;
+				}
+			}
+			else {
+				if (continent == country.Continent) {
+					std::cout << "-> ";
+					std::cout << "Country ID: " << country.CountryID << " ";
+					std::cout << country.Name;
+				}
 			}
 		}
 		j = 0;
@@ -134,7 +167,7 @@ void Map2::SetMapName(std::string mapName)
 	MapName = new std::string (mapName);
 }
 
-bool Map2::Equals(Country country2)
+bool Map2::Validate()
 {
 	return false;
 }
