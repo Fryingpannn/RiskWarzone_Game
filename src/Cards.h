@@ -1,8 +1,16 @@
 #pragma once
 #include <vector> 
 #include <iostream> 
+#include <queue> 
+#include <deque> 
 
 using namespace std;
+
+
+class Card;
+class Hand;
+class Deck;
+
 
 enum CardType {
 	BOMB = 1,
@@ -10,34 +18,28 @@ enum CardType {
 	BLOCKADE,
 	AIRLIFT,
 	DIPLOMACY,
-	SPY
+	SPY,
+	EMPTY
 };
+
 
 class Card {
 private:
-	CardType* type;
+	CardType type;
 
 public:
-	Card(CardType& c);
-	void Play();
-};
 
+	Card();
+	Card(CardType c);
+	Card(const Card& c);
 
+	CardType getType();
 
-class Deck {
-
-private:
-	vector<Card>* deck;
-	int* size;
-public:
-
-	Deck(int& const deckSize);
-	Deck(Deck& deck);
-
-	Card draw(Hand& hand);
-	void add(CardType& const type);
+	void Play(Hand& h, Deck& d);
+	friend ostream& operator << (ostream& out, const Card& card);
 
 };
+
 
 class Hand {
 
@@ -45,13 +47,32 @@ private:
 	vector<Card>* hand;
 
 public:
+
 	Hand();
-	Hand(Hand& h);
+	Hand(const Hand& h);
 	void add(CardType& const type);
-	void remove(Card& const Card);
+	void remove(int index);
+	int find(Card c);
+	Card returnFirst();
+	friend ostream& operator << (ostream& out, const Hand& h);
 
 };
 
-ostream& operator << (ostream& out, const Card& card);
-ostream& operator << (ostream& out, const Hand& hand);
-ostream& operator << (ostream& out, const Deck& deck);
+class Deck {
+
+private:
+	queue<Card>* deck;
+	int size;
+public:
+
+	Deck(int const deckSize);
+	Deck(const Deck& deck);
+
+	Card draw(Hand& h);
+	void add(CardType& const type);
+	friend ostream& operator << (ostream& out, const Deck& d);
+
+};
+
+
+
