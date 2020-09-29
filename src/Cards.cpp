@@ -7,6 +7,18 @@
 using namespace std;
 
 
+/*
+TODO1
+Make the size of the deck equal to the size of the territories
+
+TODO2
+In the play() method, add a special order to the list of orders
+
+TODO3
+Make sure all class members are of type pointer
+
+*/
+
 class Card;
 class Hand;
 class Deck;
