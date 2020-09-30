@@ -21,7 +21,7 @@ TODO4
 Add Destructors
 
 TODO5
-Complete copy constructors and assignment operatorover loading
+Complete copy constructors and assignment operator overloading
 */
 
 class Card;
