@@ -17,6 +17,11 @@ In the play() method, add a special order to the list of orders
 TODO3
 Make sure all class members are of type pointer
 
+TODO4
+Add Destructors
+
+TODO5
+Complete copy constructors and assignment operatorover loading
 */
 
 class Card;
