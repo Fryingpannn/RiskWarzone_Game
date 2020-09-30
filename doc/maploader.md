@@ -28,6 +28,8 @@ Implement a group of C++ classes that reads and loads a map file in the .maptext
 - Should continents have a vector of countries?
 - How to create subgraphs of each continent?
 - How to link two countries from different continents in the graph structure?
+- How do I make the file path OS agnostic?
+- How do I indicate failure to the calling method?
 
 # Todo List
 - [ ] Create several invalid map files with varying problems

@@ -74,7 +74,7 @@ class Borders
 {
 public:
     int *country_number;
-    std::vector<int *> *borders;
+    std::vector<int> *borders;
 
     // Constructors
     Borders();
@@ -113,9 +113,9 @@ public:
     std::string *map_pic_file_name;
     std::string *cards_file_name;
     std::string *prv_file_name;
-    std::vector<Continent *> *map_continents;
-    std::vector<Country *> *map_countries;
-    std::vector<Borders *> *map_borders;
+    std::vector<Continent> *map_continents;
+    std::vector<Country> *map_countries;
+    std::vector<Borders> *map_borders;
 
     // Constructors
     MapFile();
