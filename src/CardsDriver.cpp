@@ -13,11 +13,13 @@ int main() {
 		d.draw(h);
 	}
 
-
+	cout << h <<endl;
+	
+	
 	for (int i = 0;i < 5;i++) {
-		h.returnFirst().Play(h, d);
+		h.returnByPos(0).Play(h, d);
 
 	}
-
+	
 	return 0;
 }
