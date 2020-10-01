@@ -1,12 +1,3 @@
-#pragma once
-#include <vector> 
-#include <iostream> 
-#include <queue> 
-#include <deque> 
-
-using namespace std;
-
-
 /*
 TODO1
 Make the size of the deck equal to the size of the territories
@@ -15,81 +6,235 @@ TODO2
 In the play() method, add a special order to the list of orders
 
 TODO3
-Make sure all class members are of type pointer
-
-TODO4
-Add Destructors
-
-TODO5
-Complete copy constructors and assignment operator overloading
+Complete copy constructors and assignment operator overloading for vectors
 */
-
-class Card;
-class Hand;
-class Deck;
+#include "Cards.h"
+#include <stdlib.h> 
 
 
-enum CardType {
-	BOMB = 1,
-	REINFORCEMENT,
-	BLOCKADE,
-	AIRLIFT,
-	DIPLOMACY,
-	SPY,
-	EMPTY
-};
+Card::Card() {
+
+	*this->type = EMPTY;
+
+}
+
+Card::Card(CardType c) {
+
+	(this->type) = new CardType(c);
+
+}
+
+Card::Card(const Card& c) {
+
+	(this->type) = new CardType(*(c.type));
+
+}
+
+Card::~Card() {
+
+	delete type;
+	type = nullptr;
+
+}
+
+CardType* Card::getType() {
+
+	return (this->type);
+}
+
+void Card::operator = (const Card& c) {
+
+	this->type = new CardType(*(c.type));
+
+}
+
+ostream& operator << (ostream& out, const Card& card) {
+
+	switch (*(card.type)) {
+	case CardType::BOMB:
+		return cout << "Bomb";
+		break;
+	case CardType::AIRLIFT:
+		return cout << "Airlift";
+		break;
+	case CardType::SPY:
+		return cout << "Spy";
+		break;
+	case CardType::BLOCKADE:
+		return cout << "Blockade";
+		break;
+	case CardType::DIPLOMACY:
+		return cout << "Diplomacy";
+		break;
+	case CardType::REINFORCEMENT:
+		return cout << "Reinforcement" ;
+		break;
+	case CardType::EMPTY:
+		return cout << "EMPTY";
+		break;
+	
+	}
+
+}
 
 
-class Card {
-private:
-	CardType type;
+void Card::Play(Hand& h, Deck& d) {
 
-public:
+	int index = h.find(*this);
+	if (index > -1) {
+	
+		CardType* type = (getType());
 
-	Card();
-	Card(CardType c);
-	Card(const Card& c);
+		d.add(*type);
+		cout << "Playing " << *this << endl;
 
-	CardType getType();
+		h.remove(index);
+		//TODO create an order in the order list
+	}
+	else {
 
-	void Play(Hand& h, Deck& d);
-	friend ostream& operator << (ostream& out, const Card& card);
-
-};
-
-
-class Hand {
-
-private:
-	vector<Card>* hand;
-
-public:
-
-	Hand();
-	Hand(const Hand& h);
-	void add(CardType& const type);
-	void remove(int index);
-	int find(Card c);
-	Card returnFirst();
-	friend ostream& operator << (ostream& out, const Hand& h);
-
-};
-
-class Deck {
-
-private:
-	queue<Card>* deck;
-	int size;
-public:
-
-	Deck(int const deckSize);
-	Deck(const Deck& deck);
-
-	Card draw(Hand& h);
-	void add(CardType& const type);
-	friend ostream& operator << (ostream& out, const Deck& d);
-
-};
+		cout << "You do not have this card" << endl;
+	}
+}
 
 
 
+Hand::Hand() {
+
+
+	hand = new vector<Card>;
+
+
+}
+
+Hand::Hand(const Hand& h) {
+
+	this->hand = h.hand;
+}
+
+Hand::~Hand() {
+
+	delete hand;
+	hand = nullptr;
+	
+}
+
+void Hand::add(CardType& const type) {
+
+
+		Card c = (Card(type));
+		hand->emplace_back(c);
+	
+}
+
+void Hand::remove(int index) {
+
+
+		for (int i = index; i < hand->size() - 1; i++) {
+			hand->at(i) = hand->at(i + 1);
+		}
+
+		hand->pop_back();
+	
+}
+
+int Hand::find(Card c) {
+
+	int index = -1;
+	for (int i = 0; i < hand->size(); i++) {
+		if (*hand->at(i).getType() == *c.getType()) {
+			index = i;
+		}
+	}
+	return index;
+
+}
+
+
+Card Hand::returnByPos(int pos) {
+
+	if (pos <= hand->size()) {
+		return this->hand->at(pos);
+	}
+}
+
+void Hand::operator = (const Hand& h) {
+
+	hand = h.hand;
+
+}
+
+Deck::Deck(int deckSize) {
+
+	deck = new queue<Card>;
+	this->size = new int(deckSize);
+	for (int i = 0; i < deckSize; i++) {
+
+		CardType t = static_cast<CardType>(rand() % 6 + 1);
+		Card c = Card(t);
+		deck->push(c);
+	}
+
+}
+
+Deck::Deck(const Deck& deck) {
+	size = new int(*deck.size);
+	Deck(*this->size);
+}
+
+Deck::~Deck() {
+
+	delete deck;
+	deck = nullptr;
+	delete size;
+	size = nullptr;
+}
+
+void Deck::add(CardType& const type){
+
+	Card c = (Card(type));
+	deck->push(c);
+
+}
+
+
+Card Deck::draw(Hand& const h) {
+
+	Card chosen = this->deck->front();
+	CardType* t = chosen.getType();
+	cout << "drawing a card of type " << chosen << endl;
+	this->deck->pop();
+	h.add(*t);
+	return chosen;
+
+}
+
+void Deck::operator = (const Deck& d) {
+
+	size = new int(*d.size);
+	deck = d.deck;
+
+}
+
+ostream& operator << (ostream& out, const Deck& d) {
+
+	queue<Card> q = *(d.deck);
+	//printing content of queue 
+	while (!q.empty()) {
+		out << " " << q.front() << endl;
+	    q.pop();
+	}
+	return out;
+
+}
+
+
+
+ostream& operator << (ostream& out, const Hand& h) {
+
+	for (int i = 0; i < h.hand->size(); i++) {
+		out << (h.hand->at(i)) << ' ';
+	}
+	return out;
+
+}
