@@ -25,19 +25,23 @@ enum CardType {
 
 class Card {
 private:
-	CardType type;
+	CardType* type;
 
 public:
 
+	//constructors
 	Card();
 	Card(CardType c);
 	Card(const Card& c);
+	~Card();
 
-	CardType getType();
-
+	//functions
+	CardType* getType();
 	void Play(Hand& h, Deck& d);
-	friend ostream& operator << (ostream& out, const Card& card);
 
+	//operator overloading
+	friend ostream& operator << (ostream& out, const Card& card);
+	void operator = (const Card& c);
 };
 
 
@@ -48,13 +52,20 @@ private:
 
 public:
 
+	//constructors
 	Hand();
 	Hand(const Hand& h);
+	~Hand();
+
+	//functions
 	void add(CardType& const type);
 	void remove(int index);
 	int find(Card c);
-	Card returnFirst();
+	Card returnByPos(int pos);
+
+	//operator overloading
 	friend ostream& operator << (ostream& out, const Hand& h);
+	void operator = (const Hand& h);
 
 };
 
@@ -62,17 +73,20 @@ class Deck {
 
 private:
 	queue<Card>* deck;
-	int size;
+	int* size;
 public:
 
+	//constructors
 	Deck(int const deckSize);
 	Deck(const Deck& deck);
+	~Deck();
 
+	//functions
 	Card draw(Hand& h);
 	void add(CardType& const type);
+
+	//operator overloading
 	friend ostream& operator << (ostream& out, const Deck& d);
+	void operator = (const Deck& d);
 
 };
-
-
-
