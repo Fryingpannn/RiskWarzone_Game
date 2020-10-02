@@ -185,3 +185,24 @@ std::ostream &operator<<(std::ostream &output, const MapFile *map_file)
     return output;
 };
 
+//  std::vector<int *> *myVar
+//
+// std::vector<int*>* p_vec1;
+// std::vector<int*>* p_vec2;
+// p_vec2->reserve(p_vec1->size());
+
+// for (auto* p_int : *p_vec1) {
+//     p_vec2->emplace_back(*p_int);
+// }
+
+////////////////////////////
+
+// std::vector<int> *myVar
+//
+// std::vector<int>* p_vec1;
+// auto* p_vec2 = new std::vector<int>{p_vec1->begin(), p_vec1->end()};
+
+// or
+
+// std::vector<int>* p_vec1;
+// auto* p_vec2 = new std::vector<int>{*p_vec1};
