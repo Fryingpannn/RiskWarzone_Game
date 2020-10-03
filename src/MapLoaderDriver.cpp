@@ -1,10 +1,10 @@
-///////////////////////////////////////////// 
+/////////////////////////////////////////////
 // Filename:        MapLoaderDriver.cpp
 //
 // Description:     Driver file to demonstrate the functionality of the MapLoader
 //
 // Author:          Stefan Russo - 26683320
-// 
+//
 // Group:           Sandra Buchen
 //                  Le Cherng Lee
 //                  Zahra Nikbakht
@@ -13,10 +13,11 @@
 //
 /////////////////////////////////////////////
 
+#include "MapLoader.h"
 #include <fstream>
 #include <iostream>
 
-#include "MapLoader.h"
+
 
 int main()
 {
@@ -29,5 +30,16 @@ int main()
     // while (std::getline(inputFile, line)) {
     //     std::cout << line << std::endl;
     // }
-    std::cout << "Hello, World!" << std::endl;
+    std::cout << "MapLoaderDriver.cpp" << std::endl;
+    std::cout << "By: Stefan Russo - 26683320" << std::endl;
+    std::cout << "===========================" << std::endl;
+
+    std::string mapFileName;
+    mapFileName = "../maps/bigeurope.map";
+    // MapFile *testMapFile;
+    MapFile *testMapFile = new MapFile("../maps/bigeurope.map");
+    // *testMapFile = new MapFile(mapFileName);
+    // Result readMapResult = testMapFile->readMapFile();
+
+    return 0;
 }

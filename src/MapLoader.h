@@ -24,14 +24,14 @@
 class Continent
 {
 public:
-    int *number;
-    std::string *name;
-    int *value;
-    std::string *colour;
+    int number;
+    std::string name;
+    int value;
+    std::string colour;
 
     // Constructors
     Continent();
-    Continent(int *new_number, std::string *new_name, int *new_value, int *new_colour);
+    Continent(int new_number, std::string new_name, int new_value, int new_colour);
     Continent(const Continent &other_continent);
 
     // Assignment Operator
@@ -48,15 +48,15 @@ std::ostream &operator<<(std::ostream &output, const Continent &continent);
 class Country
 {
 public:
-    int *number;
-    std::string *short_name;
-    int *continent_number;
-    int *x_coord;
-    int *y_coord;
+    int number;
+    std::string short_name;
+    int continent_number;
+    int x_coord;
+    int y_coord;
 
     // Constructors
     Country();
-    Country(int *new_number, std::string *new_short_name, int *new_continent_number, int *new_x_coord, int *new_y_coord);
+    Country(int new_number, std::string new_short_name, int new_continent_number, int new_x_coord, int new_y_coord);
     Country(const Country &other_country);
 
     // Assignment Operator
@@ -73,12 +73,12 @@ std::ostream &operator<<(std::ostream &output, const Country &country);
 class Borders
 {
 public:
-    int *country_number;
-    std::vector<int> *borders;
+    int country_number;
+    std::vector<int> borders;
 
     // Constructors
     Borders();
-    Borders(int *country_number);
+    Borders(int country_number);
     Borders(const Borders &other_borders);
 
     // Assignment Operator
@@ -97,8 +97,8 @@ std::ostream &operator<<(std::ostream &output, const Borders &borders);
 struct Result
 {
 public:
-    bool *success;
-    std::string *message;
+    bool success;
+    std::string message;
 };
 
 // Class: MapFile
@@ -108,21 +108,22 @@ public:
 class MapFile
 {
 public:
-    std::string *map_file_name;
-    std::string *pic_file_name;
-    std::string *map_pic_file_name;
-    std::string *cards_file_name;
-    std::string *prv_file_name;
-    std::vector<Continent> *map_continents;
-    std::vector<Country> *map_countries;
-    std::vector<Borders> *map_borders;
+    std::string map_file_name;
+    std::string pic_file_name;
+    std::string map_pic_file_name;
+    std::string cards_file_name;
+    std::string prv_file_name;
+    std::vector<Continent *> map_continents;
+    std::vector<Country *> map_countries;
+    std::vector<Borders *> map_borders;
 
     // Constructors
     MapFile();
-    MapFile(std::string *new_map_file_name);
+    MapFile(std::string new_map_file_name);
     MapFile(const MapFile &other_map_file);
 
     MapFile &operator=(const MapFile &other_map_file);
+    MapFile &operator=(std::string new_map_file_name);
 
     friend std::ostream &operator<<(std::ostream &output, const MapFile *map_file);
 
