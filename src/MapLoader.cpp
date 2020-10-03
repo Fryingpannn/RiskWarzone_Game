@@ -58,6 +58,7 @@ Continent &Continent::operator=(const Continent &other_continent)
     name = other_continent.name;
     value = other_continent.value;
     colour = other_continent.colour;
+    return *this;
 };
 
 std::ostream &operator<<(std::ostream &output, const Continent &continent)
@@ -104,6 +105,8 @@ Country &Country::operator=(const Country &other_country)
     continent_number = other_country.continent_number;
     x_coord = other_country.x_coord;
     y_coord = other_country.y_coord;
+
+    return *this;
 };
 
 std::ostream &operator<<(std::ostream &output, const Country &country)
@@ -143,6 +146,8 @@ Borders &Borders::operator=(const Borders &other_borders)
 
     // TODO: Deep copy the borders vector
     // std::copy(*other_borders.borders->begin(), *other_borders.borders->end(), std::back_inserter(this->borders));
+
+    return *this;
 };
 
 std::ostream &operator<<(std::ostream &output, const Borders &borders)
@@ -184,6 +189,8 @@ MapFile &MapFile::operator=(std::string new_map_file_name)
     // std::copy(*other_map_file.map_continents->begin(), *other_map_file.map_continents->end(), std::back_inserter(*this->map_continents));
     // std::copy(*other_map_file.map_countries->begin(), *other_map_file.map_countries->end(), std::back_inserter(*this->map_countries));
     // std::copy(*other_map_file.map_borders->begin(), *other_map_file.map_borders->end(), std::back_inserter(*this->map_borders));
+
+    return *this;
 };
 
 MapFile::MapFile(const MapFile &other_map_file)
@@ -210,6 +217,8 @@ MapFile &MapFile::operator=(const MapFile &other_map_file)
     // std::copy(*other_map_file.map_continents->begin(), *other_map_file.map_continents->end(), std::back_inserter(*this->map_continents));
     // std::copy(*other_map_file.map_countries->begin(), *other_map_file.map_countries->end(), std::back_inserter(*this->map_countries));
     // std::copy(*other_map_file.map_borders->begin(), *other_map_file.map_borders->end(), std::back_inserter(*this->map_borders));
+
+    return *this;
 };
 
 std::ostream &operator<<(std::ostream &output, const MapFile *map_file)
