@@ -59,6 +59,8 @@ Implement a group of C++ classes that reads and loads a map file in the .maptext
 
 # Valididation Checklist
 **General**
+- [ ] Lines beginning with ; are ignored
+- [ ] Blank lines are ignored
 - [ ] File is not empty
 - [ ] File contains '[files]' section
 - [ ] File contains '[continents]' section
