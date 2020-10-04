@@ -21,15 +21,6 @@
 
 int main()
 {
-    // std::cout << "Hello World" << std::endl;
-    // std::ifstream inputFile("../maps/bigeurope.map");
-    // if (!inputFile) {
-    //     std::cerr << "Could not open file!" << std::endl;
-    // }
-    // std::string line;
-    // while (std::getline(inputFile, line)) {
-    //     std::cout << line << std::endl;
-    // }
     std::cout << "MapLoaderDriver.cpp" << std::endl;
     std::cout << "By: Stefan Russo - 26683320" << std::endl;
     std::cout << "===========================" << std::endl;
@@ -39,7 +30,9 @@ int main()
     // MapFile *testMapFile;
     MapFile *testMapFile = new MapFile("../maps/bigeurope.map");
     // *testMapFile = new MapFile(mapFileName);
-    // Result readMapResult = testMapFile->readMapFile();
+    Result readMapResult = testMapFile->readMapFile();
 
     return 0;
+
 }
+
