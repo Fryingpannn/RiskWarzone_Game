@@ -111,51 +111,47 @@ std::ostream &operator<<(std::ostream &output, const Country &country) {
 ////////////////////////////////
 // Borders
 ////////////////////////////////
-Borders::Borders() { country_number = 0; };
+// Borders::Borders() { country_number = 0; };
 
-Borders::Borders(int country_number) {
-  this->country_number = country_number;
-  // std::vector<int> borders;
-};
+// Borders::Borders(int country_number) {
+//   this->country_number = country_number;
+//   // std::vector<int> borders;
+// };
 
-Borders::Borders(const Borders &other_borders) {
-  this->country_number = other_borders.country_number;
+// Borders::Borders(const Borders &other_borders) {
+//   this->country_number = other_borders.country_number;
 
-  // TODO: Deep copy the borders vector
-  // for(int i = 0; i < *other_borders.borders.size(); i++) {
-  //     *this->borders->push_back()
-  // };
+//   // TODO: Deep copy the borders vector
+//   // std::copy(other_borders->borders->begin(), *other_borders.borders->end(),
+//   // std::back_inserter(this->borders));
+// };
 
-  // std::copy(other_borders->borders->begin(), *other_borders.borders->end(),
-  // std::back_inserter(this->borders));
-};
+// Borders &Borders::operator=(const Borders &other_borders) {
+//   this->country_number = other_borders.country_number;
 
-Borders &Borders::operator=(const Borders &other_borders) {
-  this->country_number = other_borders.country_number;
+//   // TODO: Deep copy the borders vector
+//   // std::copy(*other_borders.borders->begin(), *other_borders.borders->end(),
+//   // std::back_inserter(this->borders));
 
-  // TODO: Deep copy the borders vector
-  // std::copy(*other_borders.borders->begin(), *other_borders.borders->end(),
-  // std::back_inserter(this->borders));
+//   return *this;
+// };
 
-  return *this;
-};
-
-std::ostream &operator<<(std::ostream &output, const Borders &borders) {
-  // output << "Country: " << borders.country_number << " Borders: [" <<
-  // borders.borders;
-  return output;
-};
+// std::ostream &operator<<(std::ostream &output, const Borders &borders) {
+//   // output << "Country: " << borders.country_number << " Borders: [" <<
+//   // borders.borders;
+//   return output;
+// };
 
 ////////////////////////////////
 // MapFile
 ////////////////////////////////
 
 MapFile::MapFile() {
-  // map_file_name = new std::String ("");
-  // pic_file_name = "";
-  // map_pic_file_name = "";
-  // cards_file_name = "";
-  // prv_file_name = "";
+  map_file_name = "";
+  pic_file_name = "";
+  map_pic_file_name = "";
+  cards_file_name = "";
+  prv_file_name = "";
 }
 
 MapFile::MapFile(std::string new_map_file_name) {
@@ -243,8 +239,6 @@ void MapFile::readMapFile() {
   };
   std::string line = "";
 
-  std::vector<std::string> line_args;
-
   while (std::getline(inputfilestream, line)) {
     if (!line.empty() && !isStringblank(line)) {
       trim(line);
@@ -255,78 +249,111 @@ void MapFile::readMapFile() {
         current_section = line.substr(1, pos - 1);
         // std::cout << "Section detected: " << current_section << std::endl;
       } else {
-        line_args = split(line, ' ');
         if (current_section == "files") {
-          if (line_args.size() == 2) {
-            // std::cout << "Found File Line - Size: " << line_args.size() << "
-            // "
-            //           << line_args[0] << " " << toLowerCase(line_args[0])
-            //           << std::endl;
-            if (toLowerCase(line_args[0]) == "pic") {
-              pic_file_name = line_args[1];
-            } else if (toLowerCase(line_args[0]) == "map") {
-              map_pic_file_name = line_args[1];
-            } else if (toLowerCase(line_args[0]) == "crd") {
-              cards_file_name = line_args[1];
-            } else if (toLowerCase(line_args[0]) == "prv") {
-              prv_file_name = line_args[1];
-            }
-            // std::cout << this << std::endl;
-            // std::cout << "=======" << std::endl;
-          } else {
-            std::cerr << "Invalid file section config line: " << line
-                      << std::endl;
-          }
+          this->processFileSectionLine(line);
         } else if (current_section == "continents") {
-          // std::cout << "Found Continents Line - Size: " << line_args.size()
-          //           << std::endl;
-          if (line_args.size() == 3) {
-            Continent *tempContinent;
-            tempContinent = new Continent(line_args[0], std::stoi(line_args[1]),
-                                          line_args[2]);
-
-            this->map_continents.push_back(tempContinent);
-            // std::cout << "Name: '" << line_args[0] << "'" << std::endl;
-            // std::cout << "Value: '" << std::stoi(line_args[1]) << "'" <<
-            // std::endl; std::cout << "Colour: '" << line_args[2] << "'" <<
-            // std::endl;
-            // std::cout << "# Continents: " << Continent::count << std::endl;
-          } else {
-            std::cerr << "Invalid file section config line: " << line
-                      << std::endl;
-          }
+          this->processContinentSectionLine(line);
         } else if (current_section == "countries") {
-          // std::cout << "Found Countries Line - Size: " << line_args.size()
-          //           << std::endl;
-          if (line_args.size() == 5) {
-            Country *tempCountry;
-            tempCountry = new Country(
-                std::stoi(line_args[0]), line_args[1], std::stoi(line_args[2]),
-                std::stoi(line_args[3]), std::stoi(line_args[4]));
-            this->map_countries.push_back(tempCountry);
-          } else {
-            std::cerr << "Invalid file section config line: " << line
-                      << std::endl;
-          }
+          this->processCountrySectionLine(line);
         } else if (current_section == "borders") {
-          // std::cout << "Found Borders Line - Size: " << line_args.size()
-          //           << std::endl;
-          if (line_args.size() > 1) {
-            Borders *tempBorders;
-            tempBorders = new Borders(std::stoi(line_args[0]));
-            for (int i = 1; i < line_args.size(); i++)
-            {
-              tempBorders->borders.push_back(std::stoi(line_args[i]));
-            }
-            this->map_borders.push_back(tempBorders);
-          } else {
-            std::cerr << "Invalid file section config line: " << line
-                      << std::endl;
-          }
+          this->processBordersSectionLine(line);
         }
       }
     }
   }
+};
+
+void MapFile::processFileSectionLine(const std::string line) {
+
+  std::vector<std::string> line_args;
+  line_args = split(line, ' ');
+
+  if (line_args.size() == 2) {
+    // std::cout << "Found File Line - Size: " << line_args.size() << "
+    // "
+    //           << line_args[0] << " " << toLowerCase(line_args[0])
+    //           << std::endl;
+    if (toLowerCase(line_args[0]) == "pic") {
+      pic_file_name = line_args[1];
+    } else if (toLowerCase(line_args[0]) == "map") {
+      map_pic_file_name = line_args[1];
+    } else if (toLowerCase(line_args[0]) == "crd") {
+      cards_file_name = line_args[1];
+    } else if (toLowerCase(line_args[0]) == "prv") {
+      prv_file_name = line_args[1];
+    }
+    // std::cout << this << std::endl;
+    // std::cout << "=======" << std::endl;
+  } else {
+    std::cerr << "Invalid file section config line: " << line << std::endl;
+  }
+};
+
+void MapFile::processContinentSectionLine(const std::string line) {
+  std::vector<std::string> line_args;
+  line_args = split(line, ' ');
+
+  // std::cout << "Found Continents Line - Size: " << line_args.size()
+  //           << std::endl;
+  if (line_args.size() == 3) {
+    Continent *tempContinent;
+    tempContinent =
+        new Continent(line_args[0], std::stoi(line_args[1]), line_args[2]);
+
+    map_continents.push_back(tempContinent);
+    // std::cout << "Name: '" << line_args[0] << "'" << std::endl;
+    // std::cout << "Value: '" << std::stoi(line_args[1]) << "'" <<
+    // std::endl; std::cout << "Colour: '" << line_args[2] << "'" <<
+    // std::endl;
+    // std::cout << "# Continents: " << Continent::count << std::endl;
+  } else {
+    std::cerr << "Invalid file section config line: " << line << std::endl;
+  }
+};
+
+void MapFile::processCountrySectionLine(const std::string line) {
+  std::vector<std::string> line_args;
+  line_args = split(line, ' ');
+  // std::cout << "Found Countries Line - Size: " << line_args.size()
+  //           << std::endl;
+  if (line_args.size() == 5) {
+    Country *tempCountry;
+    tempCountry = new Country(std::stoi(line_args[0]), line_args[1],
+                              std::stoi(line_args[2]), std::stoi(line_args[3]),
+                              std::stoi(line_args[4]));
+    map_countries.push_back(tempCountry);
+  } else {
+    std::cerr << "Invalid file section config line: " << line << std::endl;
+  }
+};
+
+void MapFile::processBordersSectionLine(const std::string line) {
+  std::vector<std::string> line_args;
+  line_args = split(line, ' ');
+
+  // std::cout << "Found Borders Line - Size: " << line_args.size()
+  //           << std::endl;
+  if (line_args.size() > 1) {
+    Country *tempCountry;
+    tempCountry = getCountryByNumber(std::stoi(line_args[0])); 
+    for (int i = 1; i < line_args.size(); i++) {
+      tempCountry->borders.push_back(std::stoi(line_args[i]));
+    }
+    // this->map_borders.push_back(tempBorders);
+  } else {
+    std::cerr << "Invalid file section config line: " << line << std::endl;
+  }
+};
+
+Country* MapFile::getCountryByNumber(int country_number)
+{
+  int i;
+  for (i = 0; i < map_countries.size(); i++) {
+    if (map_countries[i]->number == country_number) {
+      return map_countries[i];
+    }
+  }
+  return nullptr;
 };
 
 std::string toLowerCase(const std::string toLower) {

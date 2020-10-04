@@ -53,6 +53,7 @@ public:
   int continent_number;
   int x_coord;
   int y_coord;
+  std::vector<int> borders;
 
   // Constructors
   Country();
@@ -71,26 +72,26 @@ public:
 
 std::ostream &operator<<(std::ostream &output, const Country &country);
 
-class Borders {
-public:
-  int country_number;
-  std::vector<int> borders;
+// class Borders {
+// public:
+//   int country_number;
+//   std::vector<int> borders;
 
-  // Constructors
-  Borders();
-  Borders(int country_number);
-  Borders(const Borders &other_borders);
+//   // Constructors
+//   Borders();
+//   Borders(int country_number);
+//   Borders(const Borders &other_borders);
 
-  // Assignment Operator
-  Borders &operator=(const Borders &other_borders);
+//   // Assignment Operator
+//   Borders &operator=(const Borders &other_borders);
 
-  // Stream Insertion
-  friend std::ostream &operator<<(std::ostream &output, const Borders &borders);
+//   // Stream Insertion
+//   friend std::ostream &operator<<(std::ostream &output, const Borders &borders);
 
-  ~Borders();
-};
+//   ~Borders();
+// };
 
-std::ostream &operator<<(std::ostream &output, const Borders &borders);
+// std::ostream &operator<<(std::ostream &output, const Borders &borders);
 
 // Struct that can be passed as a parameter to obtain the success or failure of
 // an operation, outside of the return value of the function
@@ -114,7 +115,7 @@ public:
   std::string prv_file_name;
   std::vector<Continent *> map_continents;
   std::vector<Country *> map_countries;
-  std::vector<Borders *> map_borders;
+  // std::vector<Borders *> map_borders;
 
   // Constructors
   MapFile();
@@ -128,6 +129,12 @@ public:
                                   const MapFile *map_file);
 
   void readMapFile();
+  void processFileSectionLine(const std::string line);
+  void processContinentSectionLine(const std::string line);
+  void processCountrySectionLine(const std::string line);
+  void processBordersSectionLine(const std::string line);
+
+  Country* getCountryByNumber(int country_number);
 
   ~MapFile();
 };
