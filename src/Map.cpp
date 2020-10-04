@@ -116,6 +116,12 @@ void Map::AddEdges(Country country1, Country country2)
 	
 }
 
+int Map::NumOfCountries() {
+
+	return *this->NumberOfCountries;
+}
+
+
 void Map::Display()
 {
 	std::cout << "\n\nMap Name: " << *MapName << std::endl;
