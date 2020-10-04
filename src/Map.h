@@ -40,6 +40,7 @@ public:
 	~Map();
 
 	void AddEdges(Country country1, Country country2);
+	int NumOfCountries();
 	void Display();
 	void Display(std::string continent);
 	void SetMapName(std::string mapName);
