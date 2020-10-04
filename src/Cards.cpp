@@ -245,6 +245,13 @@ Card Deck::draw(Hand& const h) {
 
 }
 
+
+int Deck::GetSize() {
+
+	return deck->size();
+
+}
+
 // Operator overloading
 void Deck::operator = (const Deck& d) {
 
