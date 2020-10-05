@@ -13,7 +13,7 @@
 //
 /////////////////////////////////////////////
 
-#include "MapLoader.h"
+#include "MapLoader.hpp"
 
 #include <algorithm>
 #include <fstream>
@@ -22,9 +22,9 @@
 #include <string>
 #include <vector>
 
-////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////
 // Continent
-////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////
 
 int Continent::count = 0;
 
@@ -64,9 +64,9 @@ std::ostream &operator<<(std::ostream &output, const Continent &continent) {
   return output << "#" << continent.number << " - " << continent.name;
 };
 
-////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////
 // Country
-////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////
 
 // Default Constructor
 Country::Country() {
@@ -108,43 +108,9 @@ std::ostream &operator<<(std::ostream &output, const Country &country) {
   return output << "#" << country.number << " - " << country.short_name;
 };
 
-////////////////////////////////
-// Borders
-////////////////////////////////
-// Borders::Borders() { country_number = 0; };
-
-// Borders::Borders(int country_number) {
-//   this->country_number = country_number;
-//   // std::vector<int> borders;
-// };
-
-// Borders::Borders(const Borders &other_borders) {
-//   this->country_number = other_borders.country_number;
-
-//   // TODO: Deep copy the borders vector
-//   // std::copy(other_borders->borders->begin(), *other_borders.borders->end(),
-//   // std::back_inserter(this->borders));
-// };
-
-// Borders &Borders::operator=(const Borders &other_borders) {
-//   this->country_number = other_borders.country_number;
-
-//   // TODO: Deep copy the borders vector
-//   // std::copy(*other_borders.borders->begin(), *other_borders.borders->end(),
-//   // std::back_inserter(this->borders));
-
-//   return *this;
-// };
-
-// std::ostream &operator<<(std::ostream &output, const Borders &borders) {
-//   // output << "Country: " << borders.country_number << " Borders: [" <<
-//   // borders.borders;
-//   return output;
-// };
-
-////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////
 // MapFile
-////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////
 
 MapFile::MapFile() {
   map_file_name = "";
@@ -175,9 +141,7 @@ MapFile &MapFile::operator=(std::string new_map_file_name) {
   // std::copy(*other_map_file.map_countries->begin(),
   // *other_map_file.map_countries->end(),
   // std::back_inserter(*this->map_countries));
-  // std::copy(*other_map_file.map_borders->begin(),
-  // *other_map_file.map_borders->end(),
-  // std::back_inserter(*this->map_borders));
+
 
   return *this;
 };
@@ -195,9 +159,7 @@ MapFile::MapFile(const MapFile &other_map_file) {
   // std::copy(*other_map_file.map_countries->begin(),
   // *other_map_file.map_countries->end(),
   // std::back_inserter(*this->map_countries));
-  // std::copy(*other_map_file.map_borders->begin(),
-  // *other_map_file.map_borders->end(),
-  // std::back_inserter(*this->map_borders));
+
 };
 
 MapFile &MapFile::operator=(const MapFile &other_map_file) {
@@ -213,9 +175,6 @@ MapFile &MapFile::operator=(const MapFile &other_map_file) {
   // std::copy(*other_map_file.map_countries->begin(),
   // *other_map_file.map_countries->end(),
   // std::back_inserter(*this->map_countries));
-  // std::copy(*other_map_file.map_borders->begin(),
-  // *other_map_file.map_borders->end(),
-  // std::back_inserter(*this->map_borders));
 
   return *this;
 };
@@ -247,8 +206,8 @@ void MapFile::readMapFile() {
       } else if (line[0] == '[') {
         std::size_t pos = line.find(']');
         current_section = line.substr(1, pos - 1);
-        // std::cout << "Section detected: " << current_section << std::endl;
       } else {
+        // Do things according to what section we're in
         if (current_section == "files") {
           this->processFileSectionLine(line);
         } else if (current_section == "continents") {
@@ -269,10 +228,6 @@ void MapFile::processFileSectionLine(const std::string line) {
   line_args = split(line, ' ');
 
   if (line_args.size() == 2) {
-    // std::cout << "Found File Line - Size: " << line_args.size() << "
-    // "
-    //           << line_args[0] << " " << toLowerCase(line_args[0])
-    //           << std::endl;
     if (toLowerCase(line_args[0]) == "pic") {
       pic_file_name = line_args[1];
     } else if (toLowerCase(line_args[0]) == "map") {
@@ -282,8 +237,6 @@ void MapFile::processFileSectionLine(const std::string line) {
     } else if (toLowerCase(line_args[0]) == "prv") {
       prv_file_name = line_args[1];
     }
-    // std::cout << this << std::endl;
-    // std::cout << "=======" << std::endl;
   } else {
     std::cerr << "Invalid file section config line: " << line << std::endl;
   }
@@ -293,19 +246,12 @@ void MapFile::processContinentSectionLine(const std::string line) {
   std::vector<std::string> line_args;
   line_args = split(line, ' ');
 
-  // std::cout << "Found Continents Line - Size: " << line_args.size()
-  //           << std::endl;
   if (line_args.size() == 3) {
     Continent *tempContinent;
     tempContinent =
         new Continent(line_args[0], std::stoi(line_args[1]), line_args[2]);
 
     map_continents.push_back(tempContinent);
-    // std::cout << "Name: '" << line_args[0] << "'" << std::endl;
-    // std::cout << "Value: '" << std::stoi(line_args[1]) << "'" <<
-    // std::endl; std::cout << "Colour: '" << line_args[2] << "'" <<
-    // std::endl;
-    // std::cout << "# Continents: " << Continent::count << std::endl;
   } else {
     std::cerr << "Invalid file section config line: " << line << std::endl;
   }
@@ -314,8 +260,6 @@ void MapFile::processContinentSectionLine(const std::string line) {
 void MapFile::processCountrySectionLine(const std::string line) {
   std::vector<std::string> line_args;
   line_args = split(line, ' ');
-  // std::cout << "Found Countries Line - Size: " << line_args.size()
-  //           << std::endl;
   if (line_args.size() == 5) {
     Country *tempCountry;
     tempCountry = new Country(std::stoi(line_args[0]), line_args[1],
@@ -331,15 +275,16 @@ void MapFile::processBordersSectionLine(const std::string line) {
   std::vector<std::string> line_args;
   line_args = split(line, ' ');
 
-  // std::cout << "Found Borders Line - Size: " << line_args.size()
-  //           << std::endl;
   if (line_args.size() > 1) {
     Country *tempCountry;
-    tempCountry = getCountryByNumber(std::stoi(line_args[0])); 
-    for (int i = 1; i < line_args.size(); i++) {
-      tempCountry->borders.push_back(std::stoi(line_args[i]));
+    tempCountry = getCountryByNumber(std::stoi(line_args[0]));
+    if (tempCountry != nullptr){
+      for (int i = 1; i < line_args.size(); i++) {
+        tempCountry->borders.push_back(std::stoi(line_args[i]));
+      }
+    } else {
+      std::cerr << "Invalid country in borders section: " << line << std::endl;
     }
-    // this->map_borders.push_back(tempBorders);
   } else {
     std::cerr << "Invalid file section config line: " << line << std::endl;
   }
@@ -355,6 +300,13 @@ Country* MapFile::getCountryByNumber(int country_number)
   }
   return nullptr;
 };
+
+/////////////////////////////////////////////////////////////////////////////////
+//
+// Miscellaneous String helper Functions
+//
+/////////////////////////////////////////////////////////////////////////////////
+
 
 std::string toLowerCase(const std::string toLower) {
   std::string lowerCase = "";

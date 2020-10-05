@@ -14,7 +14,7 @@
 //
 /////////////////////////////////////////////
 
-#include "MapLoader.h"
+#include "MapLoader.hpp"
 #include <fstream>
 #include <iostream>
 

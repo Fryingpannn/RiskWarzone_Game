@@ -72,26 +72,6 @@ public:
 
 std::ostream &operator<<(std::ostream &output, const Country &country);
 
-// class Borders {
-// public:
-//   int country_number;
-//   std::vector<int> borders;
-
-//   // Constructors
-//   Borders();
-//   Borders(int country_number);
-//   Borders(const Borders &other_borders);
-
-//   // Assignment Operator
-//   Borders &operator=(const Borders &other_borders);
-
-//   // Stream Insertion
-//   friend std::ostream &operator<<(std::ostream &output, const Borders &borders);
-
-//   ~Borders();
-// };
-
-// std::ostream &operator<<(std::ostream &output, const Borders &borders);
 
 // Struct that can be passed as a parameter to obtain the success or failure of
 // an operation, outside of the return value of the function
