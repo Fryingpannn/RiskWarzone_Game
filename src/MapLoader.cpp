@@ -65,11 +65,11 @@ std::ostream &operator<<(std::ostream &output, const Continent &continent) {
 };
 
 //////////////////////////////////////////////////////////////////////////////////////
-// Country
+// Territory
 //////////////////////////////////////////////////////////////////////////////////////
 
 // Default Constructor
-Country::Country() {
+Territory::Territory() {
   number = 0;
   short_name = "";
   continent_number = 0;
@@ -77,7 +77,7 @@ Country::Country() {
   y_coord = 0;
 };
 
-Country::Country(int new_number, std::string new_short_name,
+Territory::Territory(int new_number, std::string new_short_name,
                  int new_continent_number, int new_x_coord, int new_y_coord) {
   number = new_number;
   short_name = new_short_name;
@@ -86,26 +86,26 @@ Country::Country(int new_number, std::string new_short_name,
   y_coord = new_y_coord;
 };
 
-Country::Country(const Country &other_country) {
-  number = other_country.number;
-  short_name = other_country.short_name;
-  continent_number = other_country.continent_number;
-  x_coord = other_country.x_coord;
-  y_coord = other_country.y_coord;
+Territory::Territory(const Territory &other_territory) {
+  number = other_territory.number;
+  short_name = other_territory.short_name;
+  continent_number = other_territory.continent_number;
+  x_coord = other_territory.x_coord;
+  y_coord = other_territory.y_coord;
 };
 
-Country &Country::operator=(const Country &other_country) {
-  number = other_country.number;
-  short_name = other_country.short_name;
-  continent_number = other_country.continent_number;
-  x_coord = other_country.x_coord;
-  y_coord = other_country.y_coord;
+Territory &Territory::operator=(const Territory &other_territory) {
+  number = other_territory.number;
+  short_name = other_territory.short_name;
+  continent_number = other_territory.continent_number;
+  x_coord = other_territory.x_coord;
+  y_coord = other_territory.y_coord;
 
   return *this;
 };
 
-std::ostream &operator<<(std::ostream &output, const Country &country) {
-  return output << "#" << country.number << " - " << country.short_name;
+std::ostream &operator<<(std::ostream &output, const Territory &territory) {
+  return output << "#" << territory.number << " - " << territory.short_name;
 };
 
 //////////////////////////////////////////////////////////////////////////////////////
@@ -213,7 +213,7 @@ void MapFile::readMapFile() {
         } else if (current_section == "continents") {
           this->processContinentSectionLine(line);
         } else if (current_section == "countries") {
-          this->processCountrySectionLine(line);
+          this->processTerritorySectionLine(line);
         } else if (current_section == "borders") {
           this->processBordersSectionLine(line);
         }
@@ -257,15 +257,15 @@ void MapFile::processContinentSectionLine(const std::string line) {
   }
 };
 
-void MapFile::processCountrySectionLine(const std::string line) {
+void MapFile::processTerritorySectionLine(const std::string line) {
   std::vector<std::string> line_args;
   line_args = split(line, ' ');
   if (line_args.size() == 5) {
-    Country *tempCountry;
-    tempCountry = new Country(std::stoi(line_args[0]), line_args[1],
+    Territory *tempTerritory;
+    tempTerritory = new Territory(std::stoi(line_args[0]), line_args[1],
                               std::stoi(line_args[2]), std::stoi(line_args[3]),
                               std::stoi(line_args[4]));
-    map_countries.push_back(tempCountry);
+    map_territories.push_back(tempTerritory);
   } else {
     std::cerr << "Invalid file section config line: " << line << std::endl;
   }
@@ -276,26 +276,26 @@ void MapFile::processBordersSectionLine(const std::string line) {
   line_args = split(line, ' ');
 
   if (line_args.size() > 1) {
-    Country *tempCountry;
-    tempCountry = getCountryByNumber(std::stoi(line_args[0]));
-    if (tempCountry != nullptr){
+    Territory *tempTerritory;
+    tempTerritory = getTerritoryByNumber(std::stoi(line_args[0]));
+    if (tempTerritory != nullptr){
       for (int i = 1; i < line_args.size(); i++) {
-        tempCountry->borders.push_back(std::stoi(line_args[i]));
+        tempTerritory->borders.push_back(std::stoi(line_args[i]));
       }
     } else {
-      std::cerr << "Invalid country in borders section: " << line << std::endl;
+      std::cerr << "Invalid territory in borders section: " << line << std::endl;
     }
   } else {
     std::cerr << "Invalid file section config line: " << line << std::endl;
   }
 };
 
-Country* MapFile::getCountryByNumber(int country_number)
+Territory* MapFile::getTerritoryByNumber(int territory_number)
 {
   int i;
-  for (i = 0; i < map_countries.size(); i++) {
-    if (map_countries[i]->number == country_number) {
-      return map_countries[i];
+  for (i = 0; i < map_territories.size(); i++) {
+    if (map_territories[i]->number == territory_number) {
+      return map_territories[i];
     }
   }
   return nullptr;

@@ -46,7 +46,7 @@ public:
 
 std::ostream &operator<<(std::ostream &output, const Continent &continent);
 
-class Country {
+class Territory {
 public:
   int number;
   std::string short_name;
@@ -56,21 +56,21 @@ public:
   std::vector<int> borders;
 
   // Constructors
-  Country();
-  Country(int new_number, std::string new_short_name, int new_continent_number,
+  Territory();
+  Territory(int new_number, std::string new_short_name, int new_continent_number,
           int new_x_coord, int new_y_coord);
-  Country(const Country &other_country);
+  Territory(const Territory &other_territory);
 
   // Assignment Operator
-  Country &operator=(const Country &other_country);
+  Territory &operator=(const Territory &other_territory);
 
   // Stream Insertion
-  friend std::ostream &operator<<(std::ostream &output, const Country &country);
+  friend std::ostream &operator<<(std::ostream &output, const Territory &territory);
 
-  ~Country();
+  ~Territory();
 };
 
-std::ostream &operator<<(std::ostream &output, const Country &country);
+std::ostream &operator<<(std::ostream &output, const Territory &territory);
 
 
 // Struct that can be passed as a parameter to obtain the success or failure of
@@ -94,8 +94,7 @@ public:
   std::string cards_file_name;
   std::string prv_file_name;
   std::vector<Continent *> map_continents;
-  std::vector<Country *> map_countries;
-  // std::vector<Borders *> map_borders;
+  std::vector<Territory *> map_territories;
 
   // Constructors
   MapFile();
@@ -111,10 +110,10 @@ public:
   void readMapFile();
   void processFileSectionLine(const std::string line);
   void processContinentSectionLine(const std::string line);
-  void processCountrySectionLine(const std::string line);
+  void processTerritorySectionLine(const std::string line);
   void processBordersSectionLine(const std::string line);
 
-  Country* getCountryByNumber(int country_number);
+  Territory* getTerritoryByNumber(int country_number);
 
   ~MapFile();
 };
