@@ -31,7 +31,7 @@ int Continent::count = 0;
 // Default Constructor
 /**
  * @brief Construct a new Continent:: Continent object
- * 
+ *
  */
 Continent::Continent() {
   number = 0;
@@ -43,10 +43,10 @@ Continent::Continent() {
 // Parameterized constructor
 /**
  * @brief Construct a new Continent:: Continent object
- * 
- * @param new_name 
- * @param new_value 
- * @param new_colour 
+ *
+ * @param new_name
+ * @param new_value
+ * @param new_colour
  */
 Continent::Continent(std::string new_name, int new_value,
                      std::string new_colour) {
@@ -58,51 +58,63 @@ Continent::Continent(std::string new_name, int new_value,
 
 /**
  * @brief Construct a new Continent:: Continent object
- * 
- * @param other_continent 
+ *
+ * @param other_continent
  */
 Continent::Continent(const Continent &other_continent) {
   number = other_continent.number;
   name = other_continent.name;
   value = other_continent.value;
   colour = other_continent.colour;
+
+  for (auto i = 0; i < other_continent.territories.size(); i++)
+    territories.push_back(new Territory(*(other_continent.territories[i])));
 };
 
 /**
  * @brief Assignment operator overload
- * 
- * @param other_continent 
- * @return Continent& 
+ *
+ * @param other_continent
+ * @return Continent&
  */
 Continent &Continent::operator=(const Continent &other_continent) {
   number = other_continent.number;
   name = other_continent.name;
   value = other_continent.value;
   colour = other_continent.colour;
+
+  for (auto i = 0; i < other_continent.territories.size(); i++)
+    territories.push_back(new Territory(*(other_continent.territories[i])));
+
   return *this;
 };
 
 /**
  * @brief Stream insertion operator overload
- * 
- * @param output 
- * @param continent 
- * @return std::ostream& 
+ *
+ * @param output
+ * @param continent
+ * @return std::ostream&
  */
 std::ostream &operator<<(std::ostream &output, const Continent &continent) {
   output << "Continent #: " << continent.number << std::endl;
   output << "Name: " << continent.name << std::endl;
   output << "Value: " << continent.value << std::endl;
   output << "Colour: " << continent.colour << std::endl;
+  output << "Territories: ";
+  for (auto i = 0; i < continent.territories.size(); i++) {
+    output << continent.territories[i]->short_name;
+  }
+  output << std::endl;
   return output;
 };
 
 /**
  * @brief Destroy the Continent:: Continent object
- * 
+ *
  */
 Continent::~Continent(){
-
+  // TODO Territories list
 };
 
 //////////////////////////////////////////////////////////////////////////////////////
@@ -112,7 +124,7 @@ Continent::~Continent(){
 // Default Constructor
 /**
  * @brief Construct a new Territory:: Territory object
- * 
+ *
  */
 Territory::Territory() {
   number = 0;
@@ -124,12 +136,12 @@ Territory::Territory() {
 
 /**
  * @brief Construct a new Territory:: Territory object
- * 
- * @param new_number 
- * @param new_short_name 
- * @param new_continent_number 
- * @param new_x_coord 
- * @param new_y_coord 
+ *
+ * @param new_number
+ * @param new_short_name
+ * @param new_continent_number
+ * @param new_x_coord
+ * @param new_y_coord
  */
 Territory::Territory(int new_number, std::string new_short_name,
                      int new_continent_number, int new_x_coord,
@@ -144,8 +156,8 @@ Territory::Territory(int new_number, std::string new_short_name,
 // Copy Constructor
 /**
  * @brief Construct a new Territory:: Territory object
- * 
- * @param other_territory 
+ *
+ * @param other_territory
  */
 Territory::Territory(const Territory &other_territory) {
   number = other_territory.number;
@@ -157,10 +169,10 @@ Territory::Territory(const Territory &other_territory) {
 
 // Assignment Operator
 /**
- * @brief 
- * 
- * @param other_territory 
- * @return Territory& 
+ * @brief
+ *
+ * @param other_territory
+ * @return Territory&
  */
 Territory &Territory::operator=(const Territory &other_territory) {
   number = other_territory.number;
@@ -193,7 +205,7 @@ Territory::~Territory(){
 // Default Constructor
 /**
  * @brief Construct a new Map File:: Map File object
- * 
+ *
  */
 MapFile::MapFile() {
   map_file_name = "";
@@ -205,8 +217,8 @@ MapFile::MapFile() {
 
 /**
  * @brief Construct a new Map File:: Map File object
- * 
- * @param new_map_file_name 
+ *
+ * @param new_map_file_name
  */
 MapFile::MapFile(std::string new_map_file_name) {
   map_file_name = new_map_file_name;
@@ -219,8 +231,8 @@ MapFile::MapFile(std::string new_map_file_name) {
 // Copy Constructor
 /**
  * @brief Construct a new Map File:: Map File object
- * 
- * @param other_map_file 
+ *
+ * @param other_map_file
  */
 MapFile::MapFile(const MapFile &other_map_file) {
   this->map_file_name = other_map_file.map_file_name;
@@ -230,17 +242,19 @@ MapFile::MapFile(const MapFile &other_map_file) {
   this->prv_file_name = other_map_file.prv_file_name;
 
   for (auto i = 0; i < other_map_file.map_continents.size(); i++)
-    map_continents.push_back(new Continent(*(other_map_file.map_continents[i])));
+    map_continents.push_back(
+        new Continent(*(other_map_file.map_continents[i])));
   for (auto i = 0; i < other_map_file.map_territories.size(); i++)
-    map_territories.push_back(new Territory(*(other_map_file.map_territories[i])));
+    map_territories.push_back(
+        new Territory(*(other_map_file.map_territories[i])));
 };
 
 // Assignment Operator
 /**
- * @brief 
- * 
- * @param other_map_file 
- * @return MapFile& 
+ * @brief
+ *
+ * @param other_map_file
+ * @return MapFile&
  */
 MapFile &MapFile::operator=(const MapFile &other_map_file) {
   this->map_file_name = other_map_file.map_file_name;
@@ -250,9 +264,11 @@ MapFile &MapFile::operator=(const MapFile &other_map_file) {
   this->prv_file_name = other_map_file.prv_file_name;
 
   for (auto i = 0; i < other_map_file.map_continents.size(); i++)
-    map_continents.push_back(new Continent(*(other_map_file.map_continents[i])));
+    map_continents.push_back(
+        new Continent(*(other_map_file.map_continents[i])));
   for (auto i = 0; i < other_map_file.map_territories.size(); i++)
-    map_territories.push_back(new Territory(*(other_map_file.map_territories[i])));
+    map_territories.push_back(
+        new Territory(*(other_map_file.map_territories[i])));
 
   return *this;
 };
@@ -260,10 +276,10 @@ MapFile &MapFile::operator=(const MapFile &other_map_file) {
 // Stream insertion operator
 /**
  * @brief Stream insertion operator overload
- * 
- * @param output 
- * @param map_file 
- * @return std::ostream& 
+ *
+ * @param output
+ * @param map_file
+ * @return std::ostream&
  */
 std::ostream &operator<<(std::ostream &output, const MapFile *map_file) {
   output << "Map File: " << map_file->map_file_name
@@ -277,26 +293,25 @@ std::ostream &operator<<(std::ostream &output, const MapFile *map_file) {
 // Destructor
 /**
  * @brief Destroy the Map File:: Map File object
- * 
+ *
  */
-MapFile::~MapFile(){
+MapFile::~MapFile() {
   // Delete the territories
-  for (auto i = 0; i < this->map_territories.size(); i++){
-    delete(this->map_territories[i]);
+  for (auto i = 0; i < this->map_territories.size(); i++) {
+    delete (this->map_territories[i]);
     this->map_territories[i] = nullptr;
   }
 
   // Delete the continents
-  for (auto i = 0; i < this->map_continents.size(); i++){
-    delete(this->map_continents[i]);
+  for (auto i = 0; i < this->map_continents.size(); i++) {
+    delete (this->map_continents[i]);
     this->map_continents[i] = nullptr;
   }
 };
 
-
 /**
- * @brief 
- * 
+ * @brief
+ *
  */
 void MapFile::readMapFile() {
 
@@ -334,9 +349,9 @@ void MapFile::readMapFile() {
 };
 
 /**
- * @brief 
- * 
- * @param line 
+ * @brief
+ *
+ * @param line
  */
 void MapFile::processFileSectionLine(const std::string line) {
 
@@ -359,9 +374,9 @@ void MapFile::processFileSectionLine(const std::string line) {
 };
 
 /**
- * @brief 
- * 
- * @param line 
+ * @brief
+ *
+ * @param line
  */
 void MapFile::processContinentSectionLine(const std::string line) {
   std::vector<std::string> line_args;
@@ -380,9 +395,9 @@ void MapFile::processContinentSectionLine(const std::string line) {
 };
 
 /**
- * @brief 
- * 
- * @param line 
+ * @brief
+ *
+ * @param line
  */
 void MapFile::processTerritorySectionLine(const std::string line) {
   std::vector<std::string> line_args;
@@ -400,9 +415,9 @@ void MapFile::processTerritorySectionLine(const std::string line) {
 };
 
 /**
- * @brief 
- * 
- * @param line 
+ * @brief
+ *
+ * @param line
  */
 void MapFile::processBordersSectionLine(const std::string line) {
   std::vector<std::string> line_args;
@@ -425,10 +440,10 @@ void MapFile::processBordersSectionLine(const std::string line) {
 };
 
 /**
- * @brief 
- * 
- * @param territory_number 
- * @return Territory* 
+ * @brief
+ *
+ * @param territory_number
+ * @return Territory*
  */
 Territory *MapFile::getTerritoryByNumber(int territory_number) {
   int i;
@@ -439,6 +454,16 @@ Territory *MapFile::getTerritoryByNumber(int territory_number) {
   }
   return nullptr;
 };
+
+Continent* MapFile::getContinentByNumber(int continent_number) {
+  int i;
+  for (i = 0; i < map_continents.size(); i++) {
+    if (map_continents[i]->number == continent_number) {
+      return map_continents[i];
+    }
+  }
+  return nullptr;
+}
 
 /////////////////////////////////////////////////////////////////////////////////
 //
@@ -483,6 +508,7 @@ bool isStringblank(const std::string line) {
   return true;
 };
 
+///////////////////
 // Source: https://thispointer.com/how-to-split-a-string-in-c/
 std::vector<std::string> split(std::string strToSplit, char delimeter) {
   std::stringstream ss(strToSplit);
@@ -493,6 +519,8 @@ std::vector<std::string> split(std::string strToSplit, char delimeter) {
   }
   return splittedStrings;
 };
+///////////////////
+
 
 //  std::vector<int *> *myVar
 //

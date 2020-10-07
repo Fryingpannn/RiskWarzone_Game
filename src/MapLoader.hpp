@@ -18,6 +18,10 @@
 #include <string>
 #include <vector>
 
+class Territory;
+class Continent;
+class MapFile;
+
 // Class: Continent
 //
 // Contains the data for each continent
@@ -27,6 +31,8 @@ public:
   std::string name;
   int value;
   std::string colour;
+  std::vector<Territory *> territories;
+  
   static int count;
 
   // Constructors
@@ -41,10 +47,12 @@ public:
   friend std::ostream &operator<<(std::ostream &output,
                                   const Continent &continent);
 
+  // Destructor
   ~Continent();
 };
 
 std::ostream &operator<<(std::ostream &output, const Continent &continent);
+
 
 class Territory {
 public:
@@ -54,6 +62,10 @@ public:
   int x_coord;
   int y_coord;
   std::vector<int> borders;
+  std::vector<Territory*> adjacency_list;
+  Continent *continent;
+
+  static int count;
 
   // Constructors
   Territory();
@@ -112,7 +124,11 @@ public:
   void processTerritorySectionLine(const std::string line);
   void processBordersSectionLine(const std::string line);
 
-  Territory* getTerritoryByNumber(int country_number);
+  Territory* getTerritoryByNumber(int territory_number);
+  Continent* getContinentByNumber(int continent_number);
+
+
+  void generateMap();
 
   ~MapFile();
 };
@@ -133,17 +149,3 @@ bool isStringblank(const std::string line);
 std::vector<std::string> split(std::string strToSplit, char delimeter);
 
 std::ostream &operator<<(std::ostream &output, const MapFile *map_file);
-
-// Class Requirements
-//
-// Default constructor
-// Parameterized constructor
-// Copy constructor
-// Assignment operator
-// Stream insertion operator
-
-// Functions
-//
-// File Reader
-// Line splitter (splits the line that's read and returns a std::vector
-// containing the elements)

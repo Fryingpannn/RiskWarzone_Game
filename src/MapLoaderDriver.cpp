@@ -20,7 +20,7 @@
 #include <string>
 
 
-int main() {
+void mapLoaderDriver() {
   std::cout << "MapLoaderDriver.cpp" << std::endl;
   std::cout << "By: Stefan Russo - 26683320" << std::endl;
   std::cout << "===========================" << std::endl;
@@ -32,10 +32,8 @@ int main() {
   std::cin >> map_file_name;
   trim(map_file_name);
 
-  // MapFile *testMapFile;
   MapFile *testMapFile;
   testMapFile = new MapFile(map_folder_base_path + map_file_name);
-  // *testMapFile = new MapFile(mapFileName);
   testMapFile->readMapFile();
 
   std::cout << testMapFile->map_file_name << std::endl;
@@ -49,5 +47,5 @@ int main() {
 
   delete(testMapFile);
   testMapFile = nullptr;
-  return 0;
+  // return 0;
 }
