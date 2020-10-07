@@ -1,7 +1,8 @@
 #pragma once
 
-//should be named game mode but ok
+//test
 class Orders
 {
+
 };
 
