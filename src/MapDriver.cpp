@@ -1,7 +1,7 @@
 #include <iostream>
 #include "Map.h"
 
-int main()
+void mapDriver()
 {
     //// graph edges array.
     //graphEdge edges[] = {
@@ -126,5 +126,5 @@ int main()
     WorldMap->Display();*/
 
 
-    return 0;
+    // return 0;
 }

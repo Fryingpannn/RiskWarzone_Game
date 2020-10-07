@@ -15,7 +15,7 @@
 
 #include <iostream>
 #include <string>
-// #include "MapDriver.hpp"
+#include "MapDriver.hpp"
 #include "MapLoaderDriver.hpp"
 
 void displayMenu();
@@ -36,8 +36,8 @@ int main()
 
         if (choice == "1") {
             mapLoaderDriver();
-        // } else if (choice == "2") {
-        //     mapDriver();
+        } else if (choice == "2") {
+            mapDriver();
         } else if (choice == "q" || choice == "Q"){
             break;
         }

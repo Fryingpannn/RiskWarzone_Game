@@ -17,6 +17,7 @@
 
 #include <string>
 #include <vector>
+#include "Map.h"
 
 class Territory;
 class Continent;
@@ -124,6 +125,7 @@ public:
   Territory* getTerritoryByNumber(int territory_number);
   Continent* getContinentByNumber(int continent_number);
 
+  struct::Country generateMapCountry(Territory* territory);
 
   void generateMap();
 

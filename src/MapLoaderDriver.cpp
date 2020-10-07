@@ -15,6 +15,7 @@
 /////////////////////////////////////////////
 
 #include "MapLoader.hpp"
+#include "Map.h"
 #include <fstream>
 #include <iostream>
 #include <string>
@@ -42,8 +43,13 @@ void mapLoaderDriver() {
   }
   
   for (int i = 0; i < testMapFile->map_territories.size(); i++) {
-    std::cout << *testMapFile->map_territories[i] << std::endl;  
+    // std::cout << *testMapFile->map_territories[i] << std::endl;  
+    struct::Country tempCountry;
+    tempCountry = testMapFile->generateMapCountry(testMapFile->map_territories[i]);
+    std::cout << tempCountry.Name << std::endl;
   }
+
+  
 
   delete(testMapFile);
   testMapFile = nullptr;

@@ -14,6 +14,7 @@
 /////////////////////////////////////////////
 
 #include "MapLoader.hpp"
+#include "Map.h"
 
 #include <algorithm>
 #include <fstream>
@@ -446,7 +447,7 @@ Territory *MapFile::getTerritoryByNumber(int territory_number) {
   return nullptr;
 };
 
-Continent* MapFile::getContinentByNumber(int continent_number) {
+Continent *MapFile::getContinentByNumber(int continent_number) {
   int i;
   for (i = 0; i < map_continents.size(); i++) {
     if (map_continents[i]->number == continent_number) {
@@ -455,6 +456,24 @@ Continent* MapFile::getContinentByNumber(int continent_number) {
   }
   return nullptr;
 }
+
+// TODO Check validity of continent_number
+struct::Country MapFile::generateMapCountry(Territory* territory) {
+  std::string continent_name;
+  Continent *continent;
+  continent = getContinentByNumber(territory->continent_number);
+
+  struct::Country returnCountry;
+  returnCountry = {
+    territory->short_name, territory->number, continent->name
+  };
+  return returnCountry;
+};
+
+void MapFile::generateMap()
+{
+  
+};
 
 /////////////////////////////////////////////////////////////////////////////////
 //
