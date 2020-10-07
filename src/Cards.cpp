@@ -3,7 +3,6 @@ TODO1
 Make the size of the deck equal to the size of the territories
 TODO2
 In the play() method, add a special order to the list of orders
-
 */
 #include "Cards.h"
 #include <stdlib.h> 
@@ -82,9 +81,6 @@ ostream& operator << (ostream& out, const Card& card) {
 	case CardType::AIRLIFT:
 		return cout << "Airlift";
 		break;
-	case CardType::SPY:
-		return cout << "Spy";
-		break;
 	case CardType::BLOCKADE:
 		return cout << "Blockade";
 		break;
@@ -131,9 +127,13 @@ Hand::~Hand() {
 
 void Hand::add(CardType& const type) {
 
-
-	Card c = (Card(type));
-	hand->emplace_back(c);
+	if (this->hand->size() < 6) {
+		Card c = (Card(type));
+		hand->emplace_back(c);
+	}
+	else {
+		cout << "You cannot keep any more cards in your hand" << endl;
+	}
 
 }
 
@@ -156,6 +156,7 @@ int Hand::find(Card c) {
 	for (int i = 0; i < hand->size(); i++) {
 		if (*hand->at(i).getType() == *c.getType()) {
 			index = i;
+			break;
 		}
 	}
 	return index;
@@ -166,7 +167,7 @@ int Hand::find(Card c) {
 Card Hand::returnByPos(int pos) {
 
 	// return the card at the given position
-	if (pos <= hand->size()) {
+	if (pos < hand->size()) {
 		return this->hand->at(pos);
 	}
 }
@@ -201,7 +202,7 @@ Deck::Deck(int deckSize) {
 	// fill the deck with random cards
 	for (int i = 0; i < deckSize; i++) {
 
-		CardType t = static_cast<CardType>(rand() % 6 + 1);
+		CardType t = static_cast<CardType>(rand() % 5 + 1);
 		Card c = Card(t);
 		deck->push(c);
 	}
@@ -226,7 +227,7 @@ Deck::~Deck() {
 
 // Functions
 
-void Deck::add(CardType& const type) {
+void Deck::add(CardType const type) {
 
 	Card c = (Card(type));
 	deck->push(c);
@@ -271,4 +272,3 @@ ostream& operator << (ostream& out, const Deck& d) {
 	return out;
 
 }
-
