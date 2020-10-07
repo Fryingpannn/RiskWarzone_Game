@@ -67,8 +67,6 @@ Continent::Continent(const Continent &other_continent) {
   value = other_continent.value;
   colour = other_continent.colour;
 
-  for (auto i = 0; i < other_continent.territories.size(); i++)
-    territories.push_back(new Territory(*(other_continent.territories[i])));
 };
 
 /**
@@ -82,9 +80,6 @@ Continent &Continent::operator=(const Continent &other_continent) {
   name = other_continent.name;
   value = other_continent.value;
   colour = other_continent.colour;
-
-  for (auto i = 0; i < other_continent.territories.size(); i++)
-    territories.push_back(new Territory(*(other_continent.territories[i])));
 
   return *this;
 };
@@ -101,11 +96,7 @@ std::ostream &operator<<(std::ostream &output, const Continent &continent) {
   output << "Name: " << continent.name << std::endl;
   output << "Value: " << continent.value << std::endl;
   output << "Colour: " << continent.colour << std::endl;
-  output << "Territories: ";
-  for (auto i = 0; i < continent.territories.size(); i++) {
-    output << continent.territories[i]->short_name;
-  }
-  output << std::endl;
+
   return output;
 };
 
