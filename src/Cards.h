@@ -18,7 +18,7 @@ enum CardType {
 	BLOCKADE,
 	AIRLIFT,
 	DIPLOMACY,
-	SPY,
+
 	EMPTY
 };
 
@@ -83,7 +83,7 @@ public:
 
 	//functions
 	Card draw(Hand& h);
-	void add(CardType& const type);
+	void add(CardType const type);
 	int GetSize();
 
 	//operator overloading
