@@ -10,7 +10,9 @@ int main() {
 	// create two decks and a hand
 	// deck 1 is randomized with 15 cards
 	// deck 2 is empty and can be manually filled for testing purposes
-	Deck d = Deck(15);
+
+	Map* WorldMap = new Map(15, "WorldMap");
+	Deck d = Deck(WorldMap->NumOfCountries());
 	Deck d2 = Deck(0);
 
 	d2.add(BOMB);
