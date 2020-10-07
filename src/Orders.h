@@ -8,13 +8,13 @@ class OrderList
 {
 private:
 	//list of orders
-	vector<Order*>;
+	std::vector<Order*> list;
 public:
 	//constructors
 	OrderList();
 	OrderList(int size);
 	//adds an order to the list
-	addToList(Order* order, OrderList*);
+	addToList(Order* order);
 	//removes an order from the list
 	remove(Order* order);
 	//moves an order from an index to another in the list
@@ -24,19 +24,18 @@ public:
 	//assignment operator
 	virtual OrderList& operator=(const& OrderList o);
 	//insertion stream operator
-	virtual friend ostream& operator <<(ostream& out, const OrderList &orders);
+	virtual friend std::ostream& operator <<(ostream& out, const OrderList &orders);
 };
 
-//order base class stored in order list
+//order base class, to be stored in order list
 class Order
 {
 private:
 	//name of order
-	const string* name;
+	const std::string* name;
 public:
 	//constructors
 	Order();
-	Order(string& name);
 	Order(Order& copy);
 	//checks if an order is valid
 	virtual boolean validate();
@@ -47,7 +46,9 @@ public:
 	//assignment operator
 	Order& operator =(const& Order o);
 	//insertion stream operator
-	friend ostream& operator <<(ostream& out, const Order& order);
+	friend std::ostream& operator <<(ostream& out, const Order& order);
+	//destructor
+	~Order();
 };
 
 class Deploy : public Order
@@ -55,11 +56,11 @@ class Deploy : public Order
 public: 
 	//constructors
 	Deploy() : Order();
-	Deploy(string name) : Order(name);
+	Deploy(std::string name) : Order(name);
 	//order functions
 	override boolean validate();
 	override execute();
 	//assignment & stream insertion operators
 	override Deploy& operator =(const Deploy& o);
-	override friend ostream& operator<<(ostream& out, const Deploy& order);
+	override friend std::ostream& operator<<(ostream& out, const Deploy& order);
 };
