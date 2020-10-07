@@ -67,7 +67,6 @@ Continent::Continent(const Continent &other_continent) {
   name = other_continent.name;
   value = other_continent.value;
   colour = other_continent.colour;
-
 };
 
 /**
@@ -106,7 +105,7 @@ std::ostream &operator<<(std::ostream &output, const Continent &continent) {
  *
  */
 Continent::~Continent(){
-  // TODO Territories list
+    // TODO Territories list
 };
 
 //////////////////////////////////////////////////////////////////////////////////////
@@ -458,21 +457,34 @@ Continent *MapFile::getContinentByNumber(int continent_number) {
 }
 
 // TODO Check validity of continent_number
-struct::Country MapFile::generateMapCountry(Territory* territory) {
+struct ::Country MapFile::generateMapCountry(Territory *territory) {
   std::string continent_name;
   Continent *continent;
   continent = getContinentByNumber(territory->continent_number);
 
-  struct::Country returnCountry;
-  returnCountry = {
-    territory->short_name, territory->number, continent->name
-  };
+  struct ::Country returnCountry;
+  returnCountry.Name = territory->short_name;
+  returnCountry.CountryID = territory->number;
+  returnCountry.Continent = continent->name;
   return returnCountry;
 };
 
-void MapFile::generateMap()
-{
-  
+Map *MapFile::generateMap() {
+  Map *returnMap = new Map(map_territories.size(), map_file_name);
+  for (int i = 0; i < map_territories.size(); i++) {
+    struct ::Country base_country;
+    base_country = generateMapCountry(map_territories[i]);
+
+    for (int j = 0; j < map_territories[i]->borders.size(); j++) {
+      int borderCountry = map_territories[i]->borders[j];
+      Territory *secondTerritory;
+      secondTerritory = getTerritoryByNumber(borderCountry);
+      struct ::Country secondCountry;
+      secondCountry = generateMapCountry(secondTerritory);
+      returnMap->AddEdges(base_country, secondCountry);
+    }
+  }
+  return returnMap;
 };
 
 /////////////////////////////////////////////////////////////////////////////////
@@ -530,7 +542,6 @@ std::vector<std::string> split(std::string strToSplit, char delimeter) {
   return splittedStrings;
 };
 ///////////////////
-
 
 //  std::vector<int *> *myVar
 //

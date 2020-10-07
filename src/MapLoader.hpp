@@ -127,7 +127,7 @@ public:
 
   struct::Country generateMapCountry(Territory* territory);
 
-  void generateMap();
+  Map *generateMap();
 
   ~MapFile();
 };

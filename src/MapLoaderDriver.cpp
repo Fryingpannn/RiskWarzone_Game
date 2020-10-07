@@ -38,17 +38,29 @@ void mapLoaderDriver() {
   testMapFile->readMapFile();
 
   std::cout << testMapFile->map_file_name << std::endl;
-  for (int i = 0; i < testMapFile->map_continents.size(); i++) {
-    std::cout << *testMapFile->map_continents[i] << std::endl;  
-  }
+  // for (int i = 0; i < testMapFile->map_continents.size(); i++) {
+  //   std::cout << *testMapFile->map_continents[i] << std::endl;  
+  // }
   
-  for (int i = 0; i < testMapFile->map_territories.size(); i++) {
-    // std::cout << *testMapFile->map_territories[i] << std::endl;  
-    struct::Country tempCountry;
-    tempCountry = testMapFile->generateMapCountry(testMapFile->map_territories[i]);
-    std::cout << tempCountry.Name << std::endl;
-  }
+  // for (int i = 0; i < testMapFile->map_territories.size(); i++) {
+  //   // std::cout << *testMapFile->map_territories[i] << std::endl;  
+  //   struct::Country firstCountry;
+  //   Territory *firstTerritory;
+  //   firstTerritory = testMapFile->map_territories[i];
+  //   firstCountry = testMapFile->generateMapCountry(firstTerritory);
+    
+  //   for(int j = 0; j < testMapFile->map_territories[i]->borders.size(); j++) {
+  //     int borderCountry = testMapFile->map_territories[i]->borders[j];
+  //     Territory *secondTerritory;
+  //     secondTerritory = testMapFile->getTerritoryByNumber(borderCountry);
+  //     struct::Country secondCountry;
+  //     firstCountry = testMapFile->generateMapCountry(secondTerritory);
+  //   }
+  // }
 
+  Map *testMap;
+  testMap = testMapFile->generateMap();
+  testMap->Display();
   
 
   delete(testMapFile);
