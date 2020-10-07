@@ -1,9 +1,9 @@
 #include "Cards.h"
 #include <time.h>
 #include "Map.h"
+#include "CardsDriver.h"
 
-
-int main() {
+void CardsDeckTest() {
 
 	srand(time(NULL));
 
@@ -57,5 +57,4 @@ int main() {
 
 	}
 
-	return 0;
 }
