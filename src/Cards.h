@@ -18,7 +18,6 @@ enum CardType {
 	BLOCKADE,
 	AIRLIFT,
 	DIPLOMACY,
-
 	EMPTY
 };
 
