@@ -102,7 +102,6 @@ public:
   MapFile(const MapFile &other_map_file);
 
   MapFile &operator=(const MapFile &other_map_file);
-  MapFile &operator=(std::string new_map_file_name);
 
   friend std::ostream &operator<<(std::ostream &output,
                                   const MapFile *map_file);

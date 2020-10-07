@@ -33,8 +33,8 @@ Implement a group of C++ classes that reads and loads a map file in the .maptext
 
 # Todo List
 - [ ] Create several invalid map files with varying problems
-- [ ] Create `MapFile` class
-- [ ] MapLoader reads file line by line into a string vector
+- [x] Create `MapFile` class
+- [x] MapLoader reads file line by line into a string vector
 - [ ] Finalize the `mapfiles` class
 - [ ] Finalize the `country` class
 - [ ] Finalize the `continent` class
@@ -59,8 +59,8 @@ Implement a group of C++ classes that reads and loads a map file in the .maptext
 
 # Valididation Checklist
 **General**
-- [ ] Lines beginning with ; are ignored
-- [ ] Blank lines are ignored
+- [x] Lines beginning with ; are ignored
+- [x] Blank lines are ignored
 - [ ] File is not empty
 - [ ] File contains '[files]' section
 - [ ] File contains '[continents]' section
