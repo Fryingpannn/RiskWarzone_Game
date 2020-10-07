@@ -158,7 +158,6 @@
     <ClCompile Include="src\OrdersDriver.cpp" />
     <ClCompile Include="src\Player.cpp" />
     <ClCompile Include="src\PlayerDriver.cpp" />
-    <ClCompile Include="src\RiskWarzoneGame.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Cards.h" />

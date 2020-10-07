@@ -2,25 +2,50 @@
 #include <vector>
 #include <string>
 
+
+//country only need name, a unique ID and a continent
+//is a struct and not a class, so do what you need to do :)
+struct Country {
+	std::string Name;
+	int CountryID;
+	std::string Continent;
+	bool operator==(Country& country) const { return this->CountryID == country.CountryID; }
+
+};
+
 class Map
 {
-    int* Vertices;    // No. of vertices 
+	
+	std::string* MapName;
+	std::vector<struct::Country> **ListOfCountries;
+	int* NumberOfCountries;
 
-    std::string* Country;
+	
 
-    Map* SubGraph;
-
-    // Pointer to an array containing adjacency lists 
-    std::vector<int>* Adj;
-
-
-
-    // A function used by DFS 
-    void DFSUtil(int Vertices, bool Visited[]);
+	
 public:
-    Map(int &Vertices);   // Constructor 
-    ~Map();
-    void addEdge(int &Vertices, int &W);
-    void connectedComponents();
+	//minimal Constructor
+	Map();
+
+	//another minimal constructor
+	Map(int size, std::string mapName);
+	//full constructor
+	Map(std::vector<struct::Country> **listOfCountries, std::string mapName,int size, Map &continent);
+	//partial constructor when the country doesn't have other maps
+	Map(std::vector<struct::Country> **listOfCountries, std::string mapName, int size);
+
+
+	Map(Map &Copy);
+
+	~Map();
+
+	void AddEdges(Country country1, Country country2);
+	int NumOfCountries();
+	void Display();
+	void Display(std::string continent);
+	void SetMapName(std::string mapName);
+
+	bool Validate();
+	
 };
 
