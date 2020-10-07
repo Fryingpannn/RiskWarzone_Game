@@ -40,6 +40,7 @@ int main() {
   // *testMapFile = new MapFile(mapFileName);
   testMapFile->readMapFile();
 
+  std::cout << testMapFile->map_file_name << std::endl;
 
   delete(testMapFile);
   return 0;
