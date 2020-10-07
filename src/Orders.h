@@ -14,17 +14,17 @@ public:
 	OrderList();
 	OrderList(int size);
 	//adds an order to the list
-	addToList(Order* order);
+	bool addToList(Order* order);
 	//removes an order from the list
-	remove(Order* order);
+	bool remove(Order* order);
 	//moves an order from an index to another in the list
-	move(int position, int newPosition);
+	bool move(int position, int newPosition);
 	//copy constructor
 	OrderList(OrderList* copy);
 	//assignment operator
-	virtual OrderList& operator=(const& OrderList o);
+	virtual OrderList& operator=(const OrderList& o);
 	//insertion stream operator
-	virtual friend std::ostream& operator <<(ostream& out, const OrderList &orders);
+	virtual friend std::ostream& operator <<(std::ostream& out, const OrderList &orders);
 };
 
 //order base class, to be stored in order list
@@ -38,15 +38,15 @@ public:
 	Order();
 	Order(Order& copy);
 	//checks if an order is valid
-	virtual boolean validate();
+	virtual bool validate();
 	//executes an order if it's valid
-	virtual execute();
+	virtual bool execute();
 	//accessor & mutator
-	string getName();
+	std::string getName();
 	//assignment operator
-	Order& operator =(const& Order o);
+	Order& operator =(const Order& o);
 	//insertion stream operator
-	friend std::ostream& operator <<(ostream& out, const Order& order);
+	friend std::ostream& operator <<(std::ostream& out, const Order& order);
 	//destructor
 	~Order();
 };
@@ -58,7 +58,7 @@ public:
 	Deploy() : Order();
 	Deploy(std::string name) : Order(name);
 	//order functions
-	override boolean validate();
+	override bool validate();
 	override execute();
 	//assignment & stream insertion operators
 	override Deploy& operator =(const Deploy& o);
