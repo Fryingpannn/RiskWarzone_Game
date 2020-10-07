@@ -229,13 +229,6 @@ MapFile::MapFile(const MapFile &other_map_file) {
   this->cards_file_name = other_map_file.cards_file_name;
   this->prv_file_name = other_map_file.prv_file_name;
 
-  // std::copy(other_map_file.map_continents.begin(),
-  //           other_map_file.map_continents.end(),
-  //           std::back_inserter(this->map_continents));
-  // std::copy(other_map_file.map_territories.begin(),
-  //           other_map_file.map_territories.end(),
-  //           std::back_inserter(this->map_territories));
-
   for (auto i = 0; i < other_map_file.map_continents.size(); i++)
     map_continents.push_back(new Continent(*(other_map_file.map_continents[i])));
   for (auto i = 0; i < other_map_file.map_territories.size(); i++)
@@ -255,13 +248,6 @@ MapFile &MapFile::operator=(const MapFile &other_map_file) {
   this->map_pic_file_name = other_map_file.map_pic_file_name;
   this->cards_file_name = other_map_file.cards_file_name;
   this->prv_file_name = other_map_file.prv_file_name;
-
-  // std::copy(other_map_file.map_continents.begin(),
-  //           other_map_file.map_continents.end(),
-  //           std::back_inserter(this->map_continents));
-  // std::copy(other_map_file.map_territories.begin(),
-  //           other_map_file.map_territories.end(),
-  //           std::back_inserter(this->map_territories));
 
   for (auto i = 0; i < other_map_file.map_continents.size(); i++)
     map_continents.push_back(new Continent(*(other_map_file.map_continents[i])));
@@ -294,7 +280,17 @@ std::ostream &operator<<(std::ostream &output, const MapFile *map_file) {
  * 
  */
 MapFile::~MapFile(){
+  // Delete the territories
+  for (auto i = 0; i < this->map_territories.size(); i++){
+    delete(this->map_territories[i]);
+    this->map_territories[i] = nullptr;
+  }
 
+  // Delete the continents
+  for (auto i = 0; i < this->map_continents.size(); i++){
+    delete(this->map_continents[i]);
+    this->map_continents[i] = nullptr;
+  }
 };
 
 

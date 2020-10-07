@@ -19,14 +19,6 @@
 #include <iostream>
 #include <string>
 
-// Handling file path seperators
-
-#ifdef WIN32
-#define OS_SEP '\\'
-#else
-#define OS_SEP '/'
-#endif
-
 
 int main() {
   std::cout << "MapLoaderDriver.cpp" << std::endl;
@@ -34,14 +26,28 @@ int main() {
   std::cout << "===========================" << std::endl;
   
   std::string map_folder_base_path = "./maps/";
+  std::string map_file_name;
+
+  std::cout << "Please enter a map file name: ";
+  std::cin >> map_file_name;
+  trim(map_file_name);
+
   // MapFile *testMapFile;
   MapFile *testMapFile;
-  testMapFile = new MapFile(map_folder_base_path + "bigeurope.map");
+  testMapFile = new MapFile(map_folder_base_path + map_file_name);
   // *testMapFile = new MapFile(mapFileName);
   testMapFile->readMapFile();
 
   std::cout << testMapFile->map_file_name << std::endl;
+  for (int i = 0; i < testMapFile->map_continents.size(); i++) {
+    std::cout << *testMapFile->map_continents[i] << std::endl;  
+  }
+  
+  for (int i = 0; i < testMapFile->map_territories.size(); i++) {
+    std::cout << *testMapFile->map_territories[i] << std::endl;  
+  }
 
   delete(testMapFile);
+  testMapFile = nullptr;
   return 0;
 }
