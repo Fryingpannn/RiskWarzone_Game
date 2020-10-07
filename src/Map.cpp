@@ -6,7 +6,7 @@
 Map::Map()
 {
 	NumberOfCountries = new int(5);
-	*ListOfCountries = new std::vector<struct::Country>[100] ;
+	*ListOfCountries = new std::vector<struct::Country>[1000] ;
 	MapName = new std::string ("World");
 	
 }
@@ -16,8 +16,8 @@ Map::Map(int size, std::string name)
 	std::cout << "It passed" << std::endl;
 	NumberOfCountries = new int (size);
 
-	ListOfCountries = new std::vector<Country> *[100];
-	for (int i = 0; i < 100; i++)
+	ListOfCountries = new std::vector<Country> *[1000];
+	for (int i = 0; i < 1000; i++)
 		ListOfCountries[i] = new std::vector<struct::Country>;
 
 	
@@ -46,9 +46,9 @@ Map::Map(std::vector<struct::Country> **listOfCountries, std::string mapName, in
 Map::Map(Map &Copy)
 {
 	MapName = new std::string(*Copy.MapName);
-	ListOfCountries = new std::vector<Country> * [100];
+	ListOfCountries = new std::vector<Country> * [1000];
 
-	for (int i = 0; i < 100; i++)
+	for (int i = 0; i < 1000; i++)
 		ListOfCountries[i] = new std::vector<struct::Country>;
 
 	for (int i = 0; i < *Copy.NumberOfCountries; i++)
@@ -111,7 +111,7 @@ void Map::AddEdges(Country country1, Country country2)
 	
 
 
-	this->ListOfCountries[country2.CountryID]->push_back(country1);
+	// this->ListOfCountries[country2.CountryID]->push_back(country1);
 	this->ListOfCountries[country1.CountryID]->push_back(country2);
 	
 }
