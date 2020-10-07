@@ -1,61 +1,99 @@
 #include "Player.h"
-#include <iostream>
+
 #include <algorithm>
+#include <iostream>
 
+#include "Cards.h"
+#include "Map.h"
+#include "Orders.h"
+
+/**
+ * Empty constructor
+ */
 Player::Player()
-{
-    Countries = new std::vector<int>{0};
-    Cards = new std::vector<int>{0};
+    : Countries(new std::vector<Country>()),
+      Cards(new Hand()),
+      OrdersList(new Orders) {
+  std::cout << "default constructor" << std::endl;
 }
 
-Player::Player(std::vector<int> *countriesIn, std::vector<int> *cardsIn)
-{
-    Countries = countriesIn;
-    Cards = cardsIn;
+/**
+ * Constructor
+ */
+Player::Player(std::vector<Country> countries, Hand cards, Orders orderList) {
+  std::cout << "regular constructor" << std::endl;
+  this->Countries = new std::vector<Country>(countries);
+  this->Cards = new Hand(cards);
+  this->OrdersList = new Orders(orderList);
 }
 
-std::vector<int> Player::toDefend()
-{
-    return *Countries;
+/**
+ * Copy Constructor for deep copy
+ */
+Player::Player(const Player &p) {
+  std::cout << "Copy constructor called\n";
+  this->Countries = new std::vector<Country>(*p.Countries);
+  this->Cards = new Hand(*p.Cards);
+  this->OrdersList = new Orders(*p.OrdersList);
 }
 
-std::vector<int> Player::toAttack()
-{
-    std::vector<int> v1 = Player::tempTerri;
-    std::vector<int> v2 = *Countries;
-    std::vector<int> territoriesToAttack;
-    std::set_difference(v1.begin(), v1.end(), v2.begin(), v2.end(),
-                        std::inserter(territoriesToAttack, territoriesToAttack.begin()));
-
-    return territoriesToAttack;
+/**
+ * Overloaded assignment operator for deep copy
+ */
+Player &Player::operator=(const Player &p) {
+  std::cout << "Assignment operator called\n";
+  this->Countries = new std::vector<Country>(*p.Countries);
+  this->Cards = new Hand(*p.Cards);
+  this->OrdersList = new Orders(*p.OrdersList);
+  return *this;
 }
 
-void Player::issueOrder()
-{
-    // todo create object to add to list of orders
+/**
+ * Overloaded stream operator
+ */
+std::ostream &operator<<(std::ostream &out, const Player &p) {
+  out << "  Countries: ";
+  for (auto i = p.Countries->begin(); i != p.Countries->end(); ++i) {
+    out << "temp " << ' ';
+  }
+  out << "\n";
+
+  out << "  Cards: temp ";
+  out << p.Cards;
+  out << "\n";
+
+  out << "  Orders: temp ";
+  out << p.OrdersList;
+  out << "\n";
+
+  return out;
 }
 
-void Player::print()
-{
-    std::cout << "  Countries: ";
-    for (auto i = Countries->begin();
-         i != Countries->end(); ++i)
-    {
-        std::cout << *i << ' ';
-    }
-    std::cout << std::endl;
+std::vector<Country> Player::toDefend() { return *Countries; }
 
-    std::cout << "  Cards: ";
-    for (auto i = Cards->begin();
-         i != Cards->end(); ++i)
-    {
-        std::cout << *i << ' ';
-    }
-    std::cout << std::endl;
+int Player::toAttack() {
+
+  //std::vector<int> v1 = Available Territories;
+  //std::vector<int> v2 = *Countries; // territories player owns
+  //std::vector<int> territoriesToAttack;
+  // find difference between 2 collections
+  //std::set_difference(
+  //    v1.begin(), v1.end(), v2.begin(), v2.end(),
+  //    std::inserter(territoriesToAttack, territoriesToAttack.begin()));
+
+  return 0;
 }
 
-Player::~Player()
-{
-    delete Countries;
-    delete Cards;
+void Player::issueOrder() {
+  // todo create object to add to list of orders
+}
+
+/**
+ * Destructor
+ */
+Player::~Player() {
+  Countries = NULL;
+  Cards = NULL;
+  delete Countries;
+  delete Cards;
 }

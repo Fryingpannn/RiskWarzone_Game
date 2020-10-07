@@ -1,23 +1,24 @@
 #pragma once
-#include <vector>
 #include <ostream>
+#include <vector>
 
-class Player
-{
+#include "Cards.h"
+#include "Map.h"
+#include "Orders.h"
 
-public:
-    std::vector<int> *Countries;
-    std::vector<int> *Cards;
+class Player {
+ public:
+  std::vector<Country> *Countries;
+  Hand *Cards;
+  Orders *OrdersList;
 
-    std::vector<int> tempTerri{1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
-
-    Player();
-    Player(std::vector<int> *countriesIn, std::vector<int> *cardsIn);
-
-    std::vector<int> toDefend();
-    std::vector<int> toAttack();
-    void issueOrder();
-
-    void print();
-    ~Player();
+  Player();
+  Player(std::vector<Country> countries, Hand cards, Orders orderList);
+  Player(const Player &copy);
+  Player &operator=(const Player &p);
+  std::vector<Country> toDefend();
+  int toAttack();
+  void issueOrder();
+  friend std::ostream &operator<<(std::ostream &out, const Player &p);
+  ~Player();
 };
