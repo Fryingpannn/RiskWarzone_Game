@@ -31,7 +31,6 @@ public:
   std::string name;
   int value;
   std::string colour;
-  std::vector<Territory *> territories;
   
   static int count;
 
@@ -62,8 +61,6 @@ public:
   int x_coord;
   int y_coord;
   std::vector<int> borders;
-  std::vector<Territory*> adjacency_list;
-  Continent *continent;
 
   static int count;
 
