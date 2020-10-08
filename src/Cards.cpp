@@ -13,17 +13,18 @@ In the play() method, add a special order to the list of orders
 // Constructors 
 Card::Card() {
 
-	*this->type = EMPTY;
+	this->type = new CardType(EMPTY);
 
 }
 
 Card::Card(CardType c) {
-
+	
 	(this->type) = new CardType(c);
 
 }
 
 Card::Card(const Card& c) {
+
 
 	(this->type) = new CardType(*(c.type));
 
@@ -45,9 +46,9 @@ CardType* Card::getType() {
 }
 
 
-void Card::Play(Hand& h, Deck& d) {
+void Card::Play(Player& p, Deck& d) {
 
-	int index = h.find(*this);
+	int index = p.Cards->find(*this);
 	if (index > -1) {
 
 		CardType* type = (getType());
@@ -55,8 +56,9 @@ void Card::Play(Hand& h, Deck& d) {
 		d.add(*type);
 		cout << "Playing " << *this << endl;
 
-		h.remove(index);
+		p.Cards->remove(index);
 		//TODO create an order in the order list
+		//p.Orders->addToList(new Order("Bomb"));
 	}
 	else {
 
@@ -66,9 +68,10 @@ void Card::Play(Hand& h, Deck& d) {
 
 // Operator overloading
 
-void Card::operator = (const Card& c) {
+Card& Card::operator = (const Card& c) {
 
-	this->type = new CardType(*(c.type));
+	*this->type =  *(c.type);
+	return *this;
 
 }
 
@@ -102,34 +105,32 @@ ostream& operator << (ostream& out, const Card& card) {
 // Hand class implementation
 
 // Constructors
-Hand::Hand() {
-
-
-	hand = new vector<Card>;
-
-
-}
+Hand::Hand() = default;
 
 Hand::Hand(const Hand& h) {
 
-	this->hand = new vector<Card>{ *h.hand };
+	for (int i = 0; i < h.hand.size(); i++) {
+		hand.emplace_back(new Card(*h.hand.at(i)));
+	}
 }
 
 // Destructor
 Hand::~Hand() {
 
-	delete hand;
-	hand = nullptr;
-
+	for (int i = 0; i < hand.size(); i++) {
+		delete hand.at(i);
+		hand.at(i) = nullptr;
+		hand.pop_back();
+	}
+	
 }
 
 // Functions
 
 void Hand::add(CardType& const type) {
 
-	if (this->hand->size() < 6) {
-		Card c = (Card(type));
-		hand->emplace_back(c);
+	if (this->hand.size() < 6) {
+		hand.emplace_back(new Card(type));
 	}
 	else {
 		cout << "You cannot keep any more cards in your hand" << endl;
@@ -140,11 +141,13 @@ void Hand::add(CardType& const type) {
 void Hand::remove(int index) {
 
 
-	for (int i = index; i < hand->size() - 1; i++) {
-		hand->at(i) = hand->at(i + 1);
+	for (int i = index; i < hand.size() - 1; i++) {
+		*hand.at(i) = *hand.at(i + 1);
 	}
 
-	hand->pop_back();
+	delete hand.at(hand.size() - 1);
+	hand.at(hand.size() - 1) = nullptr;
+	hand.pop_back();
 
 }
 
@@ -153,8 +156,8 @@ int Hand::find(Card c) {
 	int index = -1;
 
 	// iterate through the hand and find the index of the given card
-	for (int i = 0; i < hand->size(); i++) {
-		if (*hand->at(i).getType() == *c.getType()) {
+	for (int i = 0; i < hand.size(); i++) {
+		if (*(*hand.at(i)).getType() == *c.getType()) {
 			index = i;
 			break;
 		}
@@ -167,24 +170,32 @@ int Hand::find(Card c) {
 Card Hand::returnByPos(int pos) {
 
 	// return the card at the given position
-	if (pos < hand->size()) {
-		return this->hand->at(pos);
+	if (pos < hand.size()) {
+		return *this->hand.at(pos);
 	}
 }
 
 
 // Operator overloading
 
-void Hand::operator = (const Hand& h) {
+Hand& Hand::operator = (const Hand& h) {
 
-	hand = new vector<Card>{ *h.hand };
+	for (int i = 0; i < hand.size(); i++) {
+		delete hand.at(i);
+		hand.at(i) = nullptr;
+		hand.pop_back();
+	}
 
+	for (int i = 0; i < h.hand.size(); i++) {
+		hand.emplace_back(new Card(*h.hand.at(i)));
+	}
+	return *this;
 }
 
 ostream& operator << (ostream& out, const Hand& h) {
 
-	for (int i = 0; i < h.hand->size(); i++) {
-		out << (h.hand->at(i)) << ' ';
+	for (int i = 0; i < h.hand.size(); i++) {
+		out << *(h.hand.at(i)) << ' ';
 	}
 	return out;
 
@@ -194,33 +205,47 @@ ostream& operator << (ostream& out, const Hand& h) {
 // Deck class implementation
 
 // Constructors
+
+Deck::Deck() = default;
+
 Deck::Deck(int deckSize) {
 
-	deck = new queue<Card>;
 	this->size = new int(deckSize);
 
 	// fill the deck with random cards
 	for (int i = 0; i < deckSize; i++) {
 
 		CardType t = static_cast<CardType>(rand() % 5 + 1);
-		Card c = Card(t);
-		deck->push(c);
+		deck.push(new Card(t));
 	}
 
 }
 
-Deck::Deck(const Deck& deck) {
+Deck::Deck(const Deck& d) {
 
-	size = new int(*deck.size);
-	this->deck = new queue<Card>{ *deck.deck };
+	while (!deck.empty()) {
+		delete deck.front();
+		deck.front() = nullptr;
+		deck.pop();
+	}
+
+	size = new int(*d.size);
+	queue<Card*> q = (d.deck);
+	while (!q.empty()) {
+		deck.push(new Card(*q.front()));
+		q.pop();
+	}
 }
 
 // Destructor
 
 Deck::~Deck() {
 
-	delete deck;
-	deck = nullptr;
+	for (int i = 0; i < deck.size(); i++) {
+		delete deck.front();
+		deck.front() = nullptr;
+		deck.pop();
+	}
 	delete size;
 	size = nullptr;
 }
@@ -229,18 +254,19 @@ Deck::~Deck() {
 
 void Deck::add(CardType const type) {
 
-	Card c = (Card(type));
-	deck->push(c);
+	deck.push(new Card(type));
 
 }
 
 Card Deck::draw(Hand& const h) {
 
 	//draw the card on top of the deck and put it in the hand
-	Card chosen = this->deck->front();
+	Card chosen = *this->deck.front();
 	CardType* t = chosen.getType();
 	cout << "drawing a card of type " << chosen << endl;
-	this->deck->pop();
+	delete deck.front();
+	deck.front() = nullptr;
+	this->deck.pop();
 	h.add(*t);
 	return chosen;
 
@@ -249,24 +275,36 @@ Card Deck::draw(Hand& const h) {
 
 int Deck::GetSize() {
 
-	return deck->size();
+	return deck.size();
 
 }
 
 // Operator overloading
-void Deck::operator = (const Deck& d) {
+Deck& Deck::operator = (const Deck& d) {
 
-	size = new int(*d.size);
-	this->deck = new queue<Card>{ *d.deck };
+	//empty the current queue
+	while (!deck.empty()) {
+		delete deck.front();
+		deck.front() = nullptr;
+		deck.pop();
+	}
 
+	*size = *d.size;
+	queue<Card*> q = (d.deck);
+	// fill te queue with 
+	while (!q.empty()) {
+		deck.push(new Card(*q.front()));
+		q.pop();
+	}
+	return *this;
 }
 
 ostream& operator << (ostream& out, const Deck& d) {
 
-	queue<Card> q = *(d.deck);
+	queue<Card*> q = (d.deck);
 	//printing content of queue 
 	while (!q.empty()) {
-		out << " " << q.front() << endl;
+		out << " " << *q.front() << endl;
 		q.pop();
 	}
 	return out;
