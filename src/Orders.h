@@ -39,13 +39,14 @@ private:
 public:
 	//constructors
 	Order();
-	Order(Order& copy);
+	Order(const Order& copy);
 	//checks if an order is valid
 	virtual bool validate();
 	//executes an order if it's valid
 	virtual bool execute();
 	//accessor & mutator
 	std::string getName();
+	void setName(std::string name);
 	//assignment operator
 	Order& operator =(const Order& o);
 	//insertion stream operator
