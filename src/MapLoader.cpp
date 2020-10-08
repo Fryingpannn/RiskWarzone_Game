@@ -35,10 +35,10 @@ int Continent::count = 0;
  *
  */
 Continent::Continent() {
-  number = 0;
-  name = "";
-  value = 0;
-  colour = "";
+    number = 0;
+    name = "";
+    value = 0;
+    colour = "";
 };
 
 // Parameterized constructor
@@ -51,10 +51,10 @@ Continent::Continent() {
  */
 Continent::Continent(std::string new_name, int new_value,
                      std::string new_colour) {
-  number = ++count;
-  name = new_name;
-  value = new_value;
-  colour = new_colour;
+    number = ++count;
+    name = new_name;
+    value = new_value;
+    colour = new_colour;
 };
 
 /**
@@ -63,10 +63,10 @@ Continent::Continent(std::string new_name, int new_value,
  * @param other_continent
  */
 Continent::Continent(const Continent &other_continent) {
-  number = other_continent.number;
-  name = other_continent.name;
-  value = other_continent.value;
-  colour = other_continent.colour;
+    number = other_continent.number;
+    name = other_continent.name;
+    value = other_continent.value;
+    colour = other_continent.colour;
 };
 
 /**
@@ -76,12 +76,12 @@ Continent::Continent(const Continent &other_continent) {
  * @return Continent&
  */
 Continent &Continent::operator=(const Continent &other_continent) {
-  number = other_continent.number;
-  name = other_continent.name;
-  value = other_continent.value;
-  colour = other_continent.colour;
+    number = other_continent.number;
+    name = other_continent.name;
+    value = other_continent.value;
+    colour = other_continent.colour;
 
-  return *this;
+    return *this;
 };
 
 /**
@@ -92,19 +92,19 @@ Continent &Continent::operator=(const Continent &other_continent) {
  * @return std::ostream&
  */
 std::ostream &operator<<(std::ostream &output, const Continent &continent) {
-  output << "Continent #: " << continent.number << std::endl;
-  output << "Name: " << continent.name << std::endl;
-  output << "Value: " << continent.value << std::endl;
-  output << "Colour: " << continent.colour << std::endl;
+    output << "Continent #: " << continent.number << std::endl;
+    output << "Name: " << continent.name << std::endl;
+    output << "Value: " << continent.value << std::endl;
+    output << "Colour: " << continent.colour << std::endl;
 
-  return output;
+    return output;
 };
 
 /**
  * @brief Destroy the Continent:: Continent object
  *
  */
-Continent::~Continent(){
+Continent::~Continent() {
     // TODO Territories list
 };
 
@@ -118,11 +118,11 @@ Continent::~Continent(){
  *
  */
 Territory::Territory() {
-  number = 0;
-  short_name = "";
-  continent_number = 0;
-  x_coord = 0;
-  y_coord = 0;
+    number = 0;
+    short_name = "";
+    continent_number = 0;
+    x_coord = 0;
+    y_coord = 0;
 };
 
 /**
@@ -137,11 +137,11 @@ Territory::Territory() {
 Territory::Territory(int new_number, std::string new_short_name,
                      int new_continent_number, int new_x_coord,
                      int new_y_coord) {
-  number = new_number;
-  short_name = new_short_name;
-  continent_number = new_continent_number;
-  x_coord = new_x_coord;
-  y_coord = new_y_coord;
+    number = new_number;
+    short_name = new_short_name;
+    continent_number = new_continent_number;
+    x_coord = new_x_coord;
+    y_coord = new_y_coord;
 };
 
 // Copy Constructor
@@ -151,11 +151,11 @@ Territory::Territory(int new_number, std::string new_short_name,
  * @param other_territory
  */
 Territory::Territory(const Territory &other_territory) {
-  number = other_territory.number;
-  short_name = other_territory.short_name;
-  continent_number = other_territory.continent_number;
-  x_coord = other_territory.x_coord;
-  y_coord = other_territory.y_coord;
+    number = other_territory.number;
+    short_name = other_territory.short_name;
+    continent_number = other_territory.continent_number;
+    x_coord = other_territory.x_coord;
+    y_coord = other_territory.y_coord;
 };
 
 // Assignment Operator
@@ -166,26 +166,26 @@ Territory::Territory(const Territory &other_territory) {
  * @return Territory&
  */
 Territory &Territory::operator=(const Territory &other_territory) {
-  number = other_territory.number;
-  short_name = other_territory.short_name;
-  continent_number = other_territory.continent_number;
-  x_coord = other_territory.x_coord;
-  y_coord = other_territory.y_coord;
+    number = other_territory.number;
+    short_name = other_territory.short_name;
+    continent_number = other_territory.continent_number;
+    x_coord = other_territory.x_coord;
+    y_coord = other_territory.y_coord;
 
-  return *this;
+    return *this;
 };
 
 // Stream Insertion Operator
 std::ostream &operator<<(std::ostream &output, const Territory &territory) {
-  output << "Territory #: " << territory.number << std::endl;
-  output << "Short Name: " << territory.short_name << std::endl;
-  output << "Continent #: " << territory.continent_number << std::endl;
-  output << "Coordinates: ( " << territory.x_coord << " / " << territory.y_coord
-         << " )" << std::endl;
-  return output;
+    output << "Territory #: " << territory.number << std::endl;
+    output << "Short Name: " << territory.short_name << std::endl;
+    output << "Continent #: " << territory.continent_number << std::endl;
+    output << "Coordinates: ( " << territory.x_coord << " / " << territory.y_coord
+           << " )" << std::endl;
+    return output;
 };
 
-Territory::~Territory(){
+Territory::~Territory() {
 
 };
 
@@ -199,11 +199,11 @@ Territory::~Territory(){
  *
  */
 MapFile::MapFile() {
-  map_file_name = "";
-  pic_file_name = "";
-  map_pic_file_name = "";
-  cards_file_name = "";
-  prv_file_name = "";
+    map_file_name = "";
+    pic_file_name = "";
+    map_pic_file_name = "";
+    cards_file_name = "";
+    prv_file_name = "";
 }
 
 /**
@@ -212,11 +212,11 @@ MapFile::MapFile() {
  * @param new_map_file_name
  */
 MapFile::MapFile(std::string new_map_file_name) {
-  map_file_name = new_map_file_name;
-  pic_file_name = "";
-  map_pic_file_name = "";
-  cards_file_name = "";
-  prv_file_name = "";
+    map_file_name = new_map_file_name;
+    pic_file_name = "";
+    map_pic_file_name = "";
+    cards_file_name = "";
+    prv_file_name = "";
 }
 
 // Copy Constructor
@@ -226,18 +226,18 @@ MapFile::MapFile(std::string new_map_file_name) {
  * @param other_map_file
  */
 MapFile::MapFile(const MapFile &other_map_file) {
-  this->map_file_name = other_map_file.map_file_name;
-  this->pic_file_name = other_map_file.pic_file_name;
-  this->map_pic_file_name = other_map_file.map_pic_file_name;
-  this->cards_file_name = other_map_file.cards_file_name;
-  this->prv_file_name = other_map_file.prv_file_name;
+    this->map_file_name = other_map_file.map_file_name;
+    this->pic_file_name = other_map_file.pic_file_name;
+    this->map_pic_file_name = other_map_file.map_pic_file_name;
+    this->cards_file_name = other_map_file.cards_file_name;
+    this->prv_file_name = other_map_file.prv_file_name;
 
-  for (auto i = 0; i < other_map_file.map_continents.size(); i++)
-    map_continents.push_back(
-        new Continent(*(other_map_file.map_continents[i])));
-  for (auto i = 0; i < other_map_file.map_territories.size(); i++)
-    map_territories.push_back(
-        new Territory(*(other_map_file.map_territories[i])));
+    for (auto map_continent : other_map_file.map_continents)
+        map_continents.push_back(
+                new Continent(*map_continent));
+    for (auto i = 0; i < other_map_file.map_territories.size(); i++)
+        map_territories.push_back(
+                new Territory(*(other_map_file.map_territories[i])));
 };
 
 // Assignment Operator
@@ -248,20 +248,20 @@ MapFile::MapFile(const MapFile &other_map_file) {
  * @return MapFile&
  */
 MapFile &MapFile::operator=(const MapFile &other_map_file) {
-  this->map_file_name = other_map_file.map_file_name;
-  this->pic_file_name = other_map_file.pic_file_name;
-  this->map_pic_file_name = other_map_file.map_pic_file_name;
-  this->cards_file_name = other_map_file.cards_file_name;
-  this->prv_file_name = other_map_file.prv_file_name;
+    this->map_file_name = other_map_file.map_file_name;
+    this->pic_file_name = other_map_file.pic_file_name;
+    this->map_pic_file_name = other_map_file.map_pic_file_name;
+    this->cards_file_name = other_map_file.cards_file_name;
+    this->prv_file_name = other_map_file.prv_file_name;
 
-  for (auto i = 0; i < other_map_file.map_continents.size(); i++)
-    map_continents.push_back(
-        new Continent(*(other_map_file.map_continents[i])));
-  for (auto i = 0; i < other_map_file.map_territories.size(); i++)
-    map_territories.push_back(
-        new Territory(*(other_map_file.map_territories[i])));
+    for (auto i = 0; i < other_map_file.map_continents.size(); i++)
+        map_continents.push_back(
+                new Continent(*(other_map_file.map_continents[i])));
+    for (auto i = 0; i < other_map_file.map_territories.size(); i++)
+        map_territories.push_back(
+                new Territory(*(other_map_file.map_territories[i])));
 
-  return *this;
+    return *this;
 };
 
 // Stream insertion operator
@@ -272,13 +272,14 @@ MapFile &MapFile::operator=(const MapFile &other_map_file) {
  * @param map_file
  * @return std::ostream&
  */
+// TODO Output map_continents and map_territories
 std::ostream &operator<<(std::ostream &output, const MapFile *map_file) {
-  output << "Map File: " << map_file->map_file_name
-         << "\nPic File: " << map_file->pic_file_name
-         << "\nMap Pic File: " << map_file->map_pic_file_name
-         << "\nCards File: " << map_file->cards_file_name
-         << "\nPreview File: " << map_file->prv_file_name;
-  return output;
+    output << "Map File: " << map_file->map_file_name
+           << "\nPic File: " << map_file->pic_file_name
+           << "\nMap Pic File: " << map_file->map_pic_file_name
+           << "\nCards File: " << map_file->cards_file_name
+           << "\nPreview File: " << map_file->prv_file_name;
+    return output;
 };
 
 // Destructor
@@ -287,17 +288,17 @@ std::ostream &operator<<(std::ostream &output, const MapFile *map_file) {
  *
  */
 MapFile::~MapFile() {
-  // Delete the territories
-  for (auto i = 0; i < this->map_territories.size(); i++) {
-    delete (this->map_territories[i]);
-    this->map_territories[i] = nullptr;
-  }
+    // Delete the territories
+    for (auto i = 0; i < this->map_territories.size(); i++) {
+        delete (this->map_territories[i]);
+        this->map_territories[i] = nullptr;
+    }
 
-  // Delete the continents
-  for (auto i = 0; i < this->map_continents.size(); i++) {
-    delete (this->map_continents[i]);
-    this->map_continents[i] = nullptr;
-  }
+    // Delete the continents
+    for (auto i = 0; i < this->map_continents.size(); i++) {
+        delete (this->map_continents[i]);
+        this->map_continents[i] = nullptr;
+    }
 };
 
 /**
@@ -306,129 +307,163 @@ MapFile::~MapFile() {
  */
 void MapFile::readMapFile() {
 
-  std::string current_section = "none";
-  // Attempt to open the file.
-  std::ifstream inputfilestream(map_file_name);
-  if (!inputfilestream.is_open()) {
-    std::cerr << "Cound not open map file";
-  };
-  std::string line = "";
+    std::string current_section = "none";
+    // Attempt to open the file.
+    std::ifstream inputfilestream(map_file_name);
+    if (!inputfilestream.is_open()) {
+        std::cerr << "Cound not open map file";
+    };
+    std::string line = "";
 
-  while (std::getline(inputfilestream, line)) {
-    if (!line.empty() && !isStringblank(line)) {
-      trim(line);
-      if (line[0] == ';') {
-        // Do nothing, this is a commented line
-      } else if (line[0] == '[') {
-        std::size_t pos = line.find(']');
-        current_section = line.substr(1, pos - 1);
-      } else {
-        // Do things according to what section we're in
-        if (current_section == "files") {
-          this->processFileSectionLine(line);
-        } else if (current_section == "continents") {
-          this->processContinentSectionLine(line);
-        } else if (current_section == "countries") {
-          this->processTerritorySectionLine(line);
-        } else if (current_section == "borders") {
-          this->processBordersSectionLine(line);
+    while (std::getline(inputfilestream, line)) {
+        if (!line.empty() && !isStringBlank(line)) {
+            trim(line);
+            if (line[0] == ';') {
+                // Do nothing, this is a commented line
+            } else if (line[0] == '[') {
+                std::size_t pos = line.find(']');
+                current_section = line.substr(1, pos - 1);
+            } else {
+                // Do things according to what section we're in
+                if (current_section == "files") {
+                    this->processFileSectionLine(line);
+                } else if (current_section == "continents") {
+                    this->processContinentSectionLine(line);
+                } else if (current_section == "countries") {
+                    this->processTerritorySectionLine(line);
+                } else if (current_section == "borders") {
+                    this->processBordersSectionLine(line);
+                }
+            }
         }
-      }
     }
-  }
-  inputfilestream.close();
+    inputfilestream.close();
 };
+
+
 
 /**
  * @brief
  *
  * @param line
  */
+// TODO Change this function to return a Result
 void MapFile::processFileSectionLine(const std::string line) {
 
-  std::vector<std::string> line_args;
-  line_args = split(line, ' ');
+    std::vector<std::string> line_args;
+    line_args = split(line, ' ');
 
-  if (line_args.size() == 2) {
-    if (toLowerCase(line_args[0]) == "pic") {
-      pic_file_name = line_args[1];
-    } else if (toLowerCase(line_args[0]) == "map") {
-      map_pic_file_name = line_args[1];
-    } else if (toLowerCase(line_args[0]) == "crd") {
-      cards_file_name = line_args[1];
-    } else if (toLowerCase(line_args[0]) == "prv") {
-      prv_file_name = line_args[1];
-    }
-  } else {
-    std::cerr << "Invalid file section config line: " << line << std::endl;
-  }
-};
-
-/**
- * @brief
- *
- * @param line
- */
-void MapFile::processContinentSectionLine(const std::string line) {
-  std::vector<std::string> line_args;
-  line_args = split(line, ' ');
-
-  if (line_args.size() == 3) {
-    Continent *tempContinent;
-    tempContinent =
-        new Continent(line_args[0], std::stoi(line_args[1]), line_args[2]);
-
-    map_continents.push_back(tempContinent);
-    // delete (tempContinent);
-  } else {
-    std::cerr << "Invalid file section config line: " << line << std::endl;
-  }
-};
-
-/**
- * @brief
- *
- * @param line
- */
-void MapFile::processTerritorySectionLine(const std::string line) {
-  std::vector<std::string> line_args;
-  line_args = split(line, ' ');
-  if (line_args.size() == 5) {
-    Territory *tempTerritory;
-    tempTerritory = new Territory(
-        std::stoi(line_args[0]), line_args[1], std::stoi(line_args[2]),
-        std::stoi(line_args[3]), std::stoi(line_args[4]));
-    map_territories.push_back(tempTerritory);
-    // delete (tempTerritory);
-  } else {
-    std::cerr << "Invalid file section config line: " << line << std::endl;
-  }
-};
-
-/**
- * @brief
- *
- * @param line
- */
-void MapFile::processBordersSectionLine(const std::string line) {
-  std::vector<std::string> line_args;
-  line_args = split(line, ' ');
-
-  if (line_args.size() > 1) {
-    Territory *tempTerritory;
-    tempTerritory = getTerritoryByNumber(std::stoi(line_args[0]));
-    if (tempTerritory != nullptr) {
-      for (int i = 1; i < line_args.size(); i++) {
-        tempTerritory->borders.push_back(std::stoi(line_args[i]));
-      }
+    if (line_args.size() == 2) {
+        if (toLowerCase(line_args[0]) == "pic") {
+            pic_file_name = line_args[1];
+        } else if (toLowerCase(line_args[0]) == "map") {
+            map_pic_file_name = line_args[1];
+        } else if (toLowerCase(line_args[0]) == "crd") {
+            cards_file_name = line_args[1];
+        } else if (toLowerCase(line_args[0]) == "prv") {
+            prv_file_name = line_args[1];
+        }
     } else {
-      std::cerr << "Invalid territory in borders section: " << line
-                << std::endl;
+        std::cerr << "ERROR: Invalid file section config line: " << line << std::endl;
+        exit(-1);
     }
-  } else {
-    std::cerr << "Invalid file section config line: " << line << std::endl;
-  }
 };
+
+/**
+ * @brief
+ *
+ * @param line
+ */
+// TODO Change this function to return a Result
+// TODO Check the success of the std::stoi calls, exit with error if failed
+void MapFile::processContinentSectionLine(const std::string line) {
+    std::vector<std::string> line_args;
+    line_args = split(line, ' ');
+
+    if (line_args.size() == 3) {
+        Continent *tempContinent;
+        tempContinent =
+                new Continent(line_args[0], std::stoi(line_args[1]), line_args[2]);
+
+        map_continents.push_back(tempContinent);
+        // delete (tempContinent);
+    } else {
+        std::cerr << "ERROR: Invalid file section config line: " << line << std::endl;
+        exit(-1);
+    }
+};
+
+/**
+ * @brief
+ *
+ * @param line
+ */
+// TODO Change this function to return a Result
+// TODO Check the success of the std::stoi calls, exit with error if failed
+void MapFile::processTerritorySectionLine(const std::string line) {
+    std::vector<std::string> line_args;
+    line_args = split(line, ' ');
+    if (line_args.size() == 5) {
+        Territory *tempTerritory;
+        tempTerritory = new Territory(
+                std::stoi(line_args[0]), line_args[1], std::stoi(line_args[2]),
+                std::stoi(line_args[3]), std::stoi(line_args[4]));
+        map_territories.push_back(tempTerritory);
+        // delete (tempTerritory);
+    } else {
+        std::cerr << "ERROR: Invalid file section config line: " << line << std::endl;
+        exit(-1);
+    }
+};
+
+/**
+ * @brief
+ *
+ * @param line
+ */
+// TODO Change this function to return a Result
+// TODO Check the success of the std::stoi calls, exit with error if failed
+void MapFile::processBordersSectionLine(const std::string line) {
+    std::vector<std::string> line_args;
+    line_args = split(line, ' ');
+
+    if (line_args.size() > 1) {
+        Territory *tempTerritory;
+        tempTerritory = getTerritoryByNumber(std::stoi(line_args[0]));
+        if (tempTerritory != nullptr) {
+            for (int i = 1; i < line_args.size(); i++) {
+                tempTerritory->borders.push_back(std::stoi(line_args[i]));
+            }
+        } else {
+            std::cerr << "ERROR: Invalid territory in borders section: " << line
+                      << std::endl;
+            exit(-1);
+        }
+    } else {
+        std::cerr << "ERROR: Invalid file section config line: " << line << std::endl;
+        exit(-1);
+    }
+};
+
+// /**
+//  * @brief
+//  *
+//  * @param territory_number
+//  * @return Territory*
+//  */
+// Result<Territory> MapFile::getTerritoryByNumber(int territory_number) {
+//   int i;
+//   for (i = 0; i < map_territories.size(); i++) {
+//     if (map_territories[i]->number == territory_number) {
+//       Result<Territory> returnResult = new Result<Territory>();
+//       returnResult.success = true;
+//       returnResult.message = "SUCCESS: Found territory at index " + i;
+//       returnResult->returnValue = *map_territories[i];
+//       return returnResult;
+//     }
+//   }
+//   // return nullptr;
+// };
 
 /**
  * @brief
@@ -437,54 +472,67 @@ void MapFile::processBordersSectionLine(const std::string line) {
  * @return Territory*
  */
 Territory *MapFile::getTerritoryByNumber(int territory_number) {
-  int i;
-  for (i = 0; i < map_territories.size(); i++) {
-    if (map_territories[i]->number == territory_number) {
-      return map_territories[i];
+    int i;
+    for (i = 0; i < map_territories.size(); i++) {
+        if (map_territories[i]->number == territory_number) {
+            return map_territories[i];
+        }
     }
-  }
-  return nullptr;
+    return nullptr;
 };
 
 Continent *MapFile::getContinentByNumber(int continent_number) {
-  int i;
-  for (i = 0; i < map_continents.size(); i++) {
-    if (map_continents[i]->number == continent_number) {
-      return map_continents[i];
+    int i;
+    for (i = 0; i < map_continents.size(); i++) {
+        if (map_continents[i]->number == continent_number) {
+            return map_continents[i];
+        }
     }
-  }
-  return nullptr;
+    return nullptr;
 }
 
-// TODO Check validity of continent_number
-struct ::Country MapFile::generateMapCountry(Territory *territory) {
-  std::string continent_name;
-  Continent *continent;
-  continent = getContinentByNumber(territory->continent_number);
+// TODO Change return type to Result
+struct ::Country *MapFile::generateMapCountry(Territory *territory) {
+    std::string continent_name;
+    Continent *continent;
+    continent = getContinentByNumber(territory->continent_number);
+    if (continent != nullptr) {
+        struct ::Country *returnCountry = new struct::Country();
+        returnCountry->Name = territory->short_name;
+        returnCountry->CountryID = territory->number;
+        returnCountry->Continent = continent->name;
+        return returnCountry;
+    } else {
+        std::cerr << "ERROR: Invalid Continent ID passed to getContinentByNumber in MapFile::generateMapCountry()"
+                  << std::endl;
+        exit(-1);
+    }
 
-  struct ::Country returnCountry;
-  returnCountry.Name = territory->short_name;
-  returnCountry.CountryID = territory->number;
-  returnCountry.Continent = continent->name;
-  return returnCountry;
 };
 
+// TODO Change return type to Result
 Map *MapFile::generateMap() {
-  Map *returnMap = new Map(map_territories.size(), map_file_name);
-  for (int i = 0; i < map_territories.size(); i++) {
-    struct ::Country base_country;
-    base_country = generateMapCountry(map_territories[i]);
+    Map *returnMap = new Map(map_territories.size(), map_file_name);
+    for (int i = 0; i < map_territories.size(); i++) {
+        struct ::Country *base_country;
+        base_country = generateMapCountry(map_territories[i]);
 
-    for (int j = 0; j < map_territories[i]->borders.size(); j++) {
-      int borderCountry = map_territories[i]->borders[j];
-      Territory *secondTerritory;
-      secondTerritory = getTerritoryByNumber(borderCountry);
-      struct ::Country secondCountry;
-      secondCountry = generateMapCountry(secondTerritory);
-      returnMap->AddEdges(base_country, secondCountry);
+        for (int j = 0; j < map_territories[i]->borders.size(); j++) {
+            int borderCountry = map_territories[i]->borders[j];
+            Territory *secondTerritory;
+            secondTerritory = getTerritoryByNumber(borderCountry);
+            if (secondTerritory != nullptr) {
+                struct ::Country *secondCountry;
+                secondCountry = generateMapCountry(secondTerritory);
+                returnMap->AddEdges(*base_country, *secondCountry);
+            } else {
+                std::cerr << "ERROR: Invalid Territory number passed as secondCountry in MapFile::generateMap()"
+                          << std::endl;
+                exit(-1);
+            }
+        }
     }
-  }
-  return returnMap;
+    return returnMap;
 };
 
 /////////////////////////////////////////////////////////////////////////////////
@@ -494,52 +542,52 @@ Map *MapFile::generateMap() {
 /////////////////////////////////////////////////////////////////////////////////
 
 std::string toLowerCase(const std::string toLower) {
-  std::string lowerCase = "";
-  if (toLower.empty())
-    return toLower;
-  for (int i = 0; i < toLower.length(); i++) {
-    lowerCase += tolower(toLower[i]);
-  }
-  return lowerCase;
+    std::string lowerCase = "";
+    if (toLower.empty())
+        return toLower;
+    for (int i = 0; i < toLower.length(); i++) {
+        lowerCase += tolower(toLower[i]);
+    }
+    return lowerCase;
 };
 
 //////////////////
 // Source:
 // https://www.toptip.ca/2010/03/trim-leading-or-trailing-white-spaces.html
 void trim(std::string &s) {
-  size_t p = s.find_first_not_of("\t\n\v\f\r ");
-  s.erase(0, p);
+    size_t p = s.find_first_not_of("\t\n\v\f\r ");
+    s.erase(0, p);
 
-  p = s.find_last_not_of("\t\n\v\f\r ");
-  if (std::string::npos != p)
-    s.erase(p + 1);
+    p = s.find_last_not_of("\t\n\v\f\r ");
+    if (std::string::npos != p)
+        s.erase(p + 1);
 }
 /////////////////
 
 // Returns false if no non-space characters are found
 // Returns true otherwise
-bool isStringblank(const std::string line) {
-  if (!line.empty()) {
-    for (int i = 0; i < line.length(); i++) {
-      // Source: https://en.cppreference.com/w/cpp/string/byte/isspace
-      if (!std::isspace(static_cast<unsigned char>(line[i]))) {
-        return false;
-      }
+bool isStringBlank(const std::string line) {
+    if (!line.empty()) {
+        for (int i = 0; i < line.length(); i++) {
+            // Source: https://en.cppreference.com/w/cpp/string/byte/isspace
+            if (!std::isspace(static_cast<unsigned char>(line[i]))) {
+                return false;
+            }
+        }
     }
-  }
-  return true;
+    return true;
 };
 
 ///////////////////
 // Source: https://thispointer.com/how-to-split-a-string-in-c/
-std::vector<std::string> split(std::string strToSplit, char delimeter) {
-  std::stringstream ss(strToSplit);
-  std::string item;
-  std::vector<std::string> splittedStrings;
-  while (std::getline(ss, item, delimeter)) {
-    splittedStrings.push_back(item);
-  }
-  return splittedStrings;
+std::vector<std::string> split(std::string strToSplit, char delimiter) {
+    std::stringstream ss(strToSplit);
+    std::string item;
+    std::vector<std::string> splittedStrings;
+    while (std::getline(ss, item, delimiter)) {
+        splittedStrings.push_back(item);
+    }
+    return splittedStrings;
 };
 ///////////////////
 
