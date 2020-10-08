@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <string>
+#include <vector>
 
 class Order;
 
@@ -14,18 +15,19 @@ private:
 public:
 	//constructors
 	OrderList();
+	OrderList(const OrderList& copy);
 	//adds an order to the list
 	bool addToList(Order* order);
 	//removes an order from the list
 	bool remove(int position);
-	//moves an order from an index to another in the list
-	bool move(int position, int newPosition);
-	//copy constructor
-	OrderList(OrderList* copy);
+	//moves/swaps an order from an index with another in the list
+	bool move(int firstIndex, int secondIndex);
 	//assignment operator
-	virtual OrderList& operator=(const OrderList& o);
+	OrderList& operator=(const OrderList& o);
 	//insertion stream operator
 	friend std::ostream& operator <<(std::ostream& out, const OrderList &orders);
+	//destructor
+	~OrderList();
 };
 
 //order base class, to be stored in order list
@@ -33,7 +35,7 @@ class Order
 {
 private:
 	//name of order
-	const std::string name;
+	std::string name;
 public:
 	//constructors
 	Order();
@@ -45,11 +47,9 @@ public:
 	//accessor & mutator
 	std::string getName();
 	//assignment operator
-	virtual Order& operator =(const Order& o);
+	Order& operator =(const Order& o);
 	//insertion stream operator
 	friend std::ostream& operator <<(std::ostream& out, const Order& order);
-	//destructor
-	~Order();
 };
 
 class Deploy : public Order
