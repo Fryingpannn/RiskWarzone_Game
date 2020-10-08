@@ -3,7 +3,7 @@
 #include <iostream> 
 #include <queue> 
 #include <deque> 
-
+#include "Player.h"
 using namespace std;
 
 
@@ -18,6 +18,7 @@ enum CardType {
 	BLOCKADE,
 	AIRLIFT,
 	DIPLOMACY,
+
 	EMPTY
 };
 
@@ -36,18 +37,18 @@ public:
 
 	//functions
 	CardType* getType();
-	void Play(Hand& h, Deck& d);
+	void Play(Player& p, Deck& d);
 
 	//operator overloading
 	friend ostream& operator << (ostream& out, const Card& card);
-	void operator = (const Card& c);
+	Card& operator = (const Card& c);
 };
 
 
 class Hand {
 
 private:
-	vector<Card>* hand;
+	vector<Card*> hand;
 
 public:
 
@@ -64,18 +65,19 @@ public:
 
 	//operator overloading
 	friend ostream& operator << (ostream& out, const Hand& h);
-	void operator = (const Hand& h);
+	Hand& operator = (const Hand& h);
 
 };
 
 class Deck {
 
 private:
-	queue<Card>* deck;
+	queue<Card*> deck;
 	int* size;
 public:
 
 	//constructors
+	Deck();
 	Deck(int const deckSize);
 	Deck(const Deck& deck);
 	~Deck();
@@ -87,6 +89,6 @@ public:
 
 	//operator overloading
 	friend ostream& operator << (ostream& out, const Deck& d);
-	void operator = (const Deck& d);
+	Deck& operator = (const Deck& d);
 
 };
