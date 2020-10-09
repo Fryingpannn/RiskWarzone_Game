@@ -20,47 +20,47 @@ int main()
     //diagraph.Display();
 
     //one way to optimise is to put enum
-    Country Malaysia{
+    Territory Malaysia{
         "Malaysia", 0, "ASEAN"
     };
 
-    Country Indonesia{
+    Territory Indonesia{
         "Indonesia", 1, "ASEAN"
     };
-    Country Singapore{
+    Territory Singapore{
         "Singapore", 2, "ASEAN"
     };
 
-    Country Philippine{
+    Territory Philippine{
         "Philippine", 3, "ASEAN"
     };
 
-    Country Thailand{
+    Territory Thailand{
         "Thailand", 4, "ASEAN"
     };
 
-    Country Vietnam{
+    Territory Vietnam{
         "Vietnam", 5, "ASEAN"
     };
 
-    Country Japan{
+    Territory Japan{
         "Japan", 6, "EastAsia"
     };
 
-    Country Korea{
+    Territory Korea{
         "Korea", 7, "EastAsia"
     };
 
-    Country China{
+    Territory China{
         "China", 8, "EastAsia"
     };
 
-    //incorrect country naming cases
-    Country Germany{
+    //incorrect Territory naming cases
+    Territory Germany{
         "Germany", 8, "EastAsia"
     };
 
-    Country France{
+    Territory France{
         "France", 8, "Europe"
     };
 

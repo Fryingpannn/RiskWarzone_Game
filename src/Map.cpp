@@ -6,7 +6,7 @@
 Map::Map()
 {
 	NumberOfCountries = new int(5);
-	*ListOfCountries = new std::vector<struct::Country>[100] ;
+	*ListOfCountries = new std::vector<struct::Territory*>[100] ;
 	MapName = new std::string ("World");
 	
 }
@@ -16,9 +16,9 @@ Map::Map(int size, std::string name)
 	std::cout << "It passed" << std::endl;
 	NumberOfCountries = new int (size);
 
-	ListOfCountries = new std::vector<Country> *[100];
+	ListOfCountries = new std::vector<Territory *> *[100];
 	for (int i = 0; i < 100; i++)
-		ListOfCountries[i] = new std::vector<struct::Country>;
+		ListOfCountries[i] = new std::vector<struct::Territory*>;
 
 	
 	std::cout << "It passed 2" << std:: endl;
@@ -27,7 +27,7 @@ Map::Map(int size, std::string name)
 
 }
 
-Map::Map(std::vector<struct::Country> **listOfCountries, std::string mapName, int size, Map &continent)
+Map::Map(std::vector<struct::Territory*> **listOfCountries, std::string mapName, int size, Map &continent)
 {
 	NumberOfCountries = new int (size);
 	ListOfCountries = listOfCountries;
@@ -35,7 +35,7 @@ Map::Map(std::vector<struct::Country> **listOfCountries, std::string mapName, in
 	
 }
 
-Map::Map(std::vector<struct::Country> **listOfCountries, std::string mapName, int size)
+Map::Map(std::vector<struct::Territory*> **listOfCountries, std::string mapName, int size)
 {
 	NumberOfCountries = new int(size);
 	ListOfCountries = listOfCountries;
@@ -46,14 +46,14 @@ Map::Map(std::vector<struct::Country> **listOfCountries, std::string mapName, in
 Map::Map(Map &Copy)
 {
 	MapName = new std::string(*Copy.MapName);
-	ListOfCountries = new std::vector<Country> * [100];
+	ListOfCountries = new std::vector<Territory *> * [100];
 
 	for (int i = 0; i < 100; i++)
-		ListOfCountries[i] = new std::vector<struct::Country>;
+		ListOfCountries[i] = new std::vector<struct::Territory*>;
 
 	for (int i = 0; i < *Copy.NumberOfCountries; i++)
 	{
-		for (Country country: *Copy.ListOfCountries[i])
+		for (Territory* country: *Copy.ListOfCountries[i])
 		{
 			ListOfCountries[i]->push_back(country);
 		}
@@ -81,29 +81,29 @@ Map::~Map()
 
 
 
-void Map::AddEdges(Country country1, Country country2)
+void Map::AddEdges(Territory &country1, Territory &country2)
 {
 	std::cout << "Passed by Add Edges" << std::endl;
 
-	if (this->ListOfCountries[country1.CountryID]->size()==0)
+	if (this->ListOfCountries[country1.TerritoryID]->size()==0)
 	{
 		std::cout << "HEY HEY" << std::endl;
-		this->ListOfCountries[country1.CountryID]->push_back(country1);
+		this->ListOfCountries[country1.TerritoryID]->push_back(&country1);
 	}
 
-	if (this->ListOfCountries[country2.CountryID]->size() == 0)
+	if (this->ListOfCountries[country2.TerritoryID]->size() == 0)
 	{
 		std::cout << "HEY HEY 2" << std::endl;
-		this->ListOfCountries[country2.CountryID]->push_back(country2);
+		this->ListOfCountries[country2.TerritoryID]->push_back(&country2);
 	}
 
 	//error handling
 	//if list of country1 contains country2
 	int first = 0;
-	for (Country country : *ListOfCountries[country1.CountryID])
+	for (Territory* country : *(ListOfCountries[country1.TerritoryID]))
 	{
 		std::cout << "HEY HEY 3" << std::endl;
-		if (country == country2)
+		if (*country == country2)
 			return;
 	
 	}
@@ -111,8 +111,8 @@ void Map::AddEdges(Country country1, Country country2)
 	
 
 
-	this->ListOfCountries[country2.CountryID]->push_back(country1);
-	this->ListOfCountries[country1.CountryID]->push_back(country2);
+	this->ListOfCountries[country2.TerritoryID]->push_back(&country1);
+	this->ListOfCountries[country1.TerritoryID]->push_back(&country2);
 	
 }
 
@@ -130,18 +130,18 @@ void Map::Display()
 	{
 		int j = 0;
 		
-		for (Country country: *this->ListOfCountries[i])
+		for (Territory* country: *(this->ListOfCountries[i]))
 		{
 			if (j == 0) {
-				std::cout << "Country: " << i << std::endl;
-				std::cout << "Name: " << country.Name << std::endl;
+				std::cout << "Territory: " << i << std::endl;
+				std::cout << "Name: " << country->Name << std::endl;
 				std::cout << "Adjacent Countries " << std::endl;
 				j++;
 			}
 			else {
 				std::cout << "-> ";
-				std::cout << "Country ID: " << country.CountryID << " ";
-				std::cout << country.Name;
+				std::cout << "Country ID: " << country->TerritoryID << " ";
+				std::cout << country->Name;
 				j++;
 			}
 		}
@@ -158,22 +158,22 @@ void Map::Display(std::string continent)
 	{
 		int j = 0;
 
-		for (Country country : *this->ListOfCountries[i])
+		for (Territory* country : *(this->ListOfCountries[i]))
 		{
 			if (j == 0) {
-				if (continent == country.Continent) {
-					std::cout << "Continent: " << country.Continent << std::endl;
+				if (continent == country->Continent) {
+					std::cout << "Continent: " << country->Continent << std::endl;
 					std::cout << "Country: " << j << std::endl;
-					std::cout << "Name: " << country.Name << std::endl;
+					std::cout << "Name: " << country->Name << std::endl;
 					std::cout << "Adjacent Countries " << std::endl;
 					j++;
 				}
 			}
 			else {
-				if (continent == country.Continent) {
+				if (continent == country->Continent) {
 					std::cout << "-> ";
-					std::cout << "Country ID: " << country.CountryID << " ";
-					std::cout << country.Name;
+					std::cout << "Country ID: " << country->TerritoryID << " ";
+					std::cout << country->Name;
 					j++;
 				}
 			}
@@ -193,6 +193,8 @@ void Map::SetMapName(std::string mapName)
 //
 bool Map::Validate()
 {
+	std::cout << "\n\n\nVALIDATING\n\n\n"<<std::endl;
+
 	if (*this->NumberOfCountries==NULL)
 		return false; 
 
@@ -206,16 +208,16 @@ bool Map::Validate()
 				break;
 			}
 			//checking over2d arrays whether there are same ID with different names
-			for (Country country : *this->ListOfCountries[i])
+			for (Territory* country : *(this->ListOfCountries[i]))
 			{
-				for (Country country2 : *this->ListOfCountries[x])
+				for (Territory* country2 : *(this->ListOfCountries[x]))
 				{
-					if (country.CountryID == country2.CountryID)
+					if (country->TerritoryID == country2->TerritoryID)
 					{
-						if (country.Name != country2.Name)
+						if (country->Name != country2->Name)
 						{
 							std::cout << "Error Occured! Country with different name with same ID: "
-								<< country.Name << "& " << country2.Name << " with ID: " << country.CountryID << std::endl;
+								<< country->Name << "& " << country2->Name << " with ID: " << country->TerritoryID << std::endl;
 							return false;
 						}
 					}
@@ -228,7 +230,7 @@ bool Map::Validate()
 			
 			//using my code, and how I design it. You don't even need to check whether a country has two continents. 
 			//They will have each individual string
-				if (ListOfCountries[i]->at(j).Continent=="") {
+				if (this->ListOfCountries[i]->at(j)->Continent=="") {
 					std::cout << "Continent is empty! Error " << std::endl;
 					return false;
 				}
@@ -236,7 +238,7 @@ bool Map::Validate()
 					std::cout << "CountryID is empty! Error " << std::endl;
 					return false;
 				}*/
-				if (ListOfCountries[i]->at(j).Name == "") {
+				if (ListOfCountries[i]->at(j)->Name == "") {
 					std::cout << "Name is empty! Error " << std::endl;
 					return false;
 				}
@@ -245,12 +247,12 @@ bool Map::Validate()
 				//checking whether same country ID is found or same country name is found
 				for (int k = j + 1; k < this->ListOfCountries[i]->size(); k++)
 				{
-					if (ListOfCountries[i]->at(j).CountryID == ListOfCountries[i]->at(k).CountryID) {
-						std::cout << "Same Country ID found!! Error " << std::endl;
+					if (ListOfCountries[i]->at(j)->TerritoryID == ListOfCountries[i]->at(k)->TerritoryID) {
+						std::cout << "Same Territory ID found!! Error " << std::endl;
 						return false;
 					}
-					if (ListOfCountries[i]->at(j).Name == ListOfCountries[i]->at(k).Name) {
-						std::cout << "Same Country Name found!! Error " << std::endl;
+					if (ListOfCountries[i]->at(j)->Name == ListOfCountries[i]->at(k)->Name) {
+						std::cout << "Same Territory Name found!! Error " << std::endl;
 						return false;
 					}
 				}
