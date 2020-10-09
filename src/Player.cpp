@@ -1,30 +1,32 @@
 #include "Player.h"
 
-#include <algorithm>
-#include <iostream>
+#include <ostream>
+#include <vector>
 
 #include "Cards.h"
 #include "Map.h"
 #include "Orders.h"
 
 /**
- * Empty constructor
+ * Default constructor initialize the members of Player to their default values.
  */
-Player::Player()
-    : Countries(new std::vector<Country>()),
-      Cards(new Hand()),
-      OrdersList(new Orders) {
+Player::Player() {
+  this->Territories = std::vector<Territory *>{};
+  this->HandOfCards = new Hand();
+  this->ListOfOrders = new OrderList();
+
   std::cout << "default constructor" << std::endl;
 }
 
 /**
  * Constructor
  */
-Player::Player(std::vector<Country> countries, Hand cards, Orders orderList) {
+Player::Player(std::vector<Territory *> territories, Hand handOfCards,
+               OrderList listOfOrders) {
   std::cout << "regular constructor" << std::endl;
-  this->Countries = new std::vector<Country>(countries);
-  this->Cards = new Hand(cards);
-  this->OrdersList = new Orders(orderList);
+  this->Territories = territories;
+  this->HandOfCards = new Hand(handOfCards);
+  this->ListOfOrders = new OrderList(listOfOrders);
 }
 
 /**
@@ -32,9 +34,14 @@ Player::Player(std::vector<Country> countries, Hand cards, Orders orderList) {
  */
 Player::Player(const Player &p) {
   std::cout << "Copy constructor called\n";
-  this->Countries = new std::vector<Country>(*p.Countries);
-  this->Cards = new Hand(*p.Cards);
-  this->OrdersList = new Orders(*p.OrdersList);
+
+  this->HandOfCards = new Hand(*p.HandOfCards);
+  this->ListOfOrders = new OrderList(*p.ListOfOrders);
+
+  for (auto i = p.Territories.begin(); i != p.Territories.end(); ++i) {
+    auto *country = new Territory(**i);
+    this->Territories.push_back(country);
+  }
 }
 
 /**
@@ -42,9 +49,14 @@ Player::Player(const Player &p) {
  */
 Player &Player::operator=(const Player &p) {
   std::cout << "Assignment operator called\n";
-  this->Countries = new std::vector<Country>(*p.Countries);
-  this->Cards = new Hand(*p.Cards);
-  this->OrdersList = new Orders(*p.OrdersList);
+  // this->Territories = new std::vector<Territory>(p.Territories);
+  this->HandOfCards = new Hand(*p.HandOfCards);
+  this->ListOfOrders = new OrderList(*p.ListOfOrders);
+
+  for (auto i = p.Territories.begin(); i != p.Territories.end(); ++i) {
+    auto *country = new Territory(**i);
+    this->Territories.push_back(country);
+  }
   return *this;
 }
 
@@ -52,48 +64,59 @@ Player &Player::operator=(const Player &p) {
  * Overloaded stream operator
  */
 std::ostream &operator<<(std::ostream &out, const Player &p) {
-  out << "  Countries: ";
-  for (auto i = p.Countries->begin(); i != p.Countries->end(); ++i) {
-    out << "temp " << ' ';
+  out << "\tCountries: { ";
+  for (auto i = p.Territories.begin(); i != p.Territories.end(); ++i) {
+    out << "{" << **i << "}  ";
   }
   out << "\n";
 
-  out << "  Cards: temp ";
-  out << p.Cards;
+  out << "\tCards: " << *p.HandOfCards;
   out << "\n";
 
-  out << "  Orders: temp ";
-  out << p.OrdersList;
+  out << "\tOrders: " << *p.ListOfOrders;
   out << "\n";
 
   return out;
 }
 
-std::vector<Country> Player::toDefend() { return *Countries; }
+std::vector<Territory *> Player::toDefend() { return Territories; }
 
-int Player::toAttack() {
+std::vector<Territory *> Player::toAttack() {
+  // TODO: replace with actual list of countries from map class
+  std::vector<Territory *> listOfCountries{};
 
-  //std::vector<int> v1 = Available Territories;
-  //std::vector<int> v2 = *Countries; // territories player owns
-  //std::vector<int> territoriesToAttack;
+  // sort lists to please debugger
+  std::sort(listOfCountries.begin(), listOfCountries.end());
+  std::sort(Territories.begin(), Territories.end());
+
+  // The difference between the two to be computed
+  std::vector<Territory *> territoriesToAttack;
+
   // find difference between 2 collections
-  //std::set_difference(
-  //    v1.begin(), v1.end(), v2.begin(), v2.end(),
-  //    std::inserter(territoriesToAttack, territoriesToAttack.begin()));
+  std::set_difference(
+      listOfCountries.begin(), listOfCountries.end(), Territories.begin(),
+      Territories.end(),
+      std::inserter(territoriesToAttack, territoriesToAttack.begin()));
 
-  return 0;
+  return territoriesToAttack;
 }
 
 void Player::issueOrder() {
-  // todo create object to add to list of orders
+  auto *order = new Advance();
+  this->ListOfOrders->addToList(order);
 }
 
 /**
  * Destructor
  */
 Player::~Player() {
-  Countries = NULL;
-  Cards = NULL;
-  delete Countries;
-  delete Cards;
+  for (auto &i : Territories) {
+    delete i;
+    i = nullptr;
+  }
+  //  Territories.clear();
+  delete HandOfCards;
+  delete ListOfOrders;
+  this->HandOfCards = nullptr;
+  this->ListOfOrders = nullptr;
 }
