@@ -24,6 +24,9 @@
 
 #include "Map.h"
 
+// Change me to true to enable debug message
+const bool DEBUG = false;
+
 //////////////////////////////////////////////////////////////////////////////////////
 // Continent
 //////////////////////////////////////////////////////////////////////////////////////
@@ -305,15 +308,23 @@ MapFile::~MapFile() {
  * @brief
  *
  */
-void MapFile::readMapFile() {
+Result<void> MapFile::readMapFile() {
+    Result<void> returnResult;
+    returnResult.success = false;
+    returnResult.message =
+        "ERROR: Default failure message. This should not have happened. "
+        "MapFile::readMapFile()";
+
     std::string current_section = "none";
     // Attempt to open the file.
     std::ifstream inputfilestream(map_file_name);
     if (!inputfilestream.is_open()) {
-        std::cerr << "Cound not open map file";
+        returnResult.success = false;
+        returnResult.message = "Cound not open map file";
+        return returnResult;
     };
     std::string line = "";
-
+    Result<void> result;
     while (std::getline(inputfilestream, line)) {
         if (!line.empty() && !isStringBlank(line)) {
             trim(line);
@@ -325,19 +336,37 @@ void MapFile::readMapFile() {
             } else {
                 // Do things according to what section we're in
                 if (current_section == "files") {
-                    this->processFileSectionLine(line);
+                    result = processFileSectionLine(line);
                 } else if (current_section == "continents") {
-                    this->processContinentSectionLine(line);
+                    result = processContinentSectionLine(line);
                 } else if (current_section == "countries") {
-                    this->processTerritorySectionLine(line);
+                    result = processTerritorySectionLine(line);
                 } else if (current_section == "borders") {
-                    this->processBordersSectionLine(line);
+                    result = processBordersSectionLine(line);
+                }
+                if (result.success && DEBUG) {
+                    returnResult.success = true;
+                    returnResult.message = result.message;
+                    std::cout << result.message << std::endl;
+                } else if (!result.success) {
+                    // TODO var cleanup
+                    // TODO return result;
+                    returnResult.success = false;
+                    returnResult.message = result.message;
+                    return returnResult;
                 }
             }
         }
     }
+    
     inputfilestream.close();
+
+    returnResult.success = true;
+    returnResult.message = "DEBUG: Successfully read map file: " + map_file_name;
+    return returnResult;
 };
+
+
 
 /**
  * @brief
@@ -345,7 +374,13 @@ void MapFile::readMapFile() {
  * @param line
  */
 // TODO Change this function to return a Result
-void MapFile::processFileSectionLine(const std::string line) {
+Result<void> MapFile::processFileSectionLine(const std::string line) {
+    Result<void> returnResult;
+    returnResult.success = false;
+    returnResult.message =
+        "ERROR: Default failure message. This should not have happened. "
+        "MapFile::processFileSectionLine()";
+
     std::vector<std::string> line_args;
     line_args = split(line, ' ');
 
@@ -359,11 +394,15 @@ void MapFile::processFileSectionLine(const std::string line) {
         } else if (toLowerCase(line_args[0]) == "prv") {
             prv_file_name = line_args[1];
         }
+        returnResult.success = true;
+        returnResult.message =
+            "DEBUG: Successfully parsed file section config line: " + line;
     } else {
-        std::cerr << "ERROR: Invalid file section config line: " << line
-                  << std::endl;
-        exit(-1);
+        returnResult.success = false;
+        returnResult.message =
+            "ERROR: Invalid file section config line: " + line;
     }
+    return returnResult;
 };
 
 /**
@@ -373,22 +412,49 @@ void MapFile::processFileSectionLine(const std::string line) {
  */
 // TODO Change this function to return a Result
 // TODO Check the success of the std::stoi calls, exit with error if failed
-void MapFile::processContinentSectionLine(const std::string line) {
+Result<void> MapFile::processContinentSectionLine(const std::string line) {
+    Result<void> returnResult;
+    returnResult.success = false;
+    returnResult.message =
+        "ERROR: Default failure message. This should not have happened. "
+        "MapFile::processContinentSectionLine()";
+
     std::vector<std::string> line_args;
     line_args = split(line, ' ');
 
     if (line_args.size() == 3) {
+        int second_arg = 0;
+        // try/catch example source:
+        // Source:
+        // https://codereview.stackexchange.com/questions/206754/an-exception-safe-wrapper-for-stdstoi
+        try {
+            second_arg = std::stoi(line_args[1]);
+        } catch (const std::invalid_argument &ia) {
+            returnResult.success = false;
+            returnResult.message =
+                "ERROR: Invalid argument in continents section: " +
+                line_args[1];
+            return returnResult;
+        } catch (const std::out_of_range &oor) {
+            returnResult.success = false;
+            returnResult.message =
+                "ERROR: Invalid argument in continents section: " +
+                line_args[1];
+            return returnResult;
+        }
         Continent *tempContinent;
-        tempContinent =
-            new Continent(line_args[0], std::stoi(line_args[1]), line_args[2]);
-
+        tempContinent = new Continent(line_args[0], second_arg, line_args[2]);
         map_continents.push_back(tempContinent);
+        returnResult.success = true;
+        returnResult.message =
+            "DEBUG: Parsed line from continents section: " + line;
         // delete (tempContinent);
     } else {
-        std::cerr << "ERROR: Invalid continent section config line: " << line
-                  << std::endl;
-        exit(-1);
+        returnResult.success = false;
+        returnResult.message =
+            "ERROR: Invalid continent section config line: " + line;
     }
+    return returnResult;
 };
 
 /**
@@ -398,21 +464,53 @@ void MapFile::processContinentSectionLine(const std::string line) {
  */
 // TODO Change this function to return a Result
 // TODO Check the success of the std::stoi calls, exit with error if failed
-void MapFile::processTerritorySectionLine(const std::string line) {
+Result<void> MapFile::processTerritorySectionLine(const std::string line) {
+    Result<void> returnResult;
+    returnResult.success = false;
+    returnResult.message =
+        "ERROR: Default failure message. This should not have happened. "
+        "MapFile::processTerritorySectionLine()";
+
     std::vector<std::string> line_args;
     line_args = split(line, ' ');
+    int arg1 = 0;
+    int arg3 = 0;
+    int arg4 = 0;
+    int arg5 = 0;
     if (line_args.size() == 5) {
+        // try/catch example source:
+        // Source:
+        // https://codereview.stackexchange.com/questions/206754/an-exception-safe-wrapper-for-stdstoi
+        try {
+            arg1 = std::stoi(line_args[0]);
+            arg3 = std::stoi(line_args[2]);
+            arg4 = std::stoi(line_args[3]);
+            arg5 = std::stoi(line_args[4]);
+        } catch (const std::invalid_argument &ia) {
+            returnResult.success = false;
+            returnResult.message =
+                "ERROR: Invalid argument in territory section: " + line;
+            return returnResult;
+        } catch (const std::out_of_range &oor) {
+            returnResult.success = false;
+            returnResult.message =
+                "ERROR: Invalid argument in territory section: " + line;
+            return returnResult;
+        }
+
         Territory *tempTerritory;
-        tempTerritory = new Territory(
-            std::stoi(line_args[0]), line_args[1], std::stoi(line_args[2]),
-            std::stoi(line_args[3]), std::stoi(line_args[4]));
+        tempTerritory = new Territory(arg1, line_args[1], arg3, arg4, arg5);
         map_territories.push_back(tempTerritory);
+        returnResult.success = true;
+        returnResult.message =
+            "DEBUG: Parsed line from continents section: " + line;
         // delete (tempTerritory);
     } else {
-        std::cerr << "ERROR: Invalid file section config line: " << line
-                  << std::endl;
-        exit(-1);
+        returnResult.success = false;
+        returnResult.message =
+            "ERROR: Invalid territory section config line: " + line;
     }
+    return returnResult;
 };
 
 /**
@@ -422,36 +520,86 @@ void MapFile::processTerritorySectionLine(const std::string line) {
  */
 // TODO Change this function to return a Result
 // TODO Check the success of the std::stoi calls, exit with error if failed
-void MapFile::processBordersSectionLine(const std::string line) {
+Result<void> MapFile::processBordersSectionLine(const std::string line) {
+    Result<void> returnResult;
+    returnResult.success = false;
+    returnResult.message =
+        "ERROR: Default failure message. This should not have happened. "
+        "MapFile::processBordersSectionLine()";
+
     std::vector<std::string> line_args;
     line_args = split(line, ' ');
 
     if (line_args.size() > 1) {
+        int arg0 = 0;
+        // try/catch example source:
+        // Source:
+        // https://codereview.stackexchange.com/questions/206754/an-exception-safe-wrapper-for-stdstoi
+        try {
+            arg0 = std::stoi(line_args[0]);
+        } catch (const std::invalid_argument &ia) {
+            returnResult.success = false;
+            returnResult.message =
+                "ERROR: Invalid argument in borders section: " + line_args[0];
+            return returnResult;
+        } catch (const std::out_of_range &oor) {
+            returnResult.success = false;
+            returnResult.message =
+                "ERROR: Invalid argument in borders section: " + line_args[0];
+            return returnResult;
+        }
+
         Result<Territory> result;
-        result = getTerritoryByNumber(std::stoi(line_args[0]));
+        result = getTerritoryByNumber(arg0);
         if (result.success) {
             Territory *tempTerritory;
             tempTerritory = result.returnValue;
             for (int i = 1; i < line_args.size(); i++) {
-                int border_territory_number = std::stoi(line_args[i]);
+                int border_territory_number = 0;
+                // try/catch example source:
+                // Source:
+                // https://codereview.stackexchange.com/questions/206754/an-exception-safe-wrapper-for-stdstoi
+                try {
+                    border_territory_number = std::stoi(line_args[i]);
+                } catch (const std::invalid_argument &ia) {
+                    returnResult.success = false;
+                    returnResult.message =
+                        "ERROR: Invalid argument in borders section: " +
+                        line_args[i];
+                    return returnResult;
+                } catch (const std::out_of_range &oor) {
+                    returnResult.success = false;
+                    returnResult.message =
+                        "ERROR: Invalid argument in borders section: " +
+                        line_args[i];
+                    return returnResult;
+                }
+
                 Result<Territory> secondResult;
                 secondResult = getTerritoryByNumber(border_territory_number);
                 if (secondResult.success) {
                     tempTerritory->borders.push_back(border_territory_number);
                 } else {
+                    returnResult.success = false;
+                    returnResult.message =
+                        result.message +
+                        "\nERROR: Invalid territory in borders section: " +
+                        line;
+                    return returnResult;
                 }
             }
         } else {
-            std::cerr << result.message << std::endl;
-            std::cerr << "ERROR: Invalid territory in borders section: " << line
-                      << std::endl;
-            exit(-1);
+            returnResult.success = false;
+            returnResult.message =
+                result.message +
+                "\nERROR: Invalid territory in borders section: " + line;
         }
     } else {
-        std::cerr << "ERROR: Invalid file section config line: " << line
-                  << std::endl;
-        exit(-1);
+        returnResult.success = false;
+        returnResult.message =
+            "ERROR: Too few arguments on borders section line: " + line;
     }
+    return returnResult;
 };
 
 /**
@@ -464,13 +612,13 @@ Result<Territory> MapFile::getTerritoryByNumber(int territory_number) {
     Result<Territory> returnResult;  // = new Result<Territory>();
     returnResult.success = false;
     returnResult.message =
-        &"ERROR: No territory found with index number " [ territory_number];
+        &"ERROR: No territory found with index number "[territory_number];
     returnResult.returnValue = nullptr;
 
     for (int i = 0; i < map_territories.size(); i++) {
         if (map_territories[i]->number == territory_number) {
             returnResult.success = true;
-            returnResult.message = &"SUCCESS: Found territory at index " [ i];
+            returnResult.message = &"SUCCESS: Found territory at index "[i];
             returnResult.returnValue = map_territories[i];
             return returnResult;
         }
@@ -482,13 +630,13 @@ Result<Continent> MapFile::getContinentByNumber(int continent_number) {
     Result<Continent> returnResult;  // = new Result<Territory>();
     returnResult.success = false;
     returnResult.message =
-        &"ERROR: No continent found with index number " [ continent_number];
+        &"ERROR: No continent found with index number "[continent_number];
     returnResult.returnValue = nullptr;
 
     for (int i = 0; i < map_continents.size(); i++) {
         if (map_territories[i]->number == continent_number) {
             returnResult.success = true;
-            returnResult.message = &"SUCCESS: Found continent at index " [ i];
+            returnResult.message = &"SUCCESS: Found continent at index "[i];
             returnResult.returnValue = map_continents[i];
             return returnResult;
         }
@@ -496,35 +644,15 @@ Result<Continent> MapFile::getContinentByNumber(int continent_number) {
     return returnResult;
 }
 
-// /**
-//  * @brief
-//  *
-//  * @param territory_number
-//  * @return Territory*
-//  */
-// Territory *MapFile::getTerritoryByNumber(int territory_number) {
-//     int i;
-//     for (i = 0; i < map_territories.size(); i++) {
-//         if (map_territories[i]->number == territory_number) {
-//             return map_territories[i];
-//         }
-//     }
-//     return nullptr;
-// };
+Result<struct ::Country> MapFile::generateMapCountry(Territory *territory) {
+    Result<struct ::Country> returnResult;
+    returnResult.success = false;
+    returnResult.message =
+        "ERROR: Default failure message. This should not have happened. "
+        "MapFile::generateMapCountry()";
 
-// Continent *MapFile::getContinentByNumber(int continent_number) {
-//     int i;
-//     for (i = 0; i < map_continents.size(); i++) {
-//         if (map_continents[i]->number == continent_number) {
-//             return map_continents[i];
-//         }
-//     }
-//     return nullptr;
-// }
-
-// TODO Change return type to Result
-struct ::Country *MapFile::generateMapCountry(Territory *territory) {
-    Result<Continent> result = getContinentByNumber(territory->continent_number);
+    Result<Continent> result =
+        getContinentByNumber(territory->continent_number);
     if (result.success) {
         Continent *continent;
         continent = result.returnValue;
@@ -532,43 +660,63 @@ struct ::Country *MapFile::generateMapCountry(Territory *territory) {
         returnCountry->Name = territory->short_name;
         returnCountry->CountryID = territory->number;
         returnCountry->Continent = continent->name;
-        return returnCountry;
+        returnResult.returnValue = returnCountry;
+        returnResult.success = true;
+        returnResult.message =
+            "DEBUG: Successfully converted MapFile::Territory to Map::Country";
     } else {
-        std::cerr << result.message << std::endl;
-        std::cerr
-            << "ERROR: Invalid Continent ID passed to getContinentByNumber "
-               "in MapFile::generateMapCountry()"
-            << std::endl;
-        exit(-1);
+        returnResult.success = false;
+        returnResult.message =
+            result.message +
+            "ERROR: Invalid Continent ID passed to getContinentByNumber in "
+            "MapFile::generateMapCountry()";
     }
+    return returnResult;
 };
 
 // TODO Change return type to Result
-Map *MapFile::generateMap() {
-    Map *returnMap = new Map(map_territories.size(), map_file_name);
-    for (int i = 0; i < map_territories.size(); i++) {
-        struct ::Country *base_country;
-        base_country = generateMapCountry(map_territories[i]);
+Result<Map> MapFile::generateMap() {
+    Result<Map> returnResult;
+    returnResult.success = false;
+    returnResult.message =
+        "ERROR: Default failure message. This should not have happened. "
+        "MapFile::generateMapCountry()";
 
-        for (int j = 0; j < map_territories[i]->borders.size(); j++) {
-            int borderCountry = map_territories[i]->borders[j];
-            Result<Territory> secondResult =
-                getTerritoryByNumber(borderCountry);
-            if (secondResult.success) {
-                Territory *secondTerritory;
-                secondTerritory = secondResult.returnValue;
-                struct ::Country *secondCountry;
-                secondCountry = generateMapCountry(secondTerritory);
-                returnMap->AddEdges(*base_country, *secondCountry);
-            } else {
-                std::cerr << "ERROR: Invalid Territory number passed as "
-                             "secondCountry in MapFile::generateMap()"
-                          << std::endl;
-                exit(-1);
+    returnResult.returnValue = new Map(map_territories.size(), map_file_name);
+
+    for (int i = 0; i < map_territories.size(); i++) {
+        Result<struct ::Country> resultCountry;
+        resultCountry = generateMapCountry(map_territories[i]);
+        if (resultCountry.success) {
+            for (int j = 0; j < map_territories[i]->borders.size(); j++) {
+                int borderCountry = map_territories[i]->borders[j];
+                Result<Territory> secondResult =
+                    getTerritoryByNumber(borderCountry);
+                if (secondResult.success) {
+                    Territory *secondTerritory;
+                    secondTerritory = secondResult.returnValue;
+                    Result<struct ::Country> secondResultCountry;
+                    if (secondResultCountry.success) {
+                        secondResultCountry =
+                            generateMapCountry(secondTerritory);
+                        returnResult.returnValue->AddEdges(
+                            *resultCountry.returnValue, *secondResultCountry.returnValue);
+                    }
+                } else {
+                    returnResult.success = false;
+                    returnResult.message =
+                        secondResult.message +
+                        "ERROR: Invalid Territory number passed as "
+                        "secondCountry in MapFile::generateMap()";
+                    return returnResult;
+                }
             }
+        } else {
+            returnResult.success = false;
+            returnResult.message = resultCountry.message;
         }
     }
-    return returnMap;
+    return returnResult;
 };
 
 /////////////////////////////////////////////////////////////////////////////////
@@ -624,25 +772,3 @@ std::vector<std::string> split(std::string strToSplit, char delimiter) {
     return splittedStrings;
 };
 ///////////////////
-
-//  std::vector<int *> *myVar
-//
-// std::vector<int*>* p_vec1;
-// std::vector<int*>* p_vec2;
-// p_vec2->reserve(p_vec1->size());
-
-// for (auto* p_int : *p_vec1) {
-//     p_vec2->emplace_back(*p_int);
-// }
-
-////////////////////////////
-
-// std::vector<int> *myVar
-//
-// std::vector<int>* p_vec1;
-// auto* p_vec2 = new std::vector<int>{p_vec1->begin(), p_vec1->end()};
-
-// or
-
-// std::vector<int>* p_vec1;
-// auto* p_vec2 = new std::vector<int>{*p_vec1};

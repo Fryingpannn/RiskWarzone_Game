@@ -125,25 +125,20 @@ class MapFile {
     friend std::ostream &operator<<(std::ostream &output,
                                     const MapFile *map_file);
 
-    void readMapFile();
+    // void readMapFile();
+    Result<void> readMapFile();
 
-    void processFileSectionLine(const std::string line);
-
-    void processContinentSectionLine(const std::string line);
-
-    void processTerritorySectionLine(const std::string line);
-
-    void processBordersSectionLine(const std::string line);
-
-    // Territory *getTerritoryByNumber(int territory_number);
+    Result<void> processFileSectionLine(const std::string line);
+    Result<void> processContinentSectionLine(const std::string line);
+    Result<void> processTerritorySectionLine(const std::string line);
+    Result<void> processBordersSectionLine(const std::string line);
     Result<Territory> getTerritoryByNumber(int territory_number);
-
-    // Continent *getContinentByNumber(int continent_number);
     Result<Continent> getContinentByNumber(int continent_number);
 
-    struct ::Country *generateMapCountry(Territory *territory);
+    Result<struct ::Country> generateMapCountry(Territory *territory);
 
-    Map *generateMap();
+    // Map *generateMap();
+    Result<Map> generateMap();
 
     ~MapFile();
 };

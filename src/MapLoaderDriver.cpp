@@ -35,33 +35,21 @@ void mapLoaderDriver() {
 
     MapFile *testMapFile;
     testMapFile = new MapFile(map_folder_base_path + map_file_name);
-    testMapFile->readMapFile();
-
-    std::cout << testMapFile->map_file_name << std::endl;
-    // for (int i = 0; i < testMapFile->map_continents.size(); i++) {
-    //   std::cout << *testMapFile->map_continents[i] << std::endl;
-    // }
-
-    // for (int i = 0; i < testMapFile->map_territories.size(); i++) {
-    //   // std::cout << *testMapFile->map_territories[i] << std::endl;
-    //   struct::Country firstCountry;
-    //   Territory *firstTerritory;
-    //   firstTerritory = testMapFile->map_territories[i];
-    //   firstCountry = testMapFile->generateMapCountry(firstTerritory);
-
-    //   for(int j = 0; j < testMapFile->map_territories[i]->borders.size();
-    //   j++) {
-    //     int borderCountry = testMapFile->map_territories[i]->borders[j];
-    //     Territory *secondTerritory;
-    //     secondTerritory = testMapFile->getTerritoryByNumber(borderCountry);
-    //     struct::Country secondCountry;
-    //     firstCountry = testMapFile->generateMapCountry(secondTerritory);
-    //   }
-    // }
-
-    Map *testMap;
-    testMap = testMapFile->generateMap();
-    testMap->Display();
+    Result<void> readMapFileResult = testMapFile->readMapFile();
+    if (readMapFileResult.success) {
+        std::cout << "Map file successfully read: " << testMapFile->map_file_name << std::endl;
+        Result<Map> generateMapResult;
+        Map *testMap;
+        generateMapResult = testMapFile->generateMap();
+        if (generateMapResult.success) {
+            testMap = generateMapResult.returnValue;
+            testMap->Display();
+        } else {
+            std::cerr << generateMapResult.message << std::endl;
+        }
+    } else {
+        std::cerr << "ERROR: Could not read map file: " << readMapFileResult.message << std::endl;
+    }
 
     delete (testMapFile);
     testMapFile = nullptr;
