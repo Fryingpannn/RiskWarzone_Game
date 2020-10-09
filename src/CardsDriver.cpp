@@ -6,7 +6,7 @@
 
 void CardsDeckTest() {
 
-		srand(time(NULL));
+	srand(time(NULL));
 
 	// create two decks
 	// deck 1 is randomized with 15 cards
