@@ -35,7 +35,7 @@ class Continent {
     std::string name;
     int value;
     std::string colour;
-
+    int number_of_territories;
     static int count;
 
     // Constructors
@@ -137,8 +137,13 @@ class MapFile {
 
     Result<struct ::Territory> generateMapTerritory(MapFileTerritory *territory);
 
+    bool isValidTerritoryNumber(int territory_number);
+    bool isValidContinentNumber(int continent_number);
+
     // Map *generateMap();
     Result<Map> generateMap();
+
+    Result<void> validate();
 
     ~MapFile();
 };

@@ -38,14 +38,20 @@ void mapLoaderDriver() {
     Result<void> readMapFileResult = testMapFile->readMapFile();
     if (readMapFileResult.success) {
         std::cout << "Map file successfully read: " << testMapFile->map_file_name << std::endl;
-        Result<Map> generateMapResult;
-        Map *testMap;
-        generateMapResult = testMapFile->generateMap();
-        if (generateMapResult.success) {
-            testMap = generateMapResult.returnValue;
-            testMap->Display();
+
+        Result<void> validateMapFile = testMapFile->validate();
+        if (validateMapFile.success) {
+            Result<Map> generateMapResult;
+            Map *testMap;
+            generateMapResult = testMapFile->generateMap();
+            if (generateMapResult.success) {
+                testMap = generateMapResult.returnValue;
+                testMap->Display();
+            } else {
+                std::cerr << generateMapResult.message << std::endl;
+            }
         } else {
-            std::cerr << generateMapResult.message << std::endl;
+            std::cerr << "ERROR: testMapFile failed validation checks." << validateMapFile.message << std::endl;
         }
     } else {
         std::cerr << "ERROR: Could not read map file: " << readMapFileResult.message << std::endl;

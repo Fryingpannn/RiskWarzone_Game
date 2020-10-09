@@ -25,9 +25,9 @@ Implement a group of C++ classes that reads and loads a map file in the .maptext
 ---
 
 # Questions
-- Should continents have a vector of countries?
+- Should continents have a vector of territories?
 - How to create subgraphs of each continent?
-- How to link two countries from different continents in the graph structure?
+- How to link two territories from different continents in the graph structure?
 - How do I make the file path OS agnostic?
 - How do I indicate failure to the calling method?
 
@@ -36,7 +36,7 @@ Implement a group of C++ classes that reads and loads a map file in the .maptext
 - [x] Create `MapFile` class
 - [x] MapLoader reads file line by line into a string vector
 - [ ] Finalize the `mapfiles` class
-- [ ] Finalize the `country` class
+- [ ] Finalize the `territory` class
 - [ ] Finalize the `continent` class
 
 # Requirements Checklist
@@ -61,7 +61,7 @@ Implement a group of C++ classes that reads and loads a map file in the .maptext
 **General**
 - [x] Lines beginning with ; are ignored
 - [x] Blank lines are ignored
-- [ ] File is not empty
+- [ ] (!)File is not empty
 - [ ] File contains '[files]' section
 - [ ] File contains '[continents]' section
 - [ ] File contains '[countries]' section
@@ -87,21 +87,21 @@ Implement a group of C++ classes that reads and loads a map file in the .maptext
 - [ ] 'prv' file exists
 
 **Continents Section**
-- [ ] Section is not empty
+- [x] (!)Section is not empty
 - [x] Each line is in the format "string int string" with spaces as delimters
-- [ ] The name of each continent contains no spaces
-- [ ] Each continent contains at least 1 country
+- [ ] (S)The name of each continent contains no spaces
+- [x] Each continent contains at least 1 territory
 
 **Countries Section**
-- [ ] Section is not empty
+- [x] (!)Section is not empty
 - [x] Each line is in the format "int string int int" with spaces as delimters
-- [ ] Each country belongs to a valid continent
-- [ ] The name of each contains contains no spaces
+- [x] Each territory belongs to a valid continent
+- [ ] (S)The name of each contains contains no spaces
 
 **Borders Section**
-- [ ] Section is not empty
+- [x] (!)Section is not empty
 - [x] Each line is in the format "int int int int" with spaces as delimiters
-- [x] The first number in the line is a valid country
-- [ ] The remaining numbers are valid countries
-- [ ] All countries have at least one country on its borders
-- [ ] All countries contained in the borders section
+- [x] The first number in the line is a valid territory
+- [x] The remaining numbers are valid territories
+- [ ] ~~All territories have at least one territory on its borders~~
+- [ ] ~~All territories contained in the borders section~~

@@ -43,6 +43,7 @@ Continent::Continent() {
     name = "";
     value = 0;
     colour = "";
+    number_of_territories = 0;
 };
 
 // Parameterized constructor
@@ -59,6 +60,7 @@ Continent::Continent(std::string new_name, int new_value,
     name = new_name;
     value = new_value;
     colour = new_colour;
+    number_of_territories = 0;
 };
 
 /**
@@ -71,6 +73,7 @@ Continent::Continent(const Continent &other_continent) {
     name = other_continent.name;
     value = other_continent.value;
     colour = other_continent.colour;
+    number_of_territories = other_continent.number_of_territories;
 };
 
 /**
@@ -84,6 +87,7 @@ Continent &Continent::operator=(const Continent &other_continent) {
     name = other_continent.name;
     value = other_continent.value;
     colour = other_continent.colour;
+    number_of_territories = other_continent.number_of_territories;
 
     return *this;
 };
@@ -100,6 +104,7 @@ std::ostream &operator<<(std::ostream &output, const Continent &continent) {
     output << "Name: " << continent.name << std::endl;
     output << "Value: " << continent.value << std::endl;
     output << "Colour: " << continent.colour << std::endl;
+    output << "Number of Territories: " << continent.number_of_territories << std::endl;
 
     return output;
 };
@@ -491,13 +496,17 @@ Result<void> MapFile::processTerritorySectionLine(const std::string line) {
             return returnResult;
         }
 
-        MapFileTerritory *tempTerritory;
-        tempTerritory = new MapFileTerritory(arg1, line_args[1], arg3, arg4, arg5);
-        map_territories.push_back(tempTerritory);
-        returnResult.success = true;
-        returnResult.message =
-            "DEBUG: Parsed line from continents section: " + line;
-        // delete (tempTerritory);
+        if (isValidContinentNumber(arg3)) {
+            MapFileTerritory *tempTerritory;
+            tempTerritory = new MapFileTerritory(arg1, line_args[1], arg3, arg4, arg5);
+            map_territories.push_back(tempTerritory);
+            returnResult.success = true;
+            returnResult.message =
+                "DEBUG: Parsed line from territory section: " + line;
+        } else {
+            returnResult.success = false;
+            returnResult.message = "\nERROR: Invalid continent ID in territory line: " + line;
+        }
     } else {
         returnResult.success = false;
         returnResult.message =
@@ -665,6 +674,21 @@ Result<struct ::Territory> MapFile::generateMapTerritory(MapFileTerritory *terri
     return returnResult;
 };
 
+bool MapFile::isValidTerritoryNumber(int territory_number){
+    if (map_territories.size() == 0) return false;
+    for (int i = 0; i < map_territories.size(); i++)
+        if (map_territories[i]->number == territory_number)
+            return true;
+    return false;
+};
+bool MapFile::isValidContinentNumber(int continent_number){
+    if (map_continents.size() == 0) return false;
+    for (int i = 0; i < map_continents.size(); i++)
+        if (map_continents[i]->number == continent_number)
+            return true;
+    return false;
+};
+
 Result<Map> MapFile::generateMap() {
     Result<Map> returnResult;
     returnResult.success = false;
@@ -708,6 +732,66 @@ Result<Map> MapFile::generateMap() {
     }
     return returnResult;
 };
+
+
+Result<void> MapFile::validate() {
+    Result<void> returnResult;
+    returnResult.success = false;
+    returnResult.message = "\nERROR: Default failure message. This should not have happened. "
+        "MapFile::validate()";
+
+    // There is at least 1 continent
+    if (map_continents.size() == 0) {
+        returnResult.success = false;
+        returnResult.message = "\nERROR: There are no continents!";
+        return returnResult;        
+    }
+
+    // Each continent contains at least one territory
+    const int arr_size = map_continents.size();
+    int continent_array[arr_size];
+    for (int i = 0; i < arr_size; i++){
+        continent_array[i] = 0;
+    }
+    for (int i = 0; i < map_territories.size(); i++) {
+        int j = map_territories[i]->continent_number - 1;
+        continent_array[j]++;
+    }
+
+    for (int i = 0; i < arr_size; i++) {
+        if (continent_array[i] == 0) {
+            returnResult.success = false;
+            returnResult.message = "\nERROR: Continent # " + std::to_string(i+1) + " does not have any territories.";
+            return returnResult;
+        }
+    }
+
+    // There is at least 1 territory
+    if (map_territories.size() == 0) {
+        returnResult.success = false;
+        returnResult.message = "\nERROR: There are no territories!";
+        return returnResult;        
+    }
+
+    // There are borders on at least 1 territory
+    bool borderFound = false;
+    for (int i = 0; i < map_territories.size(); i++) {
+        if (map_territories[i]->borders.size() != 0) {
+            borderFound = true;
+            break;
+        }
+    }
+    if (!borderFound) {
+        returnResult.success = false;
+        returnResult.message = "\nERROR: Territories do not have any borders.";
+        return returnResult;
+    }
+
+    returnResult.success = true;
+    returnResult.message = "\nDEBUG: All mapfile validation tests passed.";
+    return returnResult;
+
+}
 
 /////////////////////////////////////////////////////////////////////////////////
 //
