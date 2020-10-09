@@ -28,7 +28,6 @@ int main() {
 
 	OrderList oList;
 
-
 	Order* o1 = new Order();
 	Deploy* o2 = new Deploy();
 	Deploy* o3 = new Deploy();
