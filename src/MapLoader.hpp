@@ -17,6 +17,7 @@
 
 #include <string>
 #include <vector>
+
 #include "Map.h"
 
 class Territory;
@@ -29,7 +30,7 @@ class MapFile;
 //
 // Contains the data for each continent
 class Continent {
-public:
+   public:
     int number;
     std::string name;
     int value;
@@ -57,9 +58,8 @@ public:
 
 std::ostream &operator<<(std::ostream &output, const Continent &continent);
 
-
 class Territory {
-public:
+   public:
     int number;
     std::string short_name;
     int continent_number;
@@ -72,8 +72,8 @@ public:
     // Constructors
     Territory();
 
-    Territory(int new_number, std::string new_short_name, int new_continent_number,
-              int new_x_coord, int new_y_coord);
+    Territory(int new_number, std::string new_short_name,
+              int new_continent_number, int new_x_coord, int new_y_coord);
 
     Territory(const Territory &other_territory);
 
@@ -81,17 +81,17 @@ public:
     Territory &operator=(const Territory &other_territory);
 
     // Stream Insertion
-    friend std::ostream &operator<<(std::ostream &output, const Territory &territory);
+    friend std::ostream &operator<<(std::ostream &output,
+                                    const Territory &territory);
 
     ~Territory();
 };
 
 std::ostream &operator<<(std::ostream &output, const Territory &territory);
 
-
 // Struct that can be passed as a parameter, to obtain the success or failure of
 // an operation, outside of the return value of the function
-template<typename T>
+template <typename T>
 struct Result {
     T *returnValue;
     bool success;
@@ -104,7 +104,7 @@ struct Result {
 // the map file.
 //
 class MapFile {
-public:
+   public:
     std::string map_file_name;
     std::string pic_file_name;
     std::string map_pic_file_name;
@@ -135,10 +135,11 @@ public:
 
     void processBordersSectionLine(const std::string line);
 
-    Territory *getTerritoryByNumber(int territory_number);
+    // Territory *getTerritoryByNumber(int territory_number);
+    Result<Territory> getTerritoryByNumber(int territory_number);
 
-    Continent *getContinentByNumber(int continent_number);
-    // Result<Territory> MapFile::getTerritoryByNumber(int territory_number);
+    // Continent *getContinentByNumber(int continent_number);
+    Result<Continent> getContinentByNumber(int continent_number);
 
     struct ::Country *generateMapCountry(Territory *territory);
 
@@ -147,14 +148,13 @@ public:
     ~MapFile();
 };
 
-
 std::string toLowerCase(const std::string toLower);
 
 //////////////////
-// Source: https://www.toptip.ca/2010/03/trim-leading-or-trailing-white-spaces.html
+// Source:
+// https://www.toptip.ca/2010/03/trim-leading-or-trailing-white-spaces.html
 void trim(std::string &s);
 /////////////////
-
 
 // Returns a bool after checking each char for a space character
 bool isStringBlank(const std::string line);

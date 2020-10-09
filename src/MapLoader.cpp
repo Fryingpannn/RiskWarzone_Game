@@ -14,7 +14,6 @@
 /////////////////////////////////////////////
 
 #include "MapLoader.hpp"
-#include "Map.h"
 
 #include <algorithm>
 #include <fstream>
@@ -22,6 +21,8 @@
 #include <sstream>
 #include <string>
 #include <vector>
+
+#include "Map.h"
 
 //////////////////////////////////////////////////////////////////////////////////////
 // Continent
@@ -104,7 +105,7 @@ std::ostream &operator<<(std::ostream &output, const Continent &continent) {
  * @brief Destroy the Continent:: Continent object
  *
  */
-Continent::~Continent() {
+Continent::~Continent(){
     // TODO Territories list
 };
 
@@ -180,12 +181,12 @@ std::ostream &operator<<(std::ostream &output, const Territory &territory) {
     output << "Territory #: " << territory.number << std::endl;
     output << "Short Name: " << territory.short_name << std::endl;
     output << "Continent #: " << territory.continent_number << std::endl;
-    output << "Coordinates: ( " << territory.x_coord << " / " << territory.y_coord
-           << " )" << std::endl;
+    output << "Coordinates: ( " << territory.x_coord << " / "
+           << territory.y_coord << " )" << std::endl;
     return output;
 };
 
-Territory::~Territory() {
+Territory::~Territory(){
 
 };
 
@@ -233,11 +234,10 @@ MapFile::MapFile(const MapFile &other_map_file) {
     this->prv_file_name = other_map_file.prv_file_name;
 
     for (auto map_continent : other_map_file.map_continents)
-        map_continents.push_back(
-                new Continent(*map_continent));
+        map_continents.push_back(new Continent(*map_continent));
     for (auto i = 0; i < other_map_file.map_territories.size(); i++)
         map_territories.push_back(
-                new Territory(*(other_map_file.map_territories[i])));
+            new Territory(*(other_map_file.map_territories[i])));
 };
 
 // Assignment Operator
@@ -256,10 +256,10 @@ MapFile &MapFile::operator=(const MapFile &other_map_file) {
 
     for (auto i = 0; i < other_map_file.map_continents.size(); i++)
         map_continents.push_back(
-                new Continent(*(other_map_file.map_continents[i])));
+            new Continent(*(other_map_file.map_continents[i])));
     for (auto i = 0; i < other_map_file.map_territories.size(); i++)
         map_territories.push_back(
-                new Territory(*(other_map_file.map_territories[i])));
+            new Territory(*(other_map_file.map_territories[i])));
 
     return *this;
 };
@@ -306,7 +306,6 @@ MapFile::~MapFile() {
  *
  */
 void MapFile::readMapFile() {
-
     std::string current_section = "none";
     // Attempt to open the file.
     std::ifstream inputfilestream(map_file_name);
@@ -340,8 +339,6 @@ void MapFile::readMapFile() {
     inputfilestream.close();
 };
 
-
-
 /**
  * @brief
  *
@@ -349,7 +346,6 @@ void MapFile::readMapFile() {
  */
 // TODO Change this function to return a Result
 void MapFile::processFileSectionLine(const std::string line) {
-
     std::vector<std::string> line_args;
     line_args = split(line, ' ');
 
@@ -364,7 +360,8 @@ void MapFile::processFileSectionLine(const std::string line) {
             prv_file_name = line_args[1];
         }
     } else {
-        std::cerr << "ERROR: Invalid file section config line: " << line << std::endl;
+        std::cerr << "ERROR: Invalid file section config line: " << line
+                  << std::endl;
         exit(-1);
     }
 };
@@ -383,12 +380,13 @@ void MapFile::processContinentSectionLine(const std::string line) {
     if (line_args.size() == 3) {
         Continent *tempContinent;
         tempContinent =
-                new Continent(line_args[0], std::stoi(line_args[1]), line_args[2]);
+            new Continent(line_args[0], std::stoi(line_args[1]), line_args[2]);
 
         map_continents.push_back(tempContinent);
         // delete (tempContinent);
     } else {
-        std::cerr << "ERROR: Invalid file section config line: " << line << std::endl;
+        std::cerr << "ERROR: Invalid continent section config line: " << line
+                  << std::endl;
         exit(-1);
     }
 };
@@ -406,12 +404,13 @@ void MapFile::processTerritorySectionLine(const std::string line) {
     if (line_args.size() == 5) {
         Territory *tempTerritory;
         tempTerritory = new Territory(
-                std::stoi(line_args[0]), line_args[1], std::stoi(line_args[2]),
-                std::stoi(line_args[3]), std::stoi(line_args[4]));
+            std::stoi(line_args[0]), line_args[1], std::stoi(line_args[2]),
+            std::stoi(line_args[3]), std::stoi(line_args[4]));
         map_territories.push_back(tempTerritory);
         // delete (tempTerritory);
     } else {
-        std::cerr << "ERROR: Invalid file section config line: " << line << std::endl;
+        std::cerr << "ERROR: Invalid file section config line: " << line
+                  << std::endl;
         exit(-1);
     }
 };
@@ -428,42 +427,32 @@ void MapFile::processBordersSectionLine(const std::string line) {
     line_args = split(line, ' ');
 
     if (line_args.size() > 1) {
-        Territory *tempTerritory;
-        tempTerritory = getTerritoryByNumber(std::stoi(line_args[0]));
-        if (tempTerritory != nullptr) {
+        Result<Territory> result;
+        result = getTerritoryByNumber(std::stoi(line_args[0]));
+        if (result.success) {
+            Territory *tempTerritory;
+            tempTerritory = result.returnValue;
             for (int i = 1; i < line_args.size(); i++) {
-                tempTerritory->borders.push_back(std::stoi(line_args[i]));
+                int border_territory_number = std::stoi(line_args[i]);
+                Result<Territory> secondResult;
+                secondResult = getTerritoryByNumber(border_territory_number);
+                if (secondResult.success) {
+                    tempTerritory->borders.push_back(border_territory_number);
+                } else {
+                }
             }
         } else {
+            std::cerr << result.message << std::endl;
             std::cerr << "ERROR: Invalid territory in borders section: " << line
                       << std::endl;
             exit(-1);
         }
     } else {
-        std::cerr << "ERROR: Invalid file section config line: " << line << std::endl;
+        std::cerr << "ERROR: Invalid file section config line: " << line
+                  << std::endl;
         exit(-1);
     }
 };
-
-// /**
-//  * @brief
-//  *
-//  * @param territory_number
-//  * @return Territory*
-//  */
-// Result<Territory> MapFile::getTerritoryByNumber(int territory_number) {
-//   int i;
-//   for (i = 0; i < map_territories.size(); i++) {
-//     if (map_territories[i]->number == territory_number) {
-//       Result<Territory> returnResult = new Result<Territory>();
-//       returnResult.success = true;
-//       returnResult.message = "SUCCESS: Found territory at index " + i;
-//       returnResult->returnValue = *map_territories[i];
-//       return returnResult;
-//     }
-//   }
-//   // return nullptr;
-// };
 
 /**
  * @brief
@@ -471,43 +460,87 @@ void MapFile::processBordersSectionLine(const std::string line) {
  * @param territory_number
  * @return Territory*
  */
-Territory *MapFile::getTerritoryByNumber(int territory_number) {
-    int i;
-    for (i = 0; i < map_territories.size(); i++) {
+Result<Territory> MapFile::getTerritoryByNumber(int territory_number) {
+    Result<Territory> returnResult;  // = new Result<Territory>();
+    returnResult.success = false;
+    returnResult.message =
+        &"ERROR: No territory found with index number " [ territory_number];
+    returnResult.returnValue = nullptr;
+
+    for (int i = 0; i < map_territories.size(); i++) {
         if (map_territories[i]->number == territory_number) {
-            return map_territories[i];
+            returnResult.success = true;
+            returnResult.message = &"SUCCESS: Found territory at index " [ i];
+            returnResult.returnValue = map_territories[i];
+            return returnResult;
         }
     }
-    return nullptr;
+    return returnResult;
 };
 
-Continent *MapFile::getContinentByNumber(int continent_number) {
-    int i;
-    for (i = 0; i < map_continents.size(); i++) {
-        if (map_continents[i]->number == continent_number) {
-            return map_continents[i];
+Result<Continent> MapFile::getContinentByNumber(int continent_number) {
+    Result<Continent> returnResult;  // = new Result<Territory>();
+    returnResult.success = false;
+    returnResult.message =
+        &"ERROR: No continent found with index number " [ continent_number];
+    returnResult.returnValue = nullptr;
+
+    for (int i = 0; i < map_continents.size(); i++) {
+        if (map_territories[i]->number == continent_number) {
+            returnResult.success = true;
+            returnResult.message = &"SUCCESS: Found continent at index " [ i];
+            returnResult.returnValue = map_continents[i];
+            return returnResult;
         }
     }
-    return nullptr;
+    return returnResult;
 }
+
+// /**
+//  * @brief
+//  *
+//  * @param territory_number
+//  * @return Territory*
+//  */
+// Territory *MapFile::getTerritoryByNumber(int territory_number) {
+//     int i;
+//     for (i = 0; i < map_territories.size(); i++) {
+//         if (map_territories[i]->number == territory_number) {
+//             return map_territories[i];
+//         }
+//     }
+//     return nullptr;
+// };
+
+// Continent *MapFile::getContinentByNumber(int continent_number) {
+//     int i;
+//     for (i = 0; i < map_continents.size(); i++) {
+//         if (map_continents[i]->number == continent_number) {
+//             return map_continents[i];
+//         }
+//     }
+//     return nullptr;
+// }
 
 // TODO Change return type to Result
 struct ::Country *MapFile::generateMapCountry(Territory *territory) {
-    std::string continent_name;
-    Continent *continent;
-    continent = getContinentByNumber(territory->continent_number);
-    if (continent != nullptr) {
-        struct ::Country *returnCountry = new struct::Country();
+    Result<Continent> result = getContinentByNumber(territory->continent_number);
+    if (result.success) {
+        Continent *continent;
+        continent = result.returnValue;
+        struct ::Country *returnCountry = new struct ::Country();
         returnCountry->Name = territory->short_name;
         returnCountry->CountryID = territory->number;
         returnCountry->Continent = continent->name;
         return returnCountry;
     } else {
-        std::cerr << "ERROR: Invalid Continent ID passed to getContinentByNumber in MapFile::generateMapCountry()"
-                  << std::endl;
+        std::cerr << result.message << std::endl;
+        std::cerr
+            << "ERROR: Invalid Continent ID passed to getContinentByNumber "
+               "in MapFile::generateMapCountry()"
+            << std::endl;
         exit(-1);
     }
-
 };
 
 // TODO Change return type to Result
@@ -519,14 +552,17 @@ Map *MapFile::generateMap() {
 
         for (int j = 0; j < map_territories[i]->borders.size(); j++) {
             int borderCountry = map_territories[i]->borders[j];
-            Territory *secondTerritory;
-            secondTerritory = getTerritoryByNumber(borderCountry);
-            if (secondTerritory != nullptr) {
+            Result<Territory> secondResult =
+                getTerritoryByNumber(borderCountry);
+            if (secondResult.success) {
+                Territory *secondTerritory;
+                secondTerritory = secondResult.returnValue;
                 struct ::Country *secondCountry;
                 secondCountry = generateMapCountry(secondTerritory);
                 returnMap->AddEdges(*base_country, *secondCountry);
             } else {
-                std::cerr << "ERROR: Invalid Territory number passed as secondCountry in MapFile::generateMap()"
+                std::cerr << "ERROR: Invalid Territory number passed as "
+                             "secondCountry in MapFile::generateMap()"
                           << std::endl;
                 exit(-1);
             }
@@ -543,8 +579,7 @@ Map *MapFile::generateMap() {
 
 std::string toLowerCase(const std::string toLower) {
     std::string lowerCase = "";
-    if (toLower.empty())
-        return toLower;
+    if (toLower.empty()) return toLower;
     for (int i = 0; i < toLower.length(); i++) {
         lowerCase += tolower(toLower[i]);
     }
@@ -559,8 +594,7 @@ void trim(std::string &s) {
     s.erase(0, p);
 
     p = s.find_last_not_of("\t\n\v\f\r ");
-    if (std::string::npos != p)
-        s.erase(p + 1);
+    if (std::string::npos != p) s.erase(p + 1);
 }
 /////////////////
 

@@ -88,20 +88,20 @@ Implement a group of C++ classes that reads and loads a map file in the .maptext
 
 **Continents Section**
 - [ ] Section is not empty
-- [ ] Each line is in the format "string int string" with spaces as delimters
+- [x] Each line is in the format "string int string" with spaces as delimters
 - [ ] The name of each continent contains no spaces
 - [ ] Each continent contains at least 1 country
 
 **Countries Section**
 - [ ] Section is not empty
-- [ ] Each line is in the format "int string int int" with spaces as delimters
+- [x] Each line is in the format "int string int int" with spaces as delimters
 - [ ] Each country belongs to a valid continent
 - [ ] The name of each contains contains no spaces
 
 **Borders Section**
 - [ ] Section is not empty
-- [ ] Each line is in the format "int int int int" with spaces as delimiters
-- [ ] The first number in the line is a valid country
+- [x] Each line is in the format "int int int int" with spaces as delimiters
+- [x] The first number in the line is a valid country
 - [ ] The remaining numbers are valid countries
 - [ ] All countries have at least one country on its borders
 - [ ] All countries contained in the borders section
