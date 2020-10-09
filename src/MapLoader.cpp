@@ -275,7 +275,6 @@ MapFile &MapFile::operator=(const MapFile &other_map_file) {
  * @param map_file
  * @return std::ostream&
  */
-// TODO Output map_continents and map_territories
 std::ostream &operator<<(std::ostream &output, const MapFile *map_file) {
     output << "Map File: " << map_file->map_file_name
            << "\nPic File: " << map_file->pic_file_name
@@ -350,7 +349,6 @@ Result<void> MapFile::readMapFile() {
                     std::cout << result.message << std::endl;
                 } else if (!result.success) {
                     // TODO var cleanup
-                    // TODO return result;
                     returnResult.success = false;
                     returnResult.message = result.message;
                     return returnResult;
@@ -373,7 +371,6 @@ Result<void> MapFile::readMapFile() {
  *
  * @param line
  */
-// TODO Change this function to return a Result
 Result<void> MapFile::processFileSectionLine(const std::string line) {
     Result<void> returnResult;
     returnResult.success = false;
@@ -410,8 +407,6 @@ Result<void> MapFile::processFileSectionLine(const std::string line) {
  *
  * @param line
  */
-// TODO Change this function to return a Result
-// TODO Check the success of the std::stoi calls, exit with error if failed
 Result<void> MapFile::processContinentSectionLine(const std::string line) {
     Result<void> returnResult;
     returnResult.success = false;
@@ -462,8 +457,6 @@ Result<void> MapFile::processContinentSectionLine(const std::string line) {
  *
  * @param line
  */
-// TODO Change this function to return a Result
-// TODO Check the success of the std::stoi calls, exit with error if failed
 Result<void> MapFile::processTerritorySectionLine(const std::string line) {
     Result<void> returnResult;
     returnResult.success = false;
@@ -518,8 +511,6 @@ Result<void> MapFile::processTerritorySectionLine(const std::string line) {
  *
  * @param line
  */
-// TODO Change this function to return a Result
-// TODO Check the success of the std::stoi calls, exit with error if failed
 Result<void> MapFile::processBordersSectionLine(const std::string line) {
     Result<void> returnResult;
     returnResult.success = false;
@@ -674,7 +665,6 @@ Result<struct ::Country> MapFile::generateMapCountry(Territory *territory) {
     return returnResult;
 };
 
-// TODO Change return type to Result
 Result<Map> MapFile::generateMap() {
     Result<Map> returnResult;
     returnResult.success = false;
