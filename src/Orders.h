@@ -145,6 +145,7 @@ public:
 
 //Negotiate order used to prevent attacks between current and another player until end of turn -------------
 class Negotiate : public Order {
+public:
 	//default constructors
 	Negotiate();
 	Negotiate(const Negotiate&);
