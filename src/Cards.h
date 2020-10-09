@@ -3,7 +3,7 @@
 #include <iostream> 
 #include <queue> 
 #include <deque> 
-#include "Player.h"
+#include "Orders.h";
 using namespace std;
 
 
@@ -37,7 +37,7 @@ public:
 
 	//functions
 	CardType* getType();
-	void Play(Player& p, Deck& d);
+	void Play(Hand& const h, OrderList& const list, Deck& d);
 
 	//operator overloading
 	friend ostream& operator << (ostream& out, const Card& card);
