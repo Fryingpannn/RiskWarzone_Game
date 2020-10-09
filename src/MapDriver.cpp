@@ -96,9 +96,13 @@ int main()
 
     //delete WorldMap;
 
+    //test case 2
+
 
     //fail cases where the country won't register due to having same ID
     // the country ID will causes the algorithm to think that it is another country and will treat it the same
+    
+    //using copy constructor
     Map* WorldMap2 = new Map(*WorldMap);
     WorldMap2->AddEdges(Japan,Korea);
     WorldMap2->AddEdges(China, Korea);

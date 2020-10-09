@@ -6,18 +6,20 @@
 Map::Map()
 {
 	NumberOfCountries = new int(5);
-	*ListOfCountries = new std::vector<struct::Territory*>[100] ;
+	*ListOfCountries = new std::vector<struct::Territory*>[1000] ;
 	MapName = new std::string ("World");
 	
 }
 
+//use this constructor when you are sure of the sizes and will not change anymore
+//to change the size, create another map and create another new std::vector<Territory *> *[size} and use another constructor :)
 Map::Map(int size, std::string name)
 {
 	std::cout << "It passed" << std::endl;
 	NumberOfCountries = new int (size);
 
-	ListOfCountries = new std::vector<Territory *> *[100];
-	for (int i = 0; i < 100; i++)
+	ListOfCountries = new std::vector<Territory *> *[size];
+	for (int i = 0; i < size; i++)
 		ListOfCountries[i] = new std::vector<struct::Territory*>;
 
 	
