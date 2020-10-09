@@ -12,9 +12,9 @@ OrderList::OrderList() {}
 OrderList::OrderList(const OrderList& copy) {
 	this->list.resize(copy.list.size());//resizing new list's vector to same size as copy
 	for (int i = 0; i < copy.list.size(); ++i) {
-		this->list[i] = new Order(*copy.list[i]); ////ree
+		this->list[i] = copy.list[i]->clone();       //new Order(*copy.list[i]); ////ree
 	}
-	std::cout << "OrderList copy constructor." << std::endl;
+	std::cout << "OrderList copy constructor done." << std::endl;
 }
 
 //add order to list
@@ -27,6 +27,8 @@ bool OrderList::addToList(Order* order) {
 //remove from list
 bool OrderList::remove(int position) {
 	auto it = this->list.begin() + position;
+	(**it).execute();	//executes order before removing (it is a pointer pointing to Order*)
+	delete *it;
 	this->list.erase(it);
 	std::cout << "-> Order " << position << " has been removed." << std::endl;
 	return true;
@@ -49,7 +51,7 @@ OrderList& OrderList::operator =(const OrderList& o) {
 	for (int i = 0; i < o.list.size(); ++i) {
 		this->list[i] = new Order(*o.list[i]);
 	}
-	std::cout << "OrderList assignment operator." << std::endl;
+	std::cout << "OrderList assignment operator done." << std::endl;
 
 	return *this;
 }
@@ -81,14 +83,17 @@ Order::Order() { /*this->name = "none";*/ }
 
 //copy constructor
 Order::Order(const Order& copy) {
-	std::cout << "Created a copy of the order." << std::endl;
-	//this->name = copy.name;
+	std::cout << "Created a copy of General Order" << std::endl;
+}
 
+//clone function for class polymorphism (for vector)
+Order* Order::clone() {
+	return new Order(*this);
 }
 
 //validates orders during execution
 bool Order::validate() {
-	std::cout << "Order validation." << std::endl;
+	std::cout << "Order validated." << std::endl;
 	return true;
 }
 
@@ -105,9 +110,7 @@ bool Order::execute() {
 
 //assignment operator
 Order& Order::operator =(const Order& o) {
-	//this->name = o.name;
-	std::cout << "Order assignment operator." << std::endl;
-
+	std::cout << "Order assignment operator done." << std::endl;
 	return *this;
 }
 
@@ -119,15 +122,15 @@ std::ostream& operator <<(std::ostream& out, const Order& o) {
 
 //function called by insertion stream operator to print order
 std::ostream& Order::doprint(std::ostream& out) const {
-	return out << "Unidentified order.";
+	return out << "Order: General";
 }
 
-////accessor for name
+//accessor for name
 //std::string Order::getName() {
 //	return this->name;
 //}
-//
-////mutator for name
+
+//mutator for name
 //void Order::setName(std::string name) {
 //	this->name = name;
 //}
@@ -141,9 +144,21 @@ Deploy::Deploy() {
 	//setName("Deploy");
 };
 
+//deploy copy constructor
+Deploy::Deploy(const Deploy& deploy) {
+	std::cout << "Created a copy of Deploy." << std::endl;
+}
+
+//clone function for Deploy
+Deploy* Deploy::clone() {
+	return new Deploy(*this);
+}
+
 //validates order
 bool Deploy::validate() {
-	if (true /*validation here*/) {
+	std::cout << "Validating..." << std::endl;
+	/*validation here, can user deploy units?*/
+	if (true) {
 		return true;
 	}
 	else
@@ -154,21 +169,25 @@ bool Deploy::validate() {
 bool Deploy::execute() {
 	if (validate()) {
 		//implementation of deploy
+		std::cout << "Units have been deployed successfully." << std::endl;
 		return true;
 	}
-	else
+	else {
+		std::cout << "Cannot deploy units. Deploy order not executed." << std::endl;
 		return false;
+	}
 }
 
 //assignment operator
 Deploy& Deploy::operator =(const Deploy& o) {
-	std::cout << "Deploy Assignment Operator." << std::endl;
+	std::cout << "Deploy Assignment Operator done." << std::endl;
 	
 	return *this;
 }
 
 //function called by insertion stream operator to print order
 std::ostream& Deploy::doprint(std::ostream& out) const {
-	return out << "Deploy order.";
+	return out << "Order: Deploy";
 }
+
 

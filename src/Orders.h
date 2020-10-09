@@ -34,23 +34,21 @@ public:
 class Order
 {
 //private:
-//	//name of order
-//	std::string name;
-
+	//name of order
+	//const std::string name = "General Order";
 public:
 	//constructors
 	Order();
 	Order(const Order& copy);
-	//clone function for polymorphic classes
-
+	//clone function for polymorphic classes used by OrderList's copy constructor
+	virtual Order* clone();
 	//checks if an order is valid
 	virtual bool validate();
 	//executes an order if it's valid
 	virtual bool execute();
 
-	////accessor & mutator
-	//std::string getName();
-	//void setName(std::string name);
+	//accessor
+	std::string getName();
 
 	//assignment operator
 	Order& operator =(const Order& o);
@@ -65,6 +63,9 @@ class Deploy : public Order
 public: 
 	//constructors
 	Deploy();
+	Deploy(const Deploy& deploy);
+	//clone function for polymorphic classes
+	Deploy* clone() override;
 	//order functions
 	bool validate() override;
 	bool execute() override;
