@@ -20,7 +20,7 @@
 
 #include "Map.h"
 
-class Territory;
+class MapFileTerritory;
 
 class Continent;
 
@@ -58,7 +58,7 @@ class Continent {
 
 std::ostream &operator<<(std::ostream &output, const Continent &continent);
 
-class Territory {
+class MapFileTerritory {
    public:
     int number;
     std::string short_name;
@@ -70,24 +70,24 @@ class Territory {
     static int count;
 
     // Constructors
-    Territory();
+    MapFileTerritory();
 
-    Territory(int new_number, std::string new_short_name,
+    MapFileTerritory(int new_number, std::string new_short_name,
               int new_continent_number, int new_x_coord, int new_y_coord);
 
-    Territory(const Territory &other_territory);
+    MapFileTerritory(const MapFileTerritory &other_territory);
 
     // Assignment Operator
-    Territory &operator=(const Territory &other_territory);
+    MapFileTerritory &operator=(const MapFileTerritory &other_territory);
 
     // Stream Insertion
     friend std::ostream &operator<<(std::ostream &output,
-                                    const Territory &territory);
+                                    const MapFileTerritory &territory);
 
-    ~Territory();
+    ~MapFileTerritory();
 };
 
-std::ostream &operator<<(std::ostream &output, const Territory &territory);
+std::ostream &operator<<(std::ostream &output, const MapFileTerritory &territory);
 
 // Struct that can be passed as a parameter, to obtain the success or failure of
 // an operation, outside of the return value of the function
@@ -111,7 +111,7 @@ class MapFile {
     std::string cards_file_name;
     std::string prv_file_name;
     std::vector<Continent *> map_continents;
-    std::vector<Territory *> map_territories;
+    std::vector<MapFileTerritory *> map_territories;
 
     // Constructors
     MapFile();
@@ -132,10 +132,10 @@ class MapFile {
     Result<void> processContinentSectionLine(const std::string line);
     Result<void> processTerritorySectionLine(const std::string line);
     Result<void> processBordersSectionLine(const std::string line);
-    Result<Territory> getTerritoryByNumber(int territory_number);
+    Result<MapFileTerritory> getTerritoryByNumber(int territory_number);
     Result<Continent> getContinentByNumber(int continent_number);
 
-    Result<struct ::Country> generateMapCountry(Territory *territory);
+    Result<struct ::Territory> generateMapTerritory(MapFileTerritory *territory);
 
     // Map *generateMap();
     Result<Map> generateMap();
