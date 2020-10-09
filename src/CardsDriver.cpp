@@ -1,13 +1,14 @@
 #include "Cards.h"
 #include <time.h>
 #include "Map.h"
+#include "Player.h"
 #include "CardsDriver.h"
 
 void CardsDeckTest() {
 
-	srand(time(NULL));
+		srand(time(NULL));
 
-	// create two decks and a hand
+	// create two decks
 	// deck 1 is randomized with 15 cards
 	// deck 2 is empty and can be manually filled for testing purposes
 
@@ -21,27 +22,34 @@ void CardsDeckTest() {
 	d2.add(BLOCKADE);
 	d2.add(REINFORCEMENT);
 
-	Hand h = Hand();
 
+	// create a player and an independent hand + orderlist
+	Hand h = Hand();
+	OrderList list;
+	Player p = Player();
+
+	// test deck 1 with player
 	cout << "Deck 1 is: \n" << d << endl;
 
 	cout << "Drawing from Deck 1:\n" << endl;
 
 	for (int i = 0;i < 5;i++) {
-		d.draw(h);
+		d.draw(*p.HandOfCards);
 	}
 
-	cout << "My hand now is: " << h << endl;
+	
+	cout << "My hand now is: " << *p.HandOfCards << endl;
 
 
 	for (int i = 0;i < 5;i++) {
-		h.returnByPos(0).Play(h, d);
+		p.HandOfCards->returnByPos(0).Play(*p.HandOfCards, *p.ListOfOrders, d);
 
 	}
 
 
 	cout << "---------------------------\n" << endl;
 
+	//test deck 2 with the independent hand and order list
 	cout << "Deck 2 is:\n" << d2 << endl;
 	cout << "Drawing from Deck 2:\n" << endl;
 
@@ -53,7 +61,7 @@ void CardsDeckTest() {
 
 
 	for (int i = 0;i < 5;i++) {
-		h.returnByPos(0).Play(h, d2);
+		h.returnByPos(0).Play(h, list, d2);
 
 	}
 
