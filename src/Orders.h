@@ -33,24 +33,31 @@ public:
 //order base class, to be stored in order list
 class Order
 {
-private:
-	//name of order
-	std::string name;
+//private:
+//	//name of order
+//	std::string name;
+
 public:
 	//constructors
 	Order();
 	Order(const Order& copy);
+	//clone function for polymorphic classes
+
 	//checks if an order is valid
 	virtual bool validate();
 	//executes an order if it's valid
 	virtual bool execute();
-	//accessor & mutator
-	std::string getName();
-	void setName(std::string name);
+
+	////accessor & mutator
+	//std::string getName();
+	//void setName(std::string name);
+
 	//assignment operator
 	Order& operator =(const Order& o);
 	//insertion stream operator
 	friend std::ostream& operator <<(std::ostream& out, const Order& order);
+	//print function called by insertion stream operator to allow polymorphic printing
+	virtual std::ostream& doprint(std::ostream& out) const;
 };
 
 class Deploy : public Order
@@ -63,5 +70,5 @@ public:
 	bool execute() override;
 	//assignment & stream insertion operators
 	Deploy& operator =(const Deploy& o);
-	friend std::ostream& operator<<(std::ostream& out, const Deploy& order);
+	std::ostream& doprint(std::ostream& os) const override;
 };

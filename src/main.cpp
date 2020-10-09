@@ -1,42 +1,56 @@
 #include <iostream>
 #include <vector>
 #include <string>
+#include "Orders.h"
 
 
 class Test {
 public:
-	//std::vector<int> list;
-	int hi;
+	Test() {};
+	int hi{};
+
+	void show() { 
+		std::cout << "hi friend" << std::endl; 
+	}
 };
 
+class B : public Test {
+public:
+	B() {};
+};
 
 int main() {
-	Test* test2;
-	test2->hi = 5;
+	B testFriend;
+	testFriend.show();
 
-	
+	//std::vector<int> testo;
+	//testo = {};
 
-	//Order* temp = *it2;
-	//*it2 = *it1;
-	//*it1 = temp;
-	//return true;
+	OrderList oList;
 
-	int ok = 2;
-	int notok = 3;
-	int* one = &ok;
-	int* two = &notok;
 
-	std::vector<int*> test = { one, two };
-	//auto it1 = test.begin();
-	//auto it2 = test.begin()+4-1;
+	Order* o1 = new Order();
+	Deploy* o2 = new Deploy();
+	Deploy* o3 = new Deploy();
 
-	//int temp = *it1;
-	//*it1 = *it2;
-	//*it2 = temp;
+	oList.addToList(o1);
+	oList.addToList(o2);
+	oList.addToList(o3);
 
-	for(int i = 0; i < test.size(); i++)
-		std::cout << test[i];
-	
-	std::string ok = "ok";
+	std::cout << oList;
 
+	OrderList listCopy = oList;
+
+
+	oList.move(0, 2);
+
+	std::cout << oList;
+
+	oList.remove(0);
+
+	std::cout << oList << std::endl;
+
+	std::cout << listCopy << std::endl;
+
+	return 0;
 }
