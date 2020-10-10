@@ -36,11 +36,14 @@ int main()
         "Singapore", 2, "ASEAN"
     );
 
+    //call on heap memory
     Territory* Philippine = new Territory(
         "Philippine", 3, "ASEAN"
     );
 
-    Territory* Thailand = new Territory(
+
+    // Call on stack memory for this :O 
+    Territory Thailand (
         "Thailand", 4, "ASEAN"
     );
 
@@ -65,7 +68,7 @@ int main()
         "Germany", 8, "EastAsia"
     );
 
-    Territory* France = new Territory(
+    Territory France (
         "France", 8, "Europe"
     );
 
@@ -114,7 +117,7 @@ int main()
     WorldMap->AddEdges(*Singapore, *Malaysia);
     
     WorldMap->AddEdges(*Vietnam, *Malaysia);
-    WorldMap->AddEdges(*Vietnam, *Thailand);
+    WorldMap->AddEdges(*Vietnam, Thailand);
 
     WorldMap->Display();
 
@@ -196,12 +199,12 @@ int main()
     delete Indonesia;
     delete Singapore;
     delete Philippine;
-    delete Thailand;
+    //delete &Thailand;
     delete Vietnam;
     delete Japan;
     delete Korea;
     delete China;
-    delete France;
+    //delete &France;
     delete Germany;
     std::cout << "Finish deleting each countries" << std::endl;
     delete WorldMap;
