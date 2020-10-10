@@ -27,7 +27,6 @@ bool OrderList::addToList(Order* order) {
 //remove from list
 bool OrderList::remove(int position) {
 	auto it = this->list.begin() + position;
-	(**it).execute();	//executes order before removing (it is a pointer pointing to Order*)
 	delete *it;
 	this->list.erase(it);
 	std::cout << "-> Order " << position << " has been removed." << std::endl;
@@ -42,14 +41,15 @@ bool OrderList::move(int first, int second) {
 	Order* temp = *it2;
 	*it2 = *it1;
 	*it1 = temp;
-	std::cout << "-> Orders have been swapped." << std::endl;
+	std::cout << "-> Swapped orders " << first << " and " << second << " <-" << std::endl;
 	return true;
 }
 
 //assignment operator overload
 OrderList& OrderList::operator =(const OrderList& o) {
+	this->list.resize(o.list.size());
 	for (int i = 0; i < o.list.size(); ++i) {
-		this->list[i] = new Order(*o.list[i]);
+		this->list[i] = o.list[i]->clone();
 	}
 	std::cout << "OrderList assignment operator done." << std::endl;
 
@@ -59,53 +59,35 @@ OrderList& OrderList::operator =(const OrderList& o) {
 //insertion stream operator overload
 std::ostream& operator <<(std::ostream& out, const OrderList& o) {
 	if (!o.list.empty()) {
+		out << "----- Your current orders -----" << std::endl;
 		for (int i = 0; i < o.list.size(); ++i)
-			out << "[" << i << "]. " << *o.list[i] << std::endl;
+			out << "[" << i << "]. " << o.list[i]->getName() << std::endl;
 	}
 	else
-		out << "Order list is empty." << std::endl;
-	
+		out << "Order list is empty.\n";
+
+	out << std::endl;
 	return out;
 }
 
-//destructor for OrderList
+//destructor for OrderList: deletes and clears all pointers in vector list
 OrderList::~OrderList() {
-	for (int i = 1; i < this->list.size(); ++i) {
+	for (int i = 0; i < this->list.size(); ++i) {
 		delete this->list[i];
 	}
 	this->list.clear();
+	std::cout << "------ Order List has been cleared -----" << std::endl;
 }
 
 /*---------------------------------- Order class ----------------------------------*/
   
+
 //default constructor
-Order::Order() { /*this->name = "none";*/ }
+Order::Order() { std::cout << "Orders' default constructor called" << std::endl; }
 
-//copy constructor
-Order::Order(const Order& copy) {
-	std::cout << "Created a copy of General Order" << std::endl;
-}
-
-//clone function for class polymorphism (for vector)
-Order* Order::clone() {
-	return new Order(*this);
-}
-
-//validates orders during execution
-bool Order::validate() {
-	std::cout << "Order validated." << std::endl;
-	return true;
-}
-
-//executes an order if valid
-bool Order::execute() {
-	if (validate()) {
-		std::cout << "Order has been executed." << std::endl;
-		//implementation of order here
-		return true;
-	}
-	else
-		return false;
+//param constructor to set the name variable of Order from subclasses
+Order::Order(const std::string& name) {
+	setName(name);
 }
 
 //assignment operator
@@ -115,37 +97,45 @@ Order& Order::operator =(const Order& o) {
 }
 
 //insertion stream operator, calls a separate function to allow polymorphic printing
-std::ostream& operator <<(std::ostream& out, const Order& o) {
-	//out << o.getName() << std::endl;
+std::ostream& operator <<(std::ostream& out, Order& o) {
 	return o.doprint(out);
 }
 
-//function called by insertion stream operator to print order
-std::ostream& Order::doprint(std::ostream& out) const {
-	return out << "Order: General";
+//accessor for name
+std::string Order::getName() {
+	return this->name;
 }
 
-//accessor for name
-//std::string Order::getName() {
-//	return this->name;
-//}
-
 //mutator for name
-//void Order::setName(std::string name) {
-//	this->name = name;
-//}
+void Order::setName(std::string name) {
+	this->name = name;
+}
+
+//executes the order and sets the execution status of the order; inherited by all subclasses
+void Order::setExecuted(const bool& status) {
+	this->executed = status;
+}
+
+//gets the execution status of the order
+bool Order::getExecuted() {
+	return this->executed;
+}
+
+//virtual destructor
+Order::~Order() {
+	std::cout << "Cleaning up..." << std::endl;
+}
 
 
 /*---------------------------------- Deploy class ----------------------------------*/
 
 
 //default constructor
-Deploy::Deploy() {
-	//setName("Deploy");
-};
+Deploy::Deploy() : Order("- Deploy armies -") {};
 
 //deploy copy constructor
 Deploy::Deploy(const Deploy& deploy) {
+	setName("- Deploy armies -");
 	std::cout << "Created a copy of Deploy." << std::endl;
 }
 
@@ -156,7 +146,7 @@ Deploy* Deploy::clone() {
 
 //validates order
 bool Deploy::validate() {
-	std::cout << "Validating order..." << std::endl;
+	std::cout << " Validating order..." << std::endl;
 	/*validation here, can user deploy units?*/
 	if (true) {
 		return true;
@@ -166,38 +156,50 @@ bool Deploy::validate() {
 }
 
 //executes deploy if valid
-bool Deploy::execute() {
+void Deploy::execute() {
 	if (validate()) {
 		//implementation of deploy
-		std::cout << "[Deploy] Armies have been deployed successfully." << std::endl;
-		return true;
+		setExecuted(true);
 	}
 	else {
+		//order failed
 		std::cout << "[Deploy] Cannot deploy armies. Deploy order not executed." << std::endl;
-		return false;
+		setExecuted(false);
 	}
 }
 
 //assignment operator
 Deploy& Deploy::operator =(const Deploy& o) {
+	setName("- Deploy armies -");
 	std::cout << "Deploy Assignment Operator done." << std::endl;
 	
 	return *this;
 }
 
 //function called by insertion stream operator to print order
-std::ostream& Deploy::doprint(std::ostream& out) const {
-	return out << "Deploy armies";
+std::ostream& Deploy::doprint(std::ostream& out) {
+	out << "- Deploy armies -";
+
+	//if order has been executed, also print out effect of order
+	if (getExecuted())
+		out << " [Deploy] Armies have been deployed successfully." << std::endl;
+
+	return out;
 }
 
+//destructor
+Deploy::~Deploy() {
+	std::cout << "Destroying deploy order." << std::endl;
+}
 
 /*----------------------------------- Advance class ----------------------------------*/
 
 //default constructor
-Advance::Advance() {}
+Advance::Advance() : Order("- Advance armies -"){}
 
 //copy constructor
 Advance::Advance(const Advance& adv) {
+	setName("- Advance armies -");
 	std::cout << "Created a copy of Advance." << std::endl;
 }
 
@@ -208,7 +210,7 @@ Advance* Advance::clone() {
 
 //validates the Advance order
 bool Advance::validate() {
-	std::cout << "Validating order..." << std::endl;
+	std::cout << " Validating order..." << std::endl;
 	/*validation here, can user advance units to this territory? attack/move*/
 	if (true) {
 		return true;
@@ -218,32 +220,48 @@ bool Advance::validate() {
 }
 
 //executes the Advance order
-bool Advance::execute() {
+void Advance::execute() {
 	if (validate()) {
 		if (true/*if territory belong to current player*/) {
-			std::cout << "Armies have been moved." << std::endl;
-			return true;
+			//move armies
 		}
 		else {
-			std::cout << "[Advance] Armies are now attacking enemy territory." << std::endl;
-			return true;
+			//attack armies
 		}
+		setExecuted(true);
 	}
 	else {
+		//order failed
 		std::cout << "[Advance] Armies cannot be moved. Advance order not executed." << std::endl;
-		return false;
+		setExecuted(false);
 	}
 }
 
 //assignment operator function
 Advance& Advance::operator =(const Advance& adv) {
+	setName("- Advance armies -");
 	std::cout << "Advance assignment operator done." << std::endl;
 	return *this;
 }
 
 //stream function to print Advance
-std::ostream& Advance::doprint(std::ostream& out) const {
-	return out << "Advance armies" << std::endl;
+std::ostream& Advance::doprint(std::ostream& out) {
+	out << "- Advance armies -";
+
+	//if order has been executed, also print out effect of order
+	if (getExecuted()) {
+		if(true /*if territory belong to current player*/)
+			out << " [Advance] Armies have been moved." << std::endl;
+		else
+			out << " [Advance] Armies are now attacking enemy territory." << std::endl;
+	}
+
+	return out;
+}
+
+//virtual destructor
+Advance::~Advance() {
+	std::cout << "Destroying advance order." << std::endl;
 }
 
 
@@ -251,10 +269,11 @@ std::ostream& Advance::doprint(std::ostream& out) const {
 
 
 //default constructor
-Bomb::Bomb() {};
+Bomb::Bomb() : Order("- Bomb target country -"){};
 
 //copy constructor
 Bomb::Bomb(const Bomb& deploy) {
+	setName("- Bomb target country -");
 	std::cout << "Created a copy of Bomb." << std::endl;
 }
 
@@ -265,7 +284,7 @@ Bomb* Bomb::clone() {
 
 //validates order
 bool Bomb::validate() {
-	std::cout << "Validating order..." << std::endl;
+	std::cout << " Validating order..." << std::endl;
 	/*validation here, can user use bomb card?*/
 	if (true) {
 		return true;
@@ -275,28 +294,39 @@ bool Bomb::validate() {
 }
 
 //executes Bomb order if valid
-bool Bomb::execute() {
+void Bomb::execute() {
 	if (validate()) {
 		//implementation of bomb
-		std::cout << "[Bomb] Target country bombed successfully, they have lost half their army units." << std::endl;
-		return true;
+		setExecuted(true);
 	}
 	else {
-		std::cout << "[Bomb] Cannot bomb target country. Bomb order not executed." << std::endl;
-		return false;
+		//order failed
+		std::cout << " [Bomb] Cannot bomb target country. Bomb order not executed." << std::endl;
+		setExecuted(false);
 	}
 }
 
 //assignment operator
 Bomb& Bomb::operator =(const Bomb& o) {
+	setName("- Bomb target country -");
 	std::cout << "Bomb Assignment Operator done." << std::endl;
-
 	return *this;
 }
 
 //function called by insertion stream operator to print order
-std::ostream& Bomb::doprint(std::ostream& out) const {
-	return out << "Bomb target country";
+std::ostream& Bomb::doprint(std::ostream& out) {
+	out << "- Bomb target country -";
+
+	//if order has been executed, also print out effect of order
+	if (getExecuted())
+		out << " [Bomb] Target country bombed successfully, they have lost half their army units." << std::endl;
+
+	return out;
+}
+
+//virtual destructor
+Bomb::~Bomb() {
+	std::cout << "Destroying bomb order." << std::endl;
 }
 
 
@@ -304,10 +334,11 @@ std::ostream& Bomb::doprint(std::ostream& out) const {
 
 
 //default constructor
-Blockade::Blockade() {};
+Blockade::Blockade() : Order("- Blockade target country -"){};
 
 //copy constructor
 Blockade::Blockade(const Blockade& deploy) {
+	setName("- Blockade target country -");
 	std::cout << "Created a copy of Blockade." << std::endl;
 }
 
@@ -318,7 +349,7 @@ Blockade* Blockade::clone() {
 
 //validates order
 bool Blockade::validate() {
-	std::cout << "Validating order..." << std::endl;
+	std::cout << " Validating order..." << std::endl;
 	/*validation here, can user use blockade card?*/
 	if (true) {
 		return true;
@@ -328,39 +359,51 @@ bool Blockade::validate() {
 }
 
 //executes Blockade order if valid
-bool Blockade::execute() {
+void Blockade::execute() {
 	if (validate()) {
 		//implementation of Blockade
-		std::cout << "[Blockade] Blockade Successful. Target territory's army units count has tripled and became neutral." << std::endl;
-		return true;
+		setExecuted(true);
 	}
 	else {
+		//order failed
 		std::cout << "[Blockade] Cannot blockade target territory. Blockade order not executed." << std::endl;
-		return false;
+		setExecuted(false);
 	}
 }
 
 //assignment operator
 Blockade& Blockade::operator =(const Blockade& o) {
+	setName("- Blockade target country -");
 	std::cout << "Blockade Assignment Operator done." << std::endl;
-
 	return *this;
 }
 
 //function called by insertion stream operator to print order
-std::ostream& Blockade::doprint(std::ostream& out) const {
-	return out << "Blockade target territory";
+std::ostream& Blockade::doprint(std::ostream& out) {
+	out << "- Blockade target country -";
+
+	//if order has been executed, also print out effect of order
+	if (getExecuted())
+		out << " [Blockade] Blockade Successful. Target territory's army units count has tripled and became neutral." << std::endl;
+
+	return out;
 } 
+
+//virtual destructor
+Blockade::~Blockade() {
+	std::cout << "Destroying blockade order." << std::endl;
+}
 
 
 /*------------------------------------ Airlift class ------------------------------------*/
 
 
 //default constructor
-Airlift::Airlift() {};
+Airlift::Airlift() : Order("- Airlift to target country -"){};
 
 //copy constructor
 Airlift::Airlift(const Airlift& deploy) {
+	setName("- Airlift to target country -");
 	std::cout << "Created a copy of Airlift." << std::endl;
 }
 
@@ -371,7 +414,7 @@ Airlift* Airlift::clone() {
 
 //validates order
 bool Airlift::validate() {
-	std::cout << "Validating order..." << std::endl;
+	std::cout << " Validating order..." << std::endl;
 	/*validation here, can user use Airlift card?*/
 	if (true) {
 		return true;
@@ -381,40 +424,52 @@ bool Airlift::validate() {
 }
 
 //executes Airlift order if valid
-bool Airlift::execute() {
+void Airlift::execute() {
 	if (validate()) {
 		//implementation of Airlift
-		std::cout << "[Airlift] Airlift successful. Friendly army units have been moved to new territory." << std::endl;
-		return true;
+		setExecuted(true);
 	}
 	else {
+		//order failed
 		std::cout << "[Airlift] Cannot airlift army. Airlift order not executed." << std::endl;
-		return false;
+		setExecuted(false);
 	}
 }
 
 //assignment operator
 Airlift& Airlift::operator =(const Airlift& o) {
+	setName("- Airlift to target country -");
 	std::cout << "Airlift Assignment Operator done." << std::endl;
 
 	return *this;
 }
 
 //function called by insertion stream operator to print order
-std::ostream& Airlift::doprint(std::ostream& out) const {
-	return out << "Airlift target country";
+std::ostream& Airlift::doprint(std::ostream& out) {
+	out << "- Airlift to target country -";
+
+	//if order has been executed, also print out effect of order
+	if (getExecuted())
+		out << " [Airlift] Airlift successful. Friendly army units have been moved to new territory." << std::endl;
+
+	return out;
 }
 
+//virtual destructor
+Airlift::~Airlift() {
+	std::cout << "Destroying airlift order." << std::endl;
+}
 
 /*------------------------------------ Negotiate class ------------------------------------*/
 
 
 //default constructor
-Negotiate::Negotiate() {}
+Negotiate::Negotiate() :Order("- Negotiate with target player -") {}
 
 //copy constructor
 Negotiate::Negotiate(const Negotiate& n) {
-	std::cout << "Created a copy of Negotiate.";
+	setName("- Negotiate with target player -");
+	std::cout << "Created a copy of Negotiate." << std::endl;
 }
 
 //clone function
@@ -424,7 +479,7 @@ Negotiate* Negotiate::clone() {
 
 //validates order
 bool Negotiate::validate() {
-	std::cout << "Validating order...";
+	std::cout << " Validating order...";
 	//validation here, can user use Negotiate card?
 	if (true) {
 		return true;
@@ -435,25 +490,36 @@ bool Negotiate::validate() {
 }
 
 //executes Negotiate order if valid
-bool Negotiate::execute() {
+void Negotiate::execute() {
 	if (validate()) {
-		std::cout << "[Negotiate] Negotiation successful. No attacks will be made between two players until end of turn." << std::endl;
-		return true;
+		//implement negotiate
+		setExecuted(true);
 	}
 	else {
 		std::cout << "[Negotiate] Negotiation failed. Negotiation order not executed." << std::endl;
-		return false;
+		setExecuted(false);
 	}
 }
 
 //assignment operator function
 Negotiate& Negotiate::operator =(const Negotiate& n) {
+	setName("- Negotiate with target player -");
 	std::cout << "Negotiation assignment operator done." << std::endl;
 	return *this;
 }
 
 //function called by insertion stream operator to print order
-std::ostream& Negotiate::doprint(std::ostream& out) const {
-	return out << "Negotiate with target player" << std::endl;
+std::ostream& Negotiate::doprint(std::ostream& out) {
+	out << "- Negotiate with target player -";
+
+	//if order has been executed, also print out effect of order
+	if (getExecuted())
+		out << " [Negotiate] Negotiation successful. No attacks will be made between two players until end of turn." << std::endl;
+
+	return out;
 }
 
+//virtual destructor
+Negotiate::~Negotiate() {
+	std::cout << "Destroying negotiate order." << std::endl;
+}

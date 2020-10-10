@@ -30,32 +30,38 @@ public:
 	~OrderList();
 };
 
-//order base class, to be stored in order list
+//order abstract base class. used to store the different subclasses in the OrderList vector
 class Order
 {
-//private:
+protected:
 	//name of order
-	//const std::string name = "General Order";
+	std::string name{ "None" };
+	//true if order has been executed, false otherwise
+	bool executed{ false };
 public:
 	//constructors
 	Order();
-	Order(const Order& copy);
+	//constructor to set name data member, used by subclass constructors
+	Order(const std::string& name);
 	//clone function for polymorphic classes used by OrderList's copy constructor
-	virtual Order* clone();
+	virtual Order* clone() = 0;
 	//checks if an order is valid
-	virtual bool validate();
+	virtual bool validate() = 0;
 	//executes an order if it's valid
-	virtual bool execute();
-
-	//accessor
+	virtual void execute() = 0;
+	//setter/getter to set/get the execution status of the order
+	void setExecuted(const bool& status);
+	bool getExecuted();
+	//setter/getter for order name
+	void setName(std::string name);
 	std::string getName();
-
 	//assignment operator
 	Order& operator =(const Order& o);
 	//insertion stream operator, also used by all subclasses
-	friend std::ostream& operator <<(std::ostream& out, const Order& order);
+	friend std::ostream& operator <<(std::ostream& out, Order& order);
 	//print function called by insertion stream operator to allow polymorphic printing
-	virtual std::ostream& doprint(std::ostream& out) const;
+	virtual std::ostream& doprint(std::ostream& out) = 0;
+	virtual ~Order();
 };
 
 //Deploy order used to deploy armies onto player territory -------------
@@ -69,10 +75,11 @@ public:
 	Deploy* clone() override;
 	//order functions
 	bool validate() override;
-	bool execute() override;
+	void execute() override;
 	//assignment & stream functions
 	Deploy& operator =(const Deploy& o);
-	std::ostream& doprint(std::ostream& out) const override;
+	std::ostream& doprint(std::ostream& out) override;
+	~Deploy();
 };
 
 //Advance order used to advance armies into friendly or enemy territory -------------
@@ -86,10 +93,11 @@ public:
 	Advance* clone() override;
 	//order functions
 	bool validate() override;
-	bool execute() override;
+	void execute() override;
 	//assignment & stream functions
 	Advance& operator =(const Advance& adv);
-	std::ostream& doprint(std::ostream& out) const override;
+	std::ostream& doprint(std::ostream& out) override;
+	~Advance();
 };
 
 //Bomb order used to bomb target country making them lose half their army units -------------
@@ -103,10 +111,11 @@ public:
 	Bomb* clone() override;
 	//order functions
 	bool validate() override;
-	bool execute() override;
+	void execute() override;
 	//assignment & stream functions
 	Bomb& operator =(const Bomb& o);
-	std::ostream& doprint(std::ostream& out) const override;
+	std::ostream& doprint(std::ostream& out) override;
+	~Bomb();
 };
 
 //Blockade order used to triple a territory's army units and make it become neutral -------------
@@ -120,10 +129,11 @@ public:
 	Blockade* clone() override;
 	//order functions
 	bool validate() override;
-	bool execute() override;
+	void execute() override;
 	//assignment & stream functions
 	Blockade& operator =(const Blockade& o);
-	std::ostream& doprint(std::ostream& out) const override;
+	std::ostream& doprint(std::ostream& out) override;
+	~Blockade();
 };
 
 //Airlift order used to move any number of units from one territory to any other -------------
@@ -137,14 +147,16 @@ public:
 	Airlift* clone() override;
 	//order functions
 	bool validate() override;
-	bool execute() override;
+	void execute() override;
 	//assignment & stream functions
 	Airlift& operator =(const Airlift& o);
-	std::ostream& doprint(std::ostream& out) const override;
+	std::ostream& doprint(std::ostream& out) override;
+	~Airlift();
 };
 
 //Negotiate order used to prevent attacks between current and another player until end of turn -------------
 class Negotiate : public Order {
+public:
 	//default constructors
 	Negotiate();
 	Negotiate(const Negotiate&);
@@ -152,9 +164,10 @@ class Negotiate : public Order {
 	Negotiate* clone() override;
 	//order functions
 	bool validate() override;
-	bool execute() override;
+	void execute() override;
 	//assignment and stream functions
 	Negotiate& operator =(const Negotiate&);
-	std::ostream& doprint(std::ostream& out) const override;
+	std::ostream& doprint(std::ostream& out) override;
+	~Negotiate();
 };
 
