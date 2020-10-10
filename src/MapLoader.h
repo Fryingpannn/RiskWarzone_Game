@@ -1,5 +1,7 @@
-//#pragma once
-//class MapLoader
-//{
-//};
-//
+#pragma once
+class MapLoader
+{
+public:
+	MapLoader();
+};
+
