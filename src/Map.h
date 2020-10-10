@@ -56,7 +56,7 @@ public:
 
 
 	Map(Map &Copy);
-
+	
 	~Map();
 
 	void AddEdges(Territory &country1, Territory &country2);
