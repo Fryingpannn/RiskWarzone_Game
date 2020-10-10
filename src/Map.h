@@ -1,22 +1,36 @@
 #pragma once
 #include <vector>
+#include <iostream>
 #include <string>
 
 
 //country only need name, a unique ID and a continent
 //is a struct and not a class, so do what you need to do :)
 struct Territory {
-	std::string Name;
-	int TerritoryID;
-	std::string Continent;
+	std::string* Name;
+	int* TerritoryID;
+	std::string* Continent;
 	bool operator==(Territory& Territory) const { return this->TerritoryID == Territory.TerritoryID; }
+
+	Territory(std::string name, int territoryID, std::string continent){
+		Name = new std::string(name);
+		TerritoryID = new int(territoryID);
+		Continent = new std::string(continent);
+	}
+
+	~Territory() {
+		std::cout << "Deleting: " << *Name << *TerritoryID << " " << *Continent << "\n";
+		delete Name;
+		delete TerritoryID;
+		delete Continent;
+	}
 
 };
 
 struct ContinentData {
-	std::string Name;
-	int ContinentID;
-	bool operator==(ContinentData &ContinentData) const { return this->ContinentID == ContinentData.ContinentID; }
+	std::string* Name;
+	int* ContinentID;
+	bool operator==(ContinentData &ContinentData) const { return *(this->ContinentID) == *(ContinentData.ContinentID); }
 };
 
 class Map
@@ -26,7 +40,7 @@ class Map
 	std::vector<Territory*> **ListOfCountries;
 	int* NumberOfCountries;
 
-	
+	int ActualSize; 
 
 	
 public:
