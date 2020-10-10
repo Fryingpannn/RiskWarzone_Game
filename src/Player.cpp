@@ -15,25 +15,31 @@ Player::Player() {
   this->HandOfCards = new Hand();
   this->ListOfOrders = new OrderList();
 
-  std::cout << "default constructor" << std::endl;
+  std::cout << "Default Player constructor" << std::endl;
 }
 
 /**
- * Constructor
+ * Constructor with given parameters.
+ *
+ * @param territories A list of territory objects the player owns.
+ * @param handOfCards A hand of cards the player owns.
+ * @param listOfOrders A list of orders the player owns.
  */
 Player::Player(std::vector<Territory *> territories, Hand handOfCards,
                OrderList listOfOrders) {
-  std::cout << "regular constructor" << std::endl;
+  std::cout << "Regular Player constructor" << std::endl;
   this->Territories = territories;
   this->HandOfCards = new Hand(handOfCards);
   this->ListOfOrders = new OrderList(listOfOrders);
 }
 
 /**
- * Copy Constructor for deep copy
+ * Copy constructor that creates a deep copy of a player object.
+ *
+ * @param p The object to copy.
  */
 Player::Player(const Player &p) {
-  std::cout << "Copy constructor called\n";
+  std::cout << "Player Copy constructor\n";
 
   this->HandOfCards = new Hand(*p.HandOfCards);
   this->ListOfOrders = new OrderList(*p.ListOfOrders);
@@ -45,23 +51,29 @@ Player::Player(const Player &p) {
 }
 
 /**
- * Overloaded assignment operator for deep copy
+ * Overloaded assignment operator that create a deep copy of a player object.
+ *
+ * @param p The object to equate.
  */
 Player &Player::operator=(const Player &p) {
-  std::cout << "Assignment operator called\n";
-  // this->Territories = new std::vector<Territory>(p.Territories);
-  this->HandOfCards = new Hand(*p.HandOfCards);
-  this->ListOfOrders = new OrderList(*p.ListOfOrders);
+  if (this != &p) {
+    std::cout << "Player = operator\n";
+    this->HandOfCards = new Hand(*p.HandOfCards);
+    this->ListOfOrders = new OrderList(*p.ListOfOrders);
 
-  for (auto i = p.Territories.begin(); i != p.Territories.end(); ++i) {
-    auto *country = new Territory(**i);
-    this->Territories.push_back(country);
+    for (auto i = p.Territories.begin(); i != p.Territories.end(); ++i) {
+      auto *country = new Territory(**i);
+      this->Territories.push_back(country);
+    }
   }
   return *this;
 }
 
 /**
- * Overloaded stream operator
+ * Overloaded stream operator for player
+ *
+ * @param out The stream object.
+ * @param p The player object to print.
  */
 std::ostream &operator<<(std::ostream &out, const Player &p) {
   out << "\tCountries: { ";
@@ -79,13 +91,23 @@ std::ostream &operator<<(std::ostream &out, const Player &p) {
   return out;
 }
 
+/**
+ * A function that determines the territories a player can defend.
+ *
+ * @return A list of territories.
+ */
 std::vector<Territory *> Player::toDefend() { return Territories; }
 
+/**
+ *  A function that determines the list of territories a player can attack.
+ *
+ *  @return A list of territories.
+ */
 std::vector<Territory *> Player::toAttack() {
   // TODO: replace with actual list of countries from map class
   std::vector<Territory *> listOfCountries{};
 
-  // sort lists to please debugger
+  // Sort list to please compiler
   std::sort(listOfCountries.begin(), listOfCountries.end());
   std::sort(Territories.begin(), Territories.end());
 
@@ -101,22 +123,30 @@ std::vector<Territory *> Player::toAttack() {
   return territoriesToAttack;
 }
 
+/**
+ * A function that creates a method object and adds it to the player's list of orders.
+ *
+ */
 void Player::issueOrder() {
+  // Temporary order just to demonstrate how method works
   auto *order = new Advance();
   this->ListOfOrders->addToList(order);
 }
 
 /**
- * Destructor
+ * Destructor of the player object.
  */
 Player::~Player() {
-  for (auto &i : Territories) {
-    delete i;
-    i = nullptr;
+  // Delete list of territory pointers if they exist.
+  if (!this->Territories.empty()) {
+    for (auto &i : Territories) {
+      delete i;
+      i = nullptr;
+    }
   }
-  //  Territories.clear();
-  delete HandOfCards;
-  delete ListOfOrders;
+  // Delete the members that are pointers.
+  delete this->HandOfCards;
+  delete this->ListOfOrders;
   this->HandOfCards = nullptr;
   this->ListOfOrders = nullptr;
 }

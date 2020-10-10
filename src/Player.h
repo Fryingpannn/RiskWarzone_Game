@@ -5,7 +5,10 @@
 #include "Cards.h"
 #include "Map.h"
 #include "Orders.h"
-
+/**
+ * A class for the object Player which managers territories, cards and orders
+ * owned by a player.
+ */
 class Player {
  public:
   std::vector<Territory *> Territories;
@@ -23,3 +26,7 @@ class Player {
   friend std::ostream &operator<<(std::ostream &out, const Player &p);
   ~Player();
 };
+
+
+
+
