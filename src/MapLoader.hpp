@@ -73,7 +73,8 @@ class MapFileTerritory {
     MapFileTerritory();
 
     MapFileTerritory(int new_number, std::string new_short_name,
-              int new_continent_number, int new_x_coord, int new_y_coord);
+                     int new_continent_number, int new_x_coord,
+                     int new_y_coord);
 
     MapFileTerritory(const MapFileTerritory &other_territory);
 
@@ -87,7 +88,8 @@ class MapFileTerritory {
     ~MapFileTerritory();
 };
 
-std::ostream &operator<<(std::ostream &output, const MapFileTerritory &territory);
+std::ostream &operator<<(std::ostream &output,
+                         const MapFileTerritory &territory);
 
 // Struct that can be passed as a parameter, to obtain the success or failure of
 // an operation, outside of the return value of the function
@@ -96,6 +98,18 @@ struct Result {
     T *returnValue;
     bool success;
     std::string message;
+
+    Result<T>(){};
+    Result<T>(T *newReturnvalue, bool newSuccess, std::string newMessage)
+        : returnValue(newReturnvalue),
+          success(newSuccess),
+          message(newMessage) {};
+
+    // // ~Result<Void>(){};
+    // ~Result<T>() {
+    //     if (returnValue) delete returnValue;
+    //     returnValue = nullptr;
+    // }
 };
 
 // Class: MapFile
@@ -135,7 +149,8 @@ class MapFile {
     Result<MapFileTerritory> getTerritoryByNumber(int territory_number);
     Result<Continent> getContinentByNumber(int continent_number);
 
-    Result<struct ::Territory> generateMapTerritory(MapFileTerritory *territory);
+    Result<struct ::Territory> generateMapTerritory(
+        MapFileTerritory *territory);
 
     bool isValidTerritoryNumber(int territory_number);
     bool isValidContinentNumber(int continent_number);

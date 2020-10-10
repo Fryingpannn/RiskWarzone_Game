@@ -27,6 +27,7 @@
 // Change me to true to enable debug message
 const bool DEBUG = false;
 
+
 //////////////////////////////////////////////////////////////////////////////////////
 // Continent
 //////////////////////////////////////////////////////////////////////////////////////
@@ -297,13 +298,13 @@ std::ostream &operator<<(std::ostream &output, const MapFile *map_file) {
 MapFile::~MapFile() {
     // Delete the territories
     for (auto i = 0; i < this->map_territories.size(); i++) {
-        delete (this->map_territories[i]);
+        delete this->map_territories[i];
         this->map_territories[i] = nullptr;
     }
 
     // Delete the continents
     for (auto i = 0; i < this->map_continents.size(); i++) {
-        delete (this->map_continents[i]);
+        delete this->map_continents[i];
         this->map_continents[i] = nullptr;
     }
 };
@@ -348,10 +349,11 @@ Result<void> MapFile::readMapFile() {
                 } else if (current_section == "borders") {
                     result = processBordersSectionLine(line);
                 }
-                if (result.success && DEBUG) {
+                if (result.success) {
                     returnResult.success = true;
                     returnResult.message = result.message;
-                    std::cout << result.message << std::endl;
+                    if (DEBUG)
+                        std::cout << result.message << std::endl;
                 } else if (!result.success) {
                     // TODO var cleanup
                     returnResult.success = false;
@@ -448,7 +450,6 @@ Result<void> MapFile::processContinentSectionLine(const std::string line) {
         returnResult.success = true;
         returnResult.message =
             "DEBUG: Parsed line from continents section: " + line;
-        // delete (tempContinent);
     } else {
         returnResult.success = false;
         returnResult.message =
@@ -579,6 +580,8 @@ Result<void> MapFile::processBordersSectionLine(const std::string line) {
                 secondResult = getTerritoryByNumber(border_territory_number);
                 if (secondResult.success) {
                     tempTerritory->borders.push_back(border_territory_number);
+                    returnResult.success = true;
+                    returnResult.message = "\nDEBUG: Successfully added border # " + line_args[i] + " to territory # " + line_args[0];
                 } else {
                     returnResult.success = false;
                     returnResult.message =
@@ -609,7 +612,7 @@ Result<void> MapFile::processBordersSectionLine(const std::string line) {
  * @return MapFileTerritory*
  */
 Result<MapFileTerritory> MapFile::getTerritoryByNumber(int territory_number) {
-    Result<MapFileTerritory> returnResult;  // = new Result<Territory>();
+    Result<MapFileTerritory> returnResult;  
     returnResult.success = false;
     returnResult.message =
         &"ERROR: No territory found with index number "[territory_number];
@@ -627,7 +630,7 @@ Result<MapFileTerritory> MapFile::getTerritoryByNumber(int territory_number) {
 };
 
 Result<Continent> MapFile::getContinentByNumber(int continent_number) {
-    Result<Continent> returnResult;  // = new Result<Territory>();
+    Result<Continent> returnResult; 
     returnResult.success = false;
     returnResult.message =
         &"ERROR: No continent found with index number "[continent_number];
@@ -656,10 +659,11 @@ Result<struct ::Territory> MapFile::generateMapTerritory(MapFileTerritory *terri
     if (result.success) {
         Continent *continent;
         continent = result.returnValue;
-        struct ::Territory *returnTerritory = new struct ::Territory();
+        struct ::Territory *returnTerritory = new struct ::Territory();  // MEMORY LEAK HERE
         returnTerritory->Name = territory->short_name;
         returnTerritory->TerritoryID = territory->number;
         returnTerritory->Continent = continent->name;
+
         returnResult.returnValue = returnTerritory;
         returnResult.success = true;
         returnResult.message =
@@ -694,14 +698,15 @@ Result<Map> MapFile::generateMap() {
     returnResult.success = false;
     returnResult.message =
         "ERROR: Default failure message. This should not have happened. "
-        "MapFile::generateMapTerritory()";
+        "MapFile::generateMap()";
 
-    returnResult.returnValue = new Map(map_territories.size(), map_file_name);
+    returnResult.returnValue = new Map(map_territories.size(), map_file_name); // MEMORY LEAK HERE
 
     for (int i = 0; i < map_territories.size(); i++) {
         Result<struct ::Territory> resultTerritory;
         resultTerritory = generateMapTerritory(map_territories[i]);
         if (resultTerritory.success) {
+            std::cout << "Adding borders to : " << resultTerritory.returnValue->Name << std::endl;
             for (int j = 0; j < map_territories[i]->borders.size(); j++) {
                 int borderTerritory = map_territories[i]->borders[j];
                 Result<MapFileTerritory> secondResult =
@@ -710,9 +715,8 @@ Result<Map> MapFile::generateMap() {
                     MapFileTerritory *secondTerritory;
                     secondTerritory = secondResult.returnValue;
                     Result<struct ::Territory> secondResultTerritory;
+                    secondResultTerritory = generateMapTerritory(secondTerritory);
                     if (secondResultTerritory.success) {
-                        secondResultTerritory =
-                            generateMapTerritory(secondTerritory);
                         returnResult.returnValue->AddEdges(
                             *resultTerritory.returnValue, *secondResultTerritory.returnValue);
                     }
@@ -728,7 +732,10 @@ Result<Map> MapFile::generateMap() {
         } else {
             returnResult.success = false;
             returnResult.message = resultTerritory.message;
+            return returnResult;
         }
+        returnResult.success = true;
+        returnResult.message = "\nDEBUG: Successfully created map.";
     }
     return returnResult;
 };
