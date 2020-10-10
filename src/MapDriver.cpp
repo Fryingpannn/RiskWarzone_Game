@@ -5,7 +5,7 @@
 #include <stdlib.h>  
 #include <crtdbg.h>  
 
-int main()
+void MapTest()
 {
     _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
     //// graph edges array.
@@ -135,35 +135,6 @@ int main()
         std::cout << "Success" << std::endl;
     }
     
-    
-    /*Map *WorldMap = new Map(9, "WorldMap");
-    
-
-    WorldMap->AddEdges(*Malaysia, *Vietnam);
-    WorldMap->AddEdges(*Malaysia, *Indonesia);
-    WorldMap->AddEdges(*Indonesia, *Malaysia);
-    WorldMap->AddEdges(*Indonesia, *Philippine);
-    WorldMap->AddEdges(*Singapore, *Vietnam);
-    WorldMap->AddEdges(*Singapore, *Malaysia);
-    
-    WorldMap->AddEdges(*Vietnam, *Malaysia);
-    WorldMap->AddEdges(*Vietnam, *Thailand);
-
-    WorldMap->Display();
-
-    
-    WorldMap->AddEdges(*Japan, *Korea);
-    WorldMap->AddEdges(*China, *Korea);
-    WorldMap->AddEdges(*Malaysia, *Japan);
-
-    WorldMap->Display();
-
-    WorldMap->Display("EastAsia");
-
-    if (WorldMap->Validate())
-    {
-        std::cout << "Success" << std::endl;
-    }*/
 
     
 
@@ -172,15 +143,16 @@ int main()
 
     //fail cases where the country won't register due to having same ID
     // the country ID will causes the algorithm to think that it is another country and will treat it the same
+    // 
     
     //using copy constructor
-    /*Map* WorldMap2 = new Map(*WorldMap);
-    WorldMap2->AddEdges(Japan,Korea);
-    WorldMap2->AddEdges(China, Korea);
-    WorldMap2->AddEdges(Malaysia, Korea);
-    WorldMap2->AddEdges(Germany, Korea);
-    WorldMap2->AddEdges(France, Korea);
-    WorldMap2->AddEdges(France, Malaysia);
+    Map* WorldMap2 = new Map(*WorldMap);
+    WorldMap2->AddEdges(*Japan,*Korea);
+    WorldMap2->AddEdges(*China, *Korea);
+    WorldMap2->AddEdges(*Malaysia, *Korea);
+    WorldMap2->AddEdges(*Germany, *Korea);
+    WorldMap2->AddEdges(France, *Korea);
+    WorldMap2->AddEdges(France, *Malaysia);
     WorldMap2->Display();
 
     if (WorldMap2->Validate())
@@ -190,7 +162,7 @@ int main()
     else {
         std::cout << "Failed" << std::endl;
 
-    }*/
+    }
 
     //let me test memory leaks
 
@@ -217,5 +189,5 @@ int main()
     WorldMap->Display();*/
 
    
-    return 0;
+    return ;
 }
