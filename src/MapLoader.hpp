@@ -17,6 +17,7 @@
 
 #include <string>
 #include <vector>
+#include "Map.h"
 
 
 class MapFileTerritory;
@@ -151,8 +152,8 @@ class MapFile {
     bool isValidTerritoryNumber(int territory_number);
     bool isValidContinentNumber(int continent_number);
 
-    // Map *generateMap();
-    Result<void> generateMap();
+    Map generateMap();
+    // Result<void> generateMap();
 
     Result<void> validate();
 

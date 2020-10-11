@@ -41,7 +41,7 @@ void mapLoaderDriver() {
 
         Result<void> validateMapFile = testMapFile->validate();
         if (validateMapFile.success) {
-            Result<Map> generateMapResult;
+            // Result<Map> generateMapResult;
             // Map *testMap;
             // generateMapResult = testMapFile->generateMap();
             // if (generateMapResult.success) {
