@@ -8,12 +8,12 @@ Map::Map()
 {
 	Log("Default Constructor" << std::endl);
 	NumberOfCountries = new int(0);
-	ListOfCountries = new std::vector<struct::Territory*> *[100] ;
-	for (int i = 0; i < 100; i++)
+	ListOfCountries = new std::vector<struct::Territory*> *[1000] ;
+	for (int i = 0; i < 1000; i++)
 		ListOfCountries[i] = new std::vector<struct::Territory*>;
 
 	MapName = new std::string ("World Default");
-    ActualSize = 100;
+    
 }
 
 //size defining the size of the map, name defining the map of the name
@@ -22,14 +22,14 @@ Map::Map(int size, std::string name)
 	Log("It passed" << std::endl);
 	NumberOfCountries = new int (size);
 
-	ListOfCountries = new std::vector<Territory *> *[size];
-	for (int i = 0; i < size; i++)
+	ListOfCountries = new std::vector<Territory *> *[1000];
+	for (int i = 0; i < 1000; i++)
 		ListOfCountries[i] = new std::vector<struct::Territory*>;
 
 	
 	Log("It passed 2" << std:: endl);
 	MapName = new std::string (name);
-    ActualSize = size;
+    
 	
 
 }
@@ -39,7 +39,7 @@ Map::Map(std::vector<struct::Territory*> **listOfCountries, std::string mapName,
 	NumberOfCountries = new int (size);
 	ListOfCountries = listOfCountries;
 	MapName = new std::string (mapName);
-    ActualSize = size;
+    
 	
 }
 
@@ -48,7 +48,7 @@ Map::Map(std::vector<struct::Territory*> **listOfCountries, std::string mapName,
 	NumberOfCountries = new int(size);
 	ListOfCountries = listOfCountries;
 	MapName = new std::string(mapName);
-    ActualSize = size;
+    
 }
 
 Map::Map(Map &Copy)
@@ -56,7 +56,7 @@ Map::Map(Map &Copy)
 	MapName = new std::string(*Copy.MapName);
 	ListOfCountries = new std::vector<Territory *> * [*Copy.NumberOfCountries];
 
-	for (int i = 0; i < Copy.ActualSize; i++)
+	for (int i = 0; i < 1000; i++)
 		ListOfCountries[i] = new std::vector<struct::Territory*>;
 
 	for (int i = 0; i < *Copy.NumberOfCountries; i++)
@@ -68,15 +68,13 @@ Map::Map(Map &Copy)
 	}
 	Log("Copied successful\n");
 		
-	//I passed by reference... not by value
-	ActualSize = Copy.ActualSize;
 	
 	NumberOfCountries = new int (*Copy.NumberOfCountries);
 }
 
 Map::~Map()
 {
-    for (int i = 0; i < ActualSize; i++) {
+    for (int i = 0; i < 1000; i++) {
 		Log("Deleting! : " << i);
         ListOfCountries[i]->clear();
 		delete ListOfCountries[i];

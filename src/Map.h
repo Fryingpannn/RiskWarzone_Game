@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
 #include <string>
+#include <SFML/Graphics.hpp>
 
 
 #ifdef _DEBUG
@@ -17,9 +18,8 @@ struct Territory {
 	std::string Continent;
     float XCoordinate;
     float YCoordinate;
+	sf::Texture TerritoryTexture;
 	bool operator==(Territory& Territory) const { return this->TerritoryID == Territory.TerritoryID; }
-
-	
 
 };
 
@@ -29,7 +29,7 @@ struct ContinentData {
 	int NumberOfTerritories;
 	std::string Colour;
 	static int Count;
-
+	
 	bool operator==(ContinentData &ContinentData) const { return this->ContinentID == ContinentData.ContinentID; }
 };
 
@@ -39,8 +39,8 @@ class Map
 	std::string* MapName;
 	std::vector<Territory*> **ListOfCountries;
 	int* NumberOfCountries;
-    int ActualSize;
 	
+	sf::Texture MapTexture;
 
 	
 public:
