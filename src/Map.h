@@ -3,12 +3,20 @@
 #include <string>
 
 
+#ifdef _DEBUG
+#define Log(x) std::cout<<x<<std::endl;
+#else
+#define Log(x)
+#endif
+
 //country only need name, a unique ID and a continent
 //is a struct and not a class, so do what you need to do :)
 struct Territory {
 	std::string Name;
 	int TerritoryID;
 	std::string Continent;
+    float XCoordinate;
+    float YCoordinate;
 	bool operator==(Territory& Territory) const { return this->TerritoryID == Territory.TerritoryID; }
 
 };
@@ -16,6 +24,10 @@ struct Territory {
 struct ContinentData {
 	std::string Name;
 	int ContinentID;
+	int NumberOfTerritories;
+	std::string Colour;
+	static int Count;
+
 	bool operator==(ContinentData &ContinentData) const { return this->ContinentID == ContinentData.ContinentID; }
 };
 
@@ -25,7 +37,7 @@ class Map
 	std::string* MapName;
 	std::vector<Territory*> **ListOfCountries;
 	int* NumberOfCountries;
-
+    int ActualSize;
 	
 
 	
@@ -51,7 +63,9 @@ public:
 	void Display(std::string continent);
 	void SetMapName(std::string mapName);
 
+	
 	bool Validate();
+	void DFS(int x, bool** visited);
 	
 };
 

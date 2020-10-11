@@ -1,7 +1,13 @@
 #include <iostream>
 #include "Map.h"
 
-void mapDriver()
+#define _CRTDBG_MAP_ALLOC
+#include <stdlib.h>
+#include <crtdbg.h>
+
+void mapDriver() {}
+
+int main() 
 {
     //// graph edges array.
     //graphEdge edges[] = {
@@ -20,6 +26,10 @@ void mapDriver()
     //diagraph.Display();
 
     //one way to optimise is to put enum
+    //all these will be in stack memory
+
+    _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+
     Territory Malaysia{
         "Malaysia", 0, "ASEAN"
     };
@@ -64,7 +74,7 @@ void mapDriver()
         "France", 8, "Europe"
     };
 
-    std::cout << "test" << std::endl;
+    
     Map *WorldMap = new Map(9, "WorldMap");
     
 
@@ -89,12 +99,16 @@ void mapDriver()
 
     WorldMap->Display("EastAsia");
 
+    //not connected graph
     if (WorldMap->Validate())
     {
-        std::cout << "Success" << std::endl;
+        std::cout << "\n\nSuccess" << std::endl;
+    }
+    else {
+        std::cout << "\n\nfalse" << std::endl;
     }
 
-    //delete WorldMap;
+    
 
 
     //fail cases where the country won't register due to having same ID
@@ -107,6 +121,7 @@ void mapDriver()
     WorldMap2->AddEdges(France, Korea);
     WorldMap2->AddEdges(France, Malaysia);
     WorldMap2->Display();
+    Log("ERM");
 
     if (WorldMap2->Validate())
     {
@@ -117,14 +132,30 @@ void mapDriver()
 
     }
 
+    //connected graph
+    //in a triangle
+    Map* WorldMap3 = new Map(3, "Small Map");
+    Log("Construct successful");
+    WorldMap3->AddEdges(Malaysia, Indonesia);
+    WorldMap3->AddEdges(Indonesia, Singapore);
+    WorldMap3->AddEdges(Singapore,Malaysia);
 
+    if (WorldMap3->Validate())
+    {
+        std::cout << "Success" << std::endl;
+    }
+    else {
+        std::cout << "Failed" << std::endl;
 
-    /*Map* WorldMap = new Map();
-    WorldMap->AddContinent(EastAsia);
-    WorldMap->AddContinent(ASEAN);
+    }
+   
 
-    WorldMap->Display();*/
+    delete WorldMap;
+    Log("Deleted WorldMap1");
+    delete WorldMap2;
+    Log("Deleted WorldMap2");
 
+    delete WorldMap3;
 
-    // return 0;
+    return 0;
 }

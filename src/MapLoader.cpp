@@ -749,7 +749,7 @@ Result<void> MapFile::validate() {
 
     // Each continent contains at least one territory
     const int arr_size = map_continents.size();
-    int continent_array[arr_size];
+    int continent_array[50];
     for (int i = 0; i < arr_size; i++){
         continent_array[i] = 0;
     }
