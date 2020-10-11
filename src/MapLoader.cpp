@@ -708,37 +708,50 @@ Result<Map> MapFile::generateMap() {
     returnResult.returnValue = new Map(map_territories.size(), map_file_name); // MEMORY LEAK HERE
 
     for (int i = 0; i < map_territories.size(); i++) {
-        Result<struct ::Territory> resultTerritory;
-        resultTerritory = generateMapTerritory(map_territories[i]);
-        if (resultTerritory.success) {
-            std::cout << "Adding borders to : " << resultTerritory.returnValue->Name << std::endl;
+        //Result<struct ::Territory> resultTerritory;
+        //resultTerritory = generateMapTerritory(map_territories[i]);
+        Result<Continent> resultFirstContinent = getContinentByNumber(map_territories[i]->continent_number);
+        std::string firstTerrName = map_territories[i]->short_name;
+        int firstTerrID = map_territories[i]->number;
+        std::string firstTerrContID = std::to_string(resultFirstContinent.returnValue->number);
+        struct ::Territory firstTerritory(firstTerrName, firstTerrID, firstTerrContID);
+        //if (resultTerritory.success) {
             for (int j = 0; j < map_territories[i]->borders.size(); j++) {
-                int borderTerritory = map_territories[i]->borders[j];
-                Result<MapFileTerritory> secondResult =
-                    getTerritoryByNumber(borderTerritory);
-                if (secondResult.success) {
-                    MapFileTerritory *secondTerritory;
-                    secondTerritory = secondResult.returnValue;
-                    Result<struct ::Territory> secondResultTerritory;
-                    secondResultTerritory = generateMapTerritory(secondTerritory);
-                    if (secondResultTerritory.success) {
+                //int borderTerritory = map_territories[i]->borders[j];
+                //Result<MapFileTerritory> secondResult =
+                //    getTerritoryByNumber(borderTerritory);
+                Result<Continent> resultSecondContinent =
+                    getContinentByNumber(map_territories[j]->continent_number);
+                std::string secondTerrName = map_territories[j]->short_name;
+                int secondTerrID = map_territories[j]->number;
+                std::string secondTerrContID =
+                    std::to_string(resultSecondContinent.returnValue->number);
+                struct ::Territory secondTerritory(secondTerrName, secondTerrID,secondTerrContID);
+                std::cout << "Adding borders from " << firstTerrName << " to " << secondTerrName << std::endl;
+
+                //if (secondResult.success) {
+                //    MapFileTerritory *secondTerritory;
+                //    secondTerritory = secondResult.returnValue;
+                //    Result<struct ::Territory> secondResultTerritory;
+                //    secondResultTerritory = generateMapTerritory(secondTerritory);
+                //    if (secondResultTerritory.success) {
                         returnResult.returnValue->AddEdges(
-                            *resultTerritory.returnValue, *secondResultTerritory.returnValue);
-                    }
-                } else {
-                    returnResult.success = false;
-                    returnResult.message =
-                        secondResult.message +
-                        "ERROR: Invalid Territory number passed as "
-                        "secondTerritory in MapFile::generateMap()";
-                    return returnResult;
-                }
+                            firstTerritory, secondTerritory);
+                    //}
+                //} else {
+                //    returnResult.success = false;
+                //    returnResult.message =
+                //        secondResult.message +
+                //        "ERROR: Invalid Territory number passed as "
+                //        "secondTerritory in MapFile::generateMap()";
+                //    return returnResult;
+                //}
             }
-        } else {
-            returnResult.success = false;
-            returnResult.message = resultTerritory.message;
-            return returnResult;
-        }
+        //} else {
+        //    returnResult.success = false;
+        //    returnResult.message = resultTerritory.message;
+        //    return returnResult;
+        //}
         returnResult.success = true;
         returnResult.message = "\nDEBUG: Successfully created map.";
     }
@@ -761,7 +774,8 @@ Result<void> MapFile::validate() {
 
     // Each continent contains at least one territory
     const int arr_size = map_continents.size();
-    int continent_array[arr_size];
+    //int continent_array[arr_size];
+    std::vector<int> continent_array(arr_size);
     for (int i = 0; i < arr_size; i++){
         continent_array[i] = 0;
     }
