@@ -19,6 +19,8 @@ struct Territory {
     float YCoordinate;
 	bool operator==(Territory& Territory) const { return this->TerritoryID == Territory.TerritoryID; }
 
+	
+
 };
 
 struct ContinentData {

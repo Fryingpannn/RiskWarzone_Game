@@ -16,6 +16,16 @@ void mapDriver()
 
     _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 
+
+    //for maploader people, this is an example on how you can initialize it
+    std::string ExampleName = "ahhh";
+    std::string Continent = "continent";
+    int CountryId = 2;
+    
+    Territory MapLoaderReference{
+        ExampleName,CountryId,Continent
+    };
+
     Territory Malaysia{
         "Malaysia", 0, "ASEAN"
     };
