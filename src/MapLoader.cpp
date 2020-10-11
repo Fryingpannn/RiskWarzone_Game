@@ -22,11 +22,8 @@
 #include <string>
 #include <vector>
 
-#include "Map.h"
-
 // Change me to true to enable debug message
 const bool DEBUG = false;
-
 
 //////////////////////////////////////////////////////////////////////////////////////
 // Continent
@@ -105,7 +102,8 @@ std::ostream &operator<<(std::ostream &output, const Continent &continent) {
     output << "Name: " << continent.name << std::endl;
     output << "Value: " << continent.value << std::endl;
     output << "Colour: " << continent.colour << std::endl;
-    output << "Number of Territories: " << continent.number_of_territories << std::endl;
+    output << "Number of Territories: " << continent.number_of_territories
+           << std::endl;
 
     return output;
 };
@@ -114,8 +112,8 @@ std::ostream &operator<<(std::ostream &output, const Continent &continent) {
  * @brief Destroy the Continent:: Continent object
  *
  */
-Continent::~Continent(){
-    // TODO Territories list
+Continent::~Continent() {
+    std::cout << "Deleting Continent: " << this->name << std::endl;
 };
 
 //////////////////////////////////////////////////////////////////////////////////////
@@ -145,8 +143,8 @@ MapFileTerritory::MapFileTerritory() {
  * @param new_y_coord
  */
 MapFileTerritory::MapFileTerritory(int new_number, std::string new_short_name,
-                     int new_continent_number, int new_x_coord,
-                     int new_y_coord) {
+                                   int new_continent_number, int new_x_coord,
+                                   int new_y_coord) {
     number = new_number;
     short_name = new_short_name;
     continent_number = new_continent_number;
@@ -175,7 +173,8 @@ MapFileTerritory::MapFileTerritory(const MapFileTerritory &other_territory) {
  * @param other_territory
  * @return MapFileTerritory&
  */
-MapFileTerritory &MapFileTerritory::operator=(const MapFileTerritory &other_territory) {
+MapFileTerritory &MapFileTerritory::operator=(
+    const MapFileTerritory &other_territory) {
     number = other_territory.number;
     short_name = other_territory.short_name;
     continent_number = other_territory.continent_number;
@@ -186,7 +185,8 @@ MapFileTerritory &MapFileTerritory::operator=(const MapFileTerritory &other_terr
 };
 
 // Stream Insertion Operator
-std::ostream &operator<<(std::ostream &output, const MapFileTerritory &territory) {
+std::ostream &operator<<(std::ostream &output,
+                         const MapFileTerritory &territory) {
     output << "Territory #: " << territory.number << std::endl;
     output << "Short Name: " << territory.short_name << std::endl;
     output << "Continent #: " << territory.continent_number << std::endl;
@@ -195,8 +195,8 @@ std::ostream &operator<<(std::ostream &output, const MapFileTerritory &territory
     return output;
 };
 
-MapFileTerritory::~MapFileTerritory(){
-
+MapFileTerritory::~MapFileTerritory() {
+    std::cout << "Deleting MapFileTerritory: " << this->short_name << std::endl;
 };
 
 //////////////////////////////////////////////////////////////////////////////////////
@@ -310,7 +310,7 @@ MapFile::~MapFile() {
 };
 
 /**
- * @brief
+ * @brief Reads the map file and calls the appropriate function depending on the section its in
  *
  */
 Result<void> MapFile::readMapFile() {
@@ -352,10 +352,8 @@ Result<void> MapFile::readMapFile() {
                 if (result.success) {
                     returnResult.success = true;
                     returnResult.message = result.message;
-                    if (DEBUG)
-                        std::cout << result.message << std::endl;
+                    if (DEBUG) std::cout << result.message << std::endl;
                 } else if (!result.success) {
-                    // TODO var cleanup
                     returnResult.success = false;
                     returnResult.message = result.message;
                     return returnResult;
@@ -363,18 +361,17 @@ Result<void> MapFile::readMapFile() {
             }
         }
     }
-    
+
     inputfilestream.close();
 
     returnResult.success = true;
-    returnResult.message = "DEBUG: Successfully read map file: " + map_file_name;
+    returnResult.message =
+        "DEBUG: Successfully read map file: " + map_file_name;
     return returnResult;
 };
 
-
-
 /**
- * @brief
+ * @brief Processes a line in the file section into the variables in MapFile
  *
  * @param line
  */
@@ -410,7 +407,7 @@ Result<void> MapFile::processFileSectionLine(const std::string line) {
 };
 
 /**
- * @brief
+ * @brief Processes a line in the continents section into the map_continents vector
  *
  * @param line
  */
@@ -459,7 +456,7 @@ Result<void> MapFile::processContinentSectionLine(const std::string line) {
 };
 
 /**
- * @brief
+ * @brief Processes a line in the countries section into the map_territories vector
  *
  * @param line
  */
@@ -499,14 +496,16 @@ Result<void> MapFile::processTerritorySectionLine(const std::string line) {
 
         if (isValidContinentNumber(arg3)) {
             MapFileTerritory *tempTerritory;
-            tempTerritory = new MapFileTerritory(arg1, line_args[1], arg3, arg4, arg5);
+            tempTerritory =
+                new MapFileTerritory(arg1, line_args[1], arg3, arg4, arg5);
             map_territories.push_back(tempTerritory);
             returnResult.success = true;
             returnResult.message =
                 "DEBUG: Parsed line from territory section: " + line;
         } else {
             returnResult.success = false;
-            returnResult.message = "\nERROR: Invalid continent ID in territory line: " + line;
+            returnResult.message =
+                "\nERROR: Invalid continent ID in territory line: " + line;
         }
     } else {
         returnResult.success = false;
@@ -517,8 +516,8 @@ Result<void> MapFile::processTerritorySectionLine(const std::string line) {
 };
 
 /**
- * @brief
- *
+ * @brief Processes a line in the borders section into the appropriate territory's borders
+ * 
  * @param line
  */
 Result<void> MapFile::processBordersSectionLine(const std::string line) {
@@ -581,7 +580,9 @@ Result<void> MapFile::processBordersSectionLine(const std::string line) {
                 if (secondResult.success) {
                     tempTerritory->borders.push_back(border_territory_number);
                     returnResult.success = true;
-                    returnResult.message = "\nDEBUG: Successfully added border # " + line_args[i] + " to territory # " + line_args[0];
+                    returnResult.message =
+                        "\nDEBUG: Successfully added border # " + line_args[i] +
+                        " to territory # " + line_args[0];
                 } else {
                     returnResult.success = false;
                     returnResult.message =
@@ -606,13 +607,13 @@ Result<void> MapFile::processBordersSectionLine(const std::string line) {
 };
 
 /**
- * @brief
+ * @brief Returns a territory object based on territory_number
  *
  * @param territory_number
  * @return MapFileTerritory*
  */
 Result<MapFileTerritory> MapFile::getTerritoryByNumber(int territory_number) {
-    Result<MapFileTerritory> returnResult;  
+    Result<MapFileTerritory> returnResult;
     returnResult.success = false;
     returnResult.message =
         &"ERROR: No territory found with index number "[territory_number];
@@ -629,8 +630,14 @@ Result<MapFileTerritory> MapFile::getTerritoryByNumber(int territory_number) {
     return returnResult;
 };
 
+/**
+ * @brief Returns a continent object based on continent_number
+ * 
+ * @param continent_number 
+ * @return Result<Continent> 
+ */
 Result<Continent> MapFile::getContinentByNumber(int continent_number) {
-    Result<Continent> returnResult; 
+    Result<Continent> returnResult;
     returnResult.success = false;
     returnResult.message =
         &"ERROR: No continent found with index number "[continent_number];
@@ -647,136 +654,90 @@ Result<Continent> MapFile::getContinentByNumber(int continent_number) {
     return returnResult;
 }
 
-Result<struct ::Territory> MapFile::generateMapTerritory(MapFileTerritory *territory) {
-    Result<struct ::Territory> returnResult;
-    returnResult.success = false;
-    returnResult.message =
-        "ERROR: Default failure message. This should not have happened. "
-        "MapFile::generateMapTerritory()";
-
-    Result<Continent> result =
-        getContinentByNumber(territory->continent_number);
-    if (result.success) {
-        Continent *continent;
-        continent = result.returnValue;
-        // struct ::Territory *returnTerritory = new struct ::Territory();  // MEMORY LEAK HERE
-        // returnTerritory->Name = territory->short_name;
-        // returnTerritory->TerritoryID = territory->number;
-        // returnTerritory->Continent = continent->name;
-
-        std::string terrName = territory->short_name;
-        int terrNumber = territory->number;
-        std::string contName = continent->name;
-        struct::Territory returnTerritory(terrName, terrNumber, contName);
-
-        returnResult.returnValue = &returnTerritory;
-        returnResult.success = true;
-        returnResult.message =
-            "DEBUG: Successfully converted MapFile::Territory to Map::Territory";
-    } else {
-        returnResult.success = false;
-        returnResult.message =
-            result.message +
-            "ERROR: Invalid Continent ID passed to getContinentByNumber in "
-            "MapFile::generateMapTerritory()";
-    }
-    return returnResult;
-};
-
-bool MapFile::isValidTerritoryNumber(int territory_number){
+/**
+ * @brief Checks if territory_number is valid
+ * 
+ * @param territory_number 
+ * @return true 
+ * @return false 
+ */
+bool MapFile::isValidTerritoryNumber(int territory_number) {
     if (map_territories.size() == 0) return false;
     for (int i = 0; i < map_territories.size(); i++)
-        if (map_territories[i]->number == territory_number)
-            return true;
-    return false;
-};
-bool MapFile::isValidContinentNumber(int continent_number){
-    if (map_continents.size() == 0) return false;
-    for (int i = 0; i < map_continents.size(); i++)
-        if (map_continents[i]->number == continent_number)
-            return true;
+        if (map_territories[i]->number == territory_number) return true;
     return false;
 };
 
-Result<Map> MapFile::generateMap() {
-    Result<Map> returnResult;
+/**
+ * @brief Checks if continent_number is valid
+ * 
+ * @param continent_number 
+ * @return true 
+ * @return false 
+ */
+bool MapFile::isValidContinentNumber(int continent_number) {
+    if (map_continents.size() == 0) return false;
+    for (int i = 0; i < map_continents.size(); i++)
+        if (map_continents[i]->number == continent_number) return true;
+    return false;
+};
+
+/**
+ * @brief Simulates the generation of a map.  Will be connected to the map class 
+ *          at a later date
+ * 
+ * @return Result<void> 
+ */
+Result<void> MapFile::generateMap() {
+    Result<void> returnResult;
     returnResult.success = false;
     returnResult.message =
         "ERROR: Default failure message. This should not have happened. "
         "MapFile::generateMap()";
 
-    returnResult.returnValue = new Map(map_territories.size(), map_file_name); // MEMORY LEAK HERE
 
     for (int i = 0; i < map_territories.size(); i++) {
-        //Result<struct ::Territory> resultTerritory;
-        //resultTerritory = generateMapTerritory(map_territories[i]);
-        Result<Continent> resultFirstContinent = getContinentByNumber(map_territories[i]->continent_number);
         std::string firstTerrName = map_territories[i]->short_name;
-        int firstTerrID = map_territories[i]->number;
-        std::string firstTerrContID = std::to_string(resultFirstContinent.returnValue->number);
-        struct ::Territory firstTerritory(firstTerrName, firstTerrID, firstTerrContID);
-        //if (resultTerritory.success) {
-            for (int j = 0; j < map_territories[i]->borders.size(); j++) {
-                //int borderTerritory = map_territories[i]->borders[j];
-                //Result<MapFileTerritory> secondResult =
-                //    getTerritoryByNumber(borderTerritory);
-                Result<Continent> resultSecondContinent =
-                    getContinentByNumber(map_territories[j]->continent_number);
-                std::string secondTerrName = map_territories[j]->short_name;
-                int secondTerrID = map_territories[j]->number;
-                std::string secondTerrContID =
-                    std::to_string(resultSecondContinent.returnValue->number);
-                struct ::Territory secondTerritory(secondTerrName, secondTerrID,secondTerrContID);
-                std::cout << "Adding borders from " << firstTerrName << " to " << secondTerrName << std::endl;
 
-                //if (secondResult.success) {
-                //    MapFileTerritory *secondTerritory;
-                //    secondTerritory = secondResult.returnValue;
-                //    Result<struct ::Territory> secondResultTerritory;
-                //    secondResultTerritory = generateMapTerritory(secondTerritory);
-                //    if (secondResultTerritory.success) {
-                        returnResult.returnValue->AddEdges(
-                            firstTerritory, secondTerritory);
-                    //}
-                //} else {
-                //    returnResult.success = false;
-                //    returnResult.message =
-                //        secondResult.message +
-                //        "ERROR: Invalid Territory number passed as "
-                //        "secondTerritory in MapFile::generateMap()";
-                //    return returnResult;
-                //}
-            }
-        //} else {
-        //    returnResult.success = false;
-        //    returnResult.message = resultTerritory.message;
-        //    return returnResult;
-        //}
+        std::cout << "Processing Borders for: " << firstTerrName << std::endl;
+        std::cout << "-- Borders: ";
+
+        for (int j = 0; j < map_territories[i]->borders.size(); j++) {
+            std::string secondTerrName = map_territories[j]->short_name;
+            std::cout << secondTerrName << " -- ";
+        }
+        std::cout << std::endl;
+
         returnResult.success = true;
         returnResult.message = "\nDEBUG: Successfully created map.";
     }
     return returnResult;
 };
 
-
+/**
+ * @brief Validates the MapFile structure
+ * 
+ * @return Result<void> 
+ */
 Result<void> MapFile::validate() {
     Result<void> returnResult;
     returnResult.success = false;
-    returnResult.message = "\nERROR: Default failure message. This should not have happened. "
+    returnResult.message =
+        "\nERROR: Default failure message. This should not have happened. "
         "MapFile::validate()";
 
     // There is at least 1 continent
     if (map_continents.size() == 0) {
         returnResult.success = false;
         returnResult.message = "\nERROR: There are no continents!";
-        return returnResult;        
+        return returnResult;
     }
 
     // Each continent contains at least one territory
     const int arr_size = map_continents.size();
-    //int continent_array[arr_size];
+    // int continent_array[arr_size];
     std::vector<int> continent_array(arr_size);
-    for (int i = 0; i < arr_size; i++){
+    for (int i = 0; i < arr_size; i++) {
         continent_array[i] = 0;
     }
     for (int i = 0; i < map_territories.size(); i++) {
@@ -787,7 +748,9 @@ Result<void> MapFile::validate() {
     for (int i = 0; i < arr_size; i++) {
         if (continent_array[i] == 0) {
             returnResult.success = false;
-            returnResult.message = "\nERROR: Continent # " + std::to_string(i+1) + " does not have any territories.";
+            returnResult.message = "\nERROR: Continent # " +
+                                   std::to_string(i + 1) +
+                                   " does not have any territories.";
             return returnResult;
         }
     }
@@ -796,7 +759,7 @@ Result<void> MapFile::validate() {
     if (map_territories.size() == 0) {
         returnResult.success = false;
         returnResult.message = "\nERROR: There are no territories!";
-        return returnResult;        
+        return returnResult;
     }
 
     // There are borders on at least 1 territory
@@ -816,7 +779,6 @@ Result<void> MapFile::validate() {
     returnResult.success = true;
     returnResult.message = "\nDEBUG: All mapfile validation tests passed.";
     return returnResult;
-
 }
 
 /////////////////////////////////////////////////////////////////////////////////

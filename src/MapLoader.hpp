@@ -18,7 +18,6 @@
 #include <string>
 #include <vector>
 
-#include "Map.h"
 
 class MapFileTerritory;
 
@@ -149,14 +148,11 @@ class MapFile {
     Result<MapFileTerritory> getTerritoryByNumber(int territory_number);
     Result<Continent> getContinentByNumber(int continent_number);
 
-    //Result<struct ::Territory> generateMapTerritory(MapFileTerritory *territory);
-    Result<struct ::Territory> generateMapTerritory(MapFileTerritory *territory);
-
     bool isValidTerritoryNumber(int territory_number);
     bool isValidContinentNumber(int continent_number);
 
     // Map *generateMap();
-    Result<Map> generateMap();
+    Result<void> generateMap();
 
     Result<void> validate();
 
