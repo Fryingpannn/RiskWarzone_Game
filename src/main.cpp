@@ -23,33 +23,50 @@
 
 void displayMenu();
 
-//int main()
-//{
-//    _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
-//    std::cout << "Assignment 1 - Demo" << std::endl;
-//    std::cout << "Main Menu" << std::endl;
-//    std::cout << "========================" << std::endl;
-//    
-//    std::string choice;
-//
-//    while(true)
-//    {
-//        displayMenu();
-//        std::cout << "Please enter your choice (q to quit): ";
-//        std::cin >> choice;
-//
-//        if (choice == "1") {
-//            mapLoaderDriver();
-//        } else if (choice == "2") {
-//            mapDriver();
-//        } else if (choice == "q" || choice == "Q"){
-//            break;
-//        }
-//    }
-//    
-//
-//    return 0;
-//}
+int main()
+{
+    _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+    std::cout << "Assignment 1 - Demo" << std::endl;
+    std::cout << "Main Menu" << std::endl;
+    std::cout << "========================" << std::endl;
+    
+    char choice;
+
+    bool running = true;
+    while(running)
+    {
+        displayMenu();
+        std::cout << "Please enter your choice (q to quit): ";
+        std::cin >> choice;
+
+        switch (choice) 
+        { 
+            case '1':
+                mapLoaderDriver();
+                break;
+            case '2':
+                mapDriver();
+                break;
+            case'3':
+                break;
+            case '4':
+                break;
+            case '5':
+                break;
+            case'q':
+            case 'Q':
+                running = false;
+                break;
+            default:
+                std::cout << "Please no messing around Zzz" << std::endl;
+                break;
+        }
+       
+    }
+    
+
+    return 0;
+}
 
 void displayMenu() 
 {

@@ -5,9 +5,9 @@
 #include <stdlib.h>
 #include <crtdbg.h>
 
-void mapDriver() {}
 
-int main() 
+
+void mapDriver() 
 {
     //// graph edges array.
     //graphEdge edges[] = {
@@ -157,5 +157,5 @@ int main()
 
     delete WorldMap3;
 
-    return 0;
+ 
 }
