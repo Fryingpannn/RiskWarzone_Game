@@ -18,13 +18,19 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\MapDriver.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\Cards.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\CardsDriver.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Map.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\MapDriver.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\MapLoader.cpp">
@@ -45,7 +51,7 @@
     <ClCompile Include="src\PlayerDriver.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Map.cpp">
+    <ClCompile Include="src\RiskWarzoneGame.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -53,7 +59,7 @@
     <ClInclude Include="src\Cards.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\MapLoader.h">
+    <ClInclude Include="src\MapLoader.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Orders.h">
