@@ -42,14 +42,15 @@ void mapLoaderDriver() {
         Result<void> validateMapFile = testMapFile->validate();
         if (validateMapFile.success) {
             Result<Map> generateMapResult;
-            Map *testMap;
-            generateMapResult = testMapFile->generateMap();
-            if (generateMapResult.success) {
-                testMap = generateMapResult.returnValue;
-                testMap->Display();
-            } else {
-                std::cerr << generateMapResult.message << std::endl;
-            }
+            // Map *testMap;
+            // generateMapResult = testMapFile->generateMap();
+            // if (generateMapResult.success) {
+            //     testMap = generateMapResult.returnValue;
+            //     testMap->Display();
+            // } else {
+            //     std::cerr << generateMapResult.message << std::endl;
+            // }
+            testMapFile->generateMap();
         } else {
             std::cerr << "ERROR: testMapFile failed validation checks." << validateMapFile.message << std::endl;
         }
