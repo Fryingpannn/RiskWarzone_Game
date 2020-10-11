@@ -688,6 +688,11 @@ bool MapFile::isValidContinentNumber(int continent_number) {
     return false;
 };
 
+/**
+* @brief Generates the map in conjunction with the Map class
+*
+* @return Map
+*/
 Map MapFile::generateMap() {
     Map returnMap(map_territories.size(), map_file_name);
 
@@ -697,7 +702,7 @@ Map MapFile::generateMap() {
             getContinentByNumber(map_territories[i]->continent_number);
 
         std::string firstTerrName = map_territories[i]->short_name;
-        int firstTerrID = map_territories[i]->number;
+        int firstTerrID = map_territories[i]->number -1;
         std::string firstTerrContName = firstContinentResult.returnValue->name;
 
         std::cout << "Processing Borders for: " << firstTerrName << std::endl;
@@ -714,7 +719,7 @@ Map MapFile::generateMap() {
             secondTerritoryResult = getTerritoryByNumber(map_territories[i]->borders[j]);
 
             std::string secondTerrName = secondTerritoryResult.returnValue->short_name;
-            int secondTerrID = secondTerritoryResult.returnValue->number;
+            int secondTerrID = secondTerritoryResult.returnValue->number -1;
             std::string secondTerrContName = secondContinentResult.returnValue->name;
 
             Territory secondTerritory(secondTerrName, secondTerrID, secondTerrContName);
