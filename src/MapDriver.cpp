@@ -1,13 +1,13 @@
 #include <iostream>
 #include "Map.h"
 
-#define _CRTDBG_MAP_ALLOC  
+// #define _CRTDBG_MAP_ALLOC  
 #include <stdlib.h>  
-#include <crtdbg.h>  
+// #include <crtdbg.h>  
 
-int main()
+void mapDriver()
 {
-    _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+    // _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
     //// graph edges array.
     //graphEdge edges[] = {
     //    // (x, y, w) -> edge from x to y with weight w
@@ -217,5 +217,5 @@ int main()
     WorldMap->Display();*/
 
    
-    return 0;
+    // return 0;
 }

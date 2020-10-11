@@ -659,12 +659,17 @@ Result<struct ::Territory> MapFile::generateMapTerritory(MapFileTerritory *terri
     if (result.success) {
         Continent *continent;
         continent = result.returnValue;
-        struct ::Territory *returnTerritory = new struct ::Territory();  // MEMORY LEAK HERE
-        returnTerritory->Name = territory->short_name;
-        returnTerritory->TerritoryID = territory->number;
-        returnTerritory->Continent = continent->name;
+        // struct ::Territory *returnTerritory = new struct ::Territory();  // MEMORY LEAK HERE
+        // returnTerritory->Name = territory->short_name;
+        // returnTerritory->TerritoryID = territory->number;
+        // returnTerritory->Continent = continent->name;
 
-        returnResult.returnValue = returnTerritory;
+        std::string terrName = territory->short_name;
+        int terrNumber = territory->number;
+        std::string contName = continent->name;
+        struct::Territory returnTerritory(terrName, terrNumber, contName);
+
+        returnResult.returnValue = &returnTerritory;
         returnResult.success = true;
         returnResult.message =
             "DEBUG: Successfully converted MapFile::Territory to Map::Territory";
