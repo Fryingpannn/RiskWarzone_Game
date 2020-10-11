@@ -172,6 +172,7 @@ void Map::Display()
 	}
 }
 
+//use this function when you want to display the continent countries :O 
 void Map::Display(std::string continent)
 {
 	std::cout << "\n\nMap Name: " << continent << std::endl;
@@ -184,8 +185,9 @@ void Map::Display(std::string continent)
 		{
 			if (j == 0) {
 				if (continent == *(country->Continent)) {
+					//please dereference the pointer here, otherwise you will be printing memory address Zzz
 					std::cout << "Continent: " << *country->Continent << std::endl;
-					std::cout << "Country: " << j << std::endl;
+					std::cout << "Country: " << *country->TerritoryID << std::endl;
 					std::cout << "Name: " << *country->Name << std::endl;
 					std::cout << "Adjacent Countries " << std::endl;
 					j++;
