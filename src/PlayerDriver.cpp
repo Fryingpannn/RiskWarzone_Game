@@ -53,54 +53,60 @@ void playerDriver() {
   countries.push_back(country1);
   countries.push_back(country2);
 
-  auto *card1 = new Card(BOMB);
-  auto *card2 = new Card(AIRLIFT);
-  Hand hand;
-  hand.add(*card1->getType());
-  hand.add(*card2->getType());
+  Map *map = new Map(15, "WorldMap");
+  Deck d = Deck(map->NumOfCountries());
+  Hand hand{};
+  d.draw(hand);
+  d.draw(hand);
 
   auto *order = new Deploy();
   OrderList orderlist;
   orderlist.addToList(order);
 
+
+
   ////////////////////////////////////////////////////////////////////////
   // Start of tests
   ////////////////////////////////////////////////////////////////////////
 
-  std::cout << "Testing default constructor of player" << std::endl;
+  std::cout << "\nTesting default constructor of player" << std::endl;
   auto *player1 = new Player();
+  player1->PID = "Player[1]";
+  d.draw(*(player1->HandOfCards));
   std::cout << *player1 << std::endl;
 
-  std::cout << "Testing regular constructor of player." << std::endl;
-  auto *player2 = new Player(countries, hand, orderlist);
-  std::cout << "Player2" << std::endl;
+  std::cout << "\nTesting regular constructor of player." << std::endl;
+  auto *player2 = new Player(countries, hand, orderlist, "Player[2]");
+  std::cout << "------ Player2 ------" << std::endl;
   std::cout << *player2 << std::endl;
 
-  std::cout << "Testing copy constructor of player." << std::endl;
-  auto player3 = *player2;
-  std::cout << "Player 3" << std::endl;
-  std::cout << player3 << std::endl;
+  std::cout << "\nTesting copy constructor of player." << std::endl;
+  auto *player3 = new Player(*player2);
+  d.draw(*(player3->HandOfCards));
+  std::cout << "------ Player3 ------" << std::endl;
+  std::cout << *player3 << std::endl;
 
-  std::cout << "Testing issue order method of player." << std::endl;
-  player3.issueOrder();
-  std::cout << "Player3" << std::endl;
-  std::cout << player3 << std::endl;
+  std::cout << "\nTesting issue order method of player." << std::endl;
+  player3->issueOrder();
+  std::cout << "------ Issue Order ------" << std::endl;
+  std::cout << *player3 << std::endl;
 
-  std::cout << "Testing assignment operator of player." << std::endl;
-  Player player4;
-  player4 = *player2;
-  std::cout << "Player4" << std::endl;
-  std::cout << player4 << std::endl;
+  std::cout << "\nTesting assignment operator of player." << std::endl;
+  Player *player4 = new Player();
+  *player4 = *player2;
+  d.draw(*(player4->HandOfCards));
+  std::cout << "------ Player4 ------" << std::endl;
+  std::cout << *player4 << std::endl;
 
-  std::cout << "Testing toAttack() method " << std::endl;
-  std::cout << "Player2" << std::endl;
+  std::cout << "\nTesting toAttack() method " << std::endl;
+  std::cout << "------ toAttack() ------" << std::endl;
   auto toAttack = player2->toAttack();
   for (auto i = toAttack.begin(); i != toAttack.end(); ++i) {
     std::cout << **i << " ";
   }
 
   std::cout << "\n\nTesting toDefend() method " << std::endl;
-  std::cout << "Player2 to defend " << std::endl;
+  std::cout << "------ toDefend() ------" << std::endl;
   auto toDefend = player2->toDefend();
   for (auto i = toDefend.begin(); i != toDefend.end(); ++i) {
     std::cout << **i << " ";
@@ -113,10 +119,31 @@ void playerDriver() {
   ////////////////////////////////////////////////////////////////////////
 
   // Clearing memory use
+  // country 1 and 2 are deleted by player objects themselves
+  delete country3;
+  country3 = nullptr;
+  delete country4;
+  country4 = nullptr;
+  delete country5;
+  country5 = nullptr;
+  delete country6;
+  country6 = nullptr;
+  delete country7;
+  country7 = nullptr;
+  delete country8;
+  country8 = nullptr;
+  delete map;
+  map = nullptr;
+
   delete player1;
   delete player2;
+  delete player3;
+  delete player4;
   player1 = nullptr;
   player2 = nullptr;
+  player3 = nullptr;
+  player4 = nullptr;
   allCountries.clear();
   countries.clear();
+
 }

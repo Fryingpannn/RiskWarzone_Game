@@ -17,8 +17,11 @@
 
 /*---------------------------------- OrderList class ----------------------------------*/
 
-//default constructor
-OrderList::OrderList() {}
+/*---------------------------------- OrderList class
+ * ----------------------------------*/
+
+// default constructor
+OrderList::OrderList() { this->list = std::vector<Order*>{}; }
 
 //copy constructor for OrderList
 OrderList::OrderList(const OrderList& copy) {
@@ -73,7 +76,7 @@ std::ostream& operator <<(std::ostream& out, const OrderList& o) {
 	if (!o.list.empty()) {
 		out << "----- Your current orders -----" << std::endl;
 		for (int i = 0; i < o.list.size(); ++i)
-			out << "[" << i << "]. " << o.list[i]->getName() << std::endl;
+			out << "\t[" << i << "]. " << o.list[i]->getName() << std::endl;
 	}
 	else
 		out << "Order list is empty.\n";
@@ -84,11 +87,12 @@ std::ostream& operator <<(std::ostream& out, const OrderList& o) {
 
 //destructor for OrderList: deletes and clears all pointers in vector list
 OrderList::~OrderList() {
-	for (int i = 0; i < this->list.size(); ++i) {
-		delete this->list[i];
-	}
-	this->list.clear();
-	std::cout << "------ Order List has been cleared -----" << std::endl;
+  for (int i = 0; i < this->list.size(); ++i) {
+    delete this->list[i];
+    this->list[i] = nullptr;
+  }
+  this->list.clear();
+  std::cout << "------ Order List has been cleared -----" << std::endl;
 }
 
 /*---------------------------------- Order class ----------------------------------*/

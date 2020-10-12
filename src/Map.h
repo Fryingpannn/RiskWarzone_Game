@@ -17,26 +17,35 @@
 #include <string>
 #include <vector>
 
+#include "Player.h"
+
 #ifdef _DEBUG
 #define Log(x) std::cout << x << std::endl;
 #else
 #define Log(x)
 #endif
 
+#ifndef H_PLAYER
+#define H_PLAYER
+class Player;
+#endif
 // country only need name, a unique ID and a continent
 // is a struct and not a class, so do what you need to do :)
 struct Territory {
-public:
+ public:
   std::string Name;
   int TerritoryID;
   std::string Continent;
   float XCoordinate;
   float YCoordinate;
+  std::string OwnedBy;
+  int Armies;
 
   bool operator==(Territory &Territory) const;
 
   Territory();
-  Territory(std:: string name, int territoryID, std::string continent, float x, float y);
+  Territory(std::string name, int territoryID, std::string continent, float x,
+            float y);
   Territory(const Territory &t);
   friend std::ostream &operator<<(std::ostream &out, const Territory &t);
   Territory &operator=(const Territory &t);
