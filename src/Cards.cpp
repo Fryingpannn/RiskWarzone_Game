@@ -315,10 +315,13 @@ Deck::Deck(int deckSize) {
  */
 Deck::Deck(const Deck& d) {
   while (!deck.empty()) {
-    delete deck.front();
-    deck.front() = nullptr;
-    deck.pop();
-  }
+		Card* p = deck.front();
+		deck.pop();
+
+		// memory should be freed here
+		delete p;
+		p = nullptr;
+	}
 
   size = new int(*d.size);
   std::queue<Card*> q = (d.deck);
@@ -333,11 +336,14 @@ Deck::Deck(const Deck& d) {
  * Destructor of the deck object.
  */
 Deck::~Deck() {
-  for (int i = 0; i < deck.size(); i++) {
-    delete deck.front();
-    deck.front() = nullptr;
-    deck.pop();
-  }
+  while (!deck.empty()) {
+		Card* p = deck.front();
+		deck.pop();
+
+		// memory should be freed here
+		delete p;
+		p = nullptr;
+	}
   delete size;
   size = nullptr;
 }
@@ -364,9 +370,12 @@ Card Deck::draw(Hand& const h) {
   Card chosen = *this->deck.front();
   CardType* t = chosen.getType();
   std::cout << "drawing a card of type " << chosen << std::endl;
-  delete deck.front();
-  deck.front() = nullptr;
-  this->deck.pop();
+  // memory should be freed here
+  Card* p = deck.front();
+	deck.pop();	
+	delete p;
+	p = nullptr;
+  
   h.add(*t);
   return chosen;
 }
@@ -389,10 +398,13 @@ Deck& Deck::operator=(const Deck& d) {
   if (this != &d) {
     // empty the current queue
     while (!deck.empty()) {
-      delete deck.front();
-      deck.front() = nullptr;
-      deck.pop();
-    }
+			Card* p = deck.front();
+			deck.pop();
+
+			// memory should be freed here
+			delete p;
+			p = nullptr;
+		}
 
     *size = *d.size;
     std::queue<Card*> q = (d.deck);
