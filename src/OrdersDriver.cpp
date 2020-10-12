@@ -1,10 +1,8 @@
-#include <iostream>
-#include <vector>
-#include <string>
+#include "OrdersDriver.h"
 #include "Orders.h"
 
 //This driver file tests the functionalities from the Orders.h/Orders.cpp files.
-int main() {
+void ordersDriver() {
 	std::cout << "-------- OrderList driver program: Let's create some orders! -------\n" << std::endl;
 
 	//creating new OrderList
@@ -56,6 +54,4 @@ int main() {
 	std::cout << std::endl << "Copied list:" << std::endl << assignCopy << std::endl;
 
 	std::cout << "----- Destructor call stack below -----" << std::endl;
-
-	return 0;
 }

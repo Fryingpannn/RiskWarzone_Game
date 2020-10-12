@@ -1,6 +1,3 @@
-#include <iostream>
-#include <vector>
-#include <string>
 #include "Orders.h"
 
 /*---------------------------------- OrderList class ----------------------------------*/
