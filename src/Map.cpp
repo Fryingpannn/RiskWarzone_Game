@@ -18,7 +18,13 @@
 #include <algorithm>
 #include <iostream>
 
-Territory::Territory(){};
+Territory::Territory(){
+    this->Name = "default";
+    this->TerritoryID = 999;
+    this->Continent = "";
+    this->XCoordinate = 0;
+    this->YCoordinate = 0;
+};
 
 Territory::Territory(std::string name, int territoryID, std::string continent,
                      float x, float y) {
@@ -132,6 +138,7 @@ Map::~Map() {
 void Map::AddEdges(Territory& country1, Territory& country2) {
   Log("Passed by Add Edges\n");
 
+  //When the Array still doesn't have the country yet, it will automatically add a new country
   if (this->ListOfCountries[country1.TerritoryID]->size() == 0) {
     Log("HEY HEY");
     this->ListOfCountries[country1.TerritoryID]->push_back(&country1);
@@ -154,8 +161,23 @@ void Map::AddEdges(Territory& country1, Territory& country2) {
   this->ListOfCountries[country1.TerritoryID]->push_back(&country2);
 }
 
+std::vector<struct::Territory*> Map::ReturnListOfCountries()
+{
+    std::vector<Territory*> Temp;
+    for (int i = 0; i < *NumberOfCountries; i++)
+    {
+        Temp.push_back(ListOfCountries[i]->at(0));
+        Log(ListOfCountries[i]->at(0)->Name << std::endl);
+    }
+
+    return Temp;
+}
+
 int Map::NumOfCountries() { return *this->NumberOfCountries; }
 
+/// <summary>
+/// 
+/// </summary>
 void Map::Display() {
   std::cout << "\n\nMap Name: " << *MapName << std::endl;
 
@@ -329,9 +351,9 @@ void Map::DFS(int x, bool** visited) {
   int i = 0;
 
   for (Territory* temp : *ListOfCountries[0]) {
-    /*std::cout << "Country???: " <<temp->Name<<temp->TerritoryID<< std::endl;
-    std::cout << "temp->territoryID: " << *visited[temp->TerritoryID] <<
-    std::endl;*/
+    Log("Country???: " <<temp->Name<<temp->TerritoryID<< std::endl);
+    Log("temp->territoryID: " << *visited[temp->TerritoryID]);
+    
     if (i == 0) {
       i++;
     } else {

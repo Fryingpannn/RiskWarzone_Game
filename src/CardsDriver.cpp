@@ -44,16 +44,16 @@ void CardsDeckTest() {
 	Player p = Player();
 
 	// test deck 1 with player
-	cout << "Deck 1 is: \n" << d << endl;
+	std::cout << "Deck 1 is: \n" << d << std::endl;
 
-	cout << "Drawing from Deck 1:\n" << endl;
+	std::cout << "Drawing from Deck 1:\n" << std::endl;
 
 	for (int i = 0;i < 5;i++) {
 		d.draw(*p.HandOfCards);
 	}
 
 	
-	cout << "My hand now is: " << *p.HandOfCards << endl;
+	std::cout << "My hand now is: " << *p.HandOfCards << std::endl;
 
 
 	for (int i = 0;i < 5;i++) {
@@ -62,17 +62,17 @@ void CardsDeckTest() {
 	}
 
 
-	cout << "---------------------------\n" << endl;
+	std::cout << "---------------------------\n" << std::endl;
 
 	//test deck 2 with the independent hand and order list
-	cout << "Deck 2 is:\n" << d2 << endl;
-	cout << "Drawing from Deck 2:\n" << endl;
+	std::cout << "Deck 2 is:\n" << d2 << std::endl;
+	std::cout << "Drawing from Deck 2:\n" << std::endl;
 
 	for (int i = 0;i < 5;i++) {
 		d2.draw(h);
 	}
 
-	cout << "My hand now is: " << h << endl;
+	std::cout << "My hand now is: " << h << std::endl;
 
 
 	for (int i = 0;i < 5;i++) {

@@ -46,7 +46,7 @@ void Card::Play(Hand& const h, OrderList& const list, Deck& d) {
 		CardType* type = (getType());
 
 		d.add(*type);
-		cout << "Playing " << *this << endl;
+		std::cout << "Playing " << *this << std::endl;
 
 		h.remove(index);
 		//TODO create an order in the order list
@@ -71,7 +71,7 @@ void Card::Play(Hand& const h, OrderList& const list, Deck& d) {
 	}
 	else {
 
-		cout << "You do not have this card" << endl;
+		std::cout << "You do not have this card" << std::endl;
 	}
 }
 
@@ -250,7 +250,7 @@ Card Deck::draw(Hand& const h) {
 	//draw the card on top of the deck and put it in the hand
 	Card chosen = *this->deck.front();
 	CardType* t = chosen.getType();
-	cout << "drawing a card of type " << chosen << endl;
+	std::cout << "drawing a card of type " << chosen << std::endl;
 	delete deck.front();
 	deck.front() = nullptr;
 	this->deck.pop();
@@ -279,7 +279,7 @@ Deck& Deck::operator = (const Deck& d) {
 		}
 
 		*size = *d.size;
-		queue<Card*> q = (d.deck);
+		std::queue<Card*> q = (d.deck);
 		// fill te queue with 
 		while (!q.empty()) {
 			deck.push(new Card(*q.front()));
@@ -289,12 +289,12 @@ Deck& Deck::operator = (const Deck& d) {
 	return *this;
 }
 
-ostream& operator << (ostream& out, const Deck& d) {
+std::ostream& operator << (std::ostream& out, const Deck& d) {
 
-	queue<Card*> q = (d.deck);
+	std::queue<Card*> q = (d.deck);
 	//printing content of queue 
 	while (!q.empty()) {
-		out << " " << *q.front() << endl;
+		out << " " << *q.front() << std::endl;
 		q.pop();
 	}
 	return out;

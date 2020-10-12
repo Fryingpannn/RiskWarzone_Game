@@ -55,9 +55,12 @@ struct ContinentData {
 };
 
 class Map {
+
   std::string *MapName;
   std::vector<Territory *> **ListOfCountries;
   int *NumberOfCountries;
+
+  std::vector<Territory*> AllCountries;
 
  public:
   // minimal Constructor
@@ -77,6 +80,11 @@ class Map {
   ~Map();
 
   void AddEdges(Territory &country1, Territory &country2);
+
+ 
+
+  std::vector<struct::Territory*> ReturnListOfCountries();
+
   int NumOfCountries();
   void Display();
   void Display(std::string continent);

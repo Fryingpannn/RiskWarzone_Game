@@ -69,10 +69,9 @@ void mapDriver()
     Territory France{"France", 8, "Europe", 0, 0
     };
 
-
+    //This is how you add country to the map
+    //you add the edges instead of isolated country
     Map *WorldMap = new Map(9, "WorldMap");
-
-
     WorldMap->AddEdges(Malaysia, Vietnam);
     WorldMap->AddEdges(Malaysia, Indonesia);
     WorldMap->AddEdges(Indonesia, Malaysia);
@@ -89,6 +88,11 @@ void mapDriver()
     WorldMap->AddEdges(Japan, Korea);
     WorldMap->AddEdges(China, Korea);
     WorldMap->AddEdges(Malaysia, Japan);
+
+    std::vector<Territory* > test = WorldMap->ReturnListOfCountries();
+
+    //testing whether the list return will change the Territory Data
+    test.at(1)->Name = "Hahaha";
 
     WorldMap->Display();
 
