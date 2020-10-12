@@ -21,13 +21,32 @@
 // Card class implementation
 
 // Constructors
+
+/**
+ * Default constructor initialize the type to EMPTY.
+ */
 Card::Card() { this->type = new CardType(EMPTY); }
+
+/**
+ * Constructor with given parameters.
+ *
+ * @param c a card type to assign to the current card.
+ */
 
 Card::Card(CardType c) { this->type = new CardType(c); }
 
+/**
+ * Copy constructor that creates a deep copy of a Card object.
+ *
+ * @param c The object to copy.
+ */
 Card::Card(const Card& c) { (this->type) = new CardType(*c.type); }
 
 // Destructor
+
+/**
+ * Destructor of the card object.
+ */
 Card::~Card() {
 	delete type;
 	type = nullptr;
@@ -35,9 +54,21 @@ Card::~Card() {
 
 // Functions
 
+/**
+ * A function that returns a pointer to the type of the card.
+ *
+ * @return pointer to CardType
+ */
 CardType* Card::getType() { return (this->type); }
 
-
+/**
+ * A function that removes the card from the hand, adds it to the deck and creates the associated order in the given orderlist.
+ *
+ * @param h The object hand that includes the card.
+ * @param list The orderlist where the order created will be added to.
+ * @param d The object Deck that the card will be return to.
+ * @return void
+ */
 void Card::Play(Hand& const h, OrderList& const list, Deck& d) {
 
 	int index = h.find(*this);
@@ -49,7 +80,7 @@ void Card::Play(Hand& const h, OrderList& const list, Deck& d) {
 		cout << "Playing " << *this << endl;
 
 		h.remove(index);
-		//TODO create an order in the order list
+		
 		switch (*getType()) {
 		case CardType::BOMB:
 			list.addToList(new Bomb());
@@ -77,6 +108,11 @@ void Card::Play(Hand& const h, OrderList& const list, Deck& d) {
 
 // Operator overloading
 
+/**
+ * Overloaded assignment operator that create a deep copy of a card object.
+ *
+ * @param c The object to equate.
+ */
 Card& Card::operator=(const Card& c) {
 
 	//check if two pointers dont point to the same address (not self assignment);
@@ -86,6 +122,12 @@ Card& Card::operator=(const Card& c) {
 	return *this;
 }
 
+/**
+ * Overloaded stream operator for cards
+ *
+ * @param out The stream object.
+ * @param card The card object to print.
+ */
 std::ostream& operator<<(std::ostream& out, const Card& card) {
 	switch (*card.type) {
 	case CardType::BOMB:
@@ -113,8 +155,18 @@ std::ostream& operator<<(std::ostream& out, const Card& card) {
 // Hand class implementation
 
 // Constructors
+
+/**
+ * Default constructor initialize the hand member to an empty vector.
+ */
 Hand::Hand() { this->hand = std::vector<Card*>{}; }
 
+
+/**
+ * Copy constructor that creates a deep copy of a Hand object.
+ *
+ * @param h The object to copy.
+ */
 Hand::Hand(const Hand& h) {
 	for (auto i = h.hand.begin(); i != h.hand.end(); ++i) {
 		auto* card = new Card(**i);
@@ -123,6 +175,9 @@ Hand::Hand(const Hand& h) {
 }
 
 // Destructor
+/**
+ * Destructor of the hand object.
+ */
 Hand::~Hand() {
 	for (auto& i : hand) {
 		delete i;
@@ -131,6 +186,14 @@ Hand::~Hand() {
 }
 
 // Functions
+
+
+/**
+ * A function that creates and adds a card of the given type to the hand object.
+ *
+ * @param type A CardType
+ * @return void
+ */
 void Hand::add(CardType& const type) {
 	if (this->hand.size() < 6) {
 		hand.emplace_back(new Card(type));
@@ -140,6 +203,13 @@ void Hand::add(CardType& const type) {
 	}
 }
 
+
+/**
+ * A function that removes the card at the given position from the hand.
+ *
+ * @param index The position of the card that should be removed
+ * @return void
+ */
 void Hand::remove(int index) {
 	for (int i = index; i < hand.size() - 1; i++) {
 		*hand.at(i) = *hand.at(i + 1);
@@ -150,6 +220,12 @@ void Hand::remove(int index) {
 	hand.pop_back();
 }
 
+/**
+ * A function that finds the first card of the same time as the given card in the hand and returns its position. If the card is not found, returns -1
+ *
+ * @param c The card that needs to be found
+ * @return smallest index of the given card
+ */
 int Hand::find(Card c) {
 	int index = -1;
 
@@ -163,6 +239,12 @@ int Hand::find(Card c) {
 	return index;
 }
 
+/**
+ * A function that returns the card at a given index.
+ *
+ * @param pos The position of the card that should be returned
+ * @return A Card object
+ */
 Card Hand::returnByPos(int pos) {
 	// return the card at the given position
 	if (pos < hand.size()) {
@@ -171,6 +253,11 @@ Card Hand::returnByPos(int pos) {
 }
 // Operator overloading
 
+/**
+ * Overloaded assignment operator that create a deep copy of a hand object.
+ *
+ * @param h The object to equate.
+ */
 Hand& Hand::operator=(const Hand& h) {
 
 	//check if two pointers dont point to the same address (not self assignment);
@@ -183,6 +270,12 @@ Hand& Hand::operator=(const Hand& h) {
 	return *this;
 }
 
+/**
+ * Overloaded stream operator for hand
+ *
+ * @param out The stream object.
+ * @param h The hand to print.
+ */
 std::ostream& operator<<(std::ostream& out, const Hand& h) {
 	for (auto* i : h.hand) {
 		out << *i << ' ';
@@ -195,11 +288,22 @@ std::ostream& operator<<(std::ostream& out, const Hand& h) {
 
 // Constructors
 
+// Constructors
+
+/**
+ * Default constructor initialize the deck members to their default value.
+ */
 Deck::Deck() {
 	this->deck = std::queue<Card*>{};
 	this->size = new int(0);
 };
 
+
+/**
+ * Constructor with given parameters. A deck of the given size is created and filled with random cards.
+ *
+ * @param deckSize the size of the deck to be created.
+ */
 Deck::Deck(int deckSize) {
 	this->size = new int(deckSize);
 
@@ -210,6 +314,11 @@ Deck::Deck(int deckSize) {
 	}
 }
 
+/**
+ * Copy constructor that creates a deep copy of a Deck object.
+ *
+ * @param d The object to copy.
+ */
 Deck::Deck(const Deck& d) {
 	while (!deck.empty()) {
 		delete deck.front();
@@ -226,7 +335,9 @@ Deck::Deck(const Deck& d) {
 }
 
 // Destructor
-
+/**
+ * Destructor of the deck object.
+ */
 Deck::~Deck() {
 	for (int i = 0; i < deck.size(); i++) {
 		delete deck.front();
@@ -239,12 +350,24 @@ Deck::~Deck() {
 
 // Functions
 
+/**
+ * A function that adds a card of the given type to the deck.
+ *
+ * @param type A CardType
+ * @return void
+ */
 void Deck::add(CardType const type) {
 
 	deck.push(new Card(type));
 
 }
 
+/**
+ * A function that removes the front card in the queue and puts it in the given hand object and returns that card.
+ *
+ * @param h A Hand object
+ * @return A Card object
+ */
 Card Deck::draw(Hand& const h) {
 
 	//draw the card on top of the deck and put it in the hand
@@ -259,7 +382,11 @@ Card Deck::draw(Hand& const h) {
 
 }
 
-
+/**
+ * A function that returns size of the deck
+ *
+ * @return size of the deck
+ */
 int Deck::GetSize() {
 
 	return deck.size();
@@ -267,6 +394,11 @@ int Deck::GetSize() {
 }
 
 // Operator overloading
+/**
+ * Overloaded assignment operator that create a deep copy of a deck object.
+ *
+ * @param d The object to equate.
+ */
 Deck& Deck::operator = (const Deck& d) {
 
 	//check if two pointers dont point to the same address (not self assignment);
@@ -289,6 +421,12 @@ Deck& Deck::operator = (const Deck& d) {
 	return *this;
 }
 
+/**
+ * Overloaded stream operator for deck
+ *
+ * @param out The stream object.
+ * @param d The deck to print.
+ */
 ostream& operator << (ostream& out, const Deck& d) {
 
 	queue<Card*> q = (d.deck);
