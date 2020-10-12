@@ -18,6 +18,7 @@
 #include "MapDriver.h"
 #include "MapLoaderDriver.hpp"
 #include "PlayerDriver.h"
+#include "CardsDriver.h"
 
 #include <stdlib.h>
 
@@ -35,30 +36,32 @@ int main()
     while(running)
     {
         displayMenu();
-        std::cout << "Please enter your choice (q to quit): ";
+        std::cout << "Please enter your choice 1-5 (q to quit): ";
         std::cin >> choice;
 
         switch (choice) 
         { 
             case '1':
-                mapLoaderDriver();
+                mapDriver();
                 break;
             case '2':
-                mapDriver();
+                mapLoaderDriver();
                 break;
             case '3':
                 playerDriver();
                 break;
             case '4':
+                std::cout << "Not yet implemented" << std::endl;
                 break;
             case '5':
+                CardsDeckTest();
                 break;
             case 'q':
             case 'Q':
                 running = false;
                 break;
             default:
-                std::cout << "Please no messing around Zzz" << std::endl;
+                std::cout << "Invalid option." << std::endl;
                 break;
         }
        
@@ -70,8 +73,9 @@ int main()
 
 void displayMenu() 
 {
-    std::cout << "1. MapLoader driver" << std::endl;
-    std::cout << "2. Map driver" << std::endl;
+    std::cout << "1. Map driver" << std::endl;
+    std::cout << "2. MapLoader driver" << std::endl;
     std::cout << "3. Player driver" << std::endl;
-
+    std::cout << "4. Orders driver" << std::endl;
+    std::cout << "5. Cards Driver" << std::endl;
 }
