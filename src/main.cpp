@@ -17,15 +17,15 @@
 #include <string>
 #include "MapDriver.hpp"
 #include "MapLoaderDriver.hpp"
-#define _CRTDBG_MAP_ALLOC
+// #define _CRTDBG_MAP_ALLOC
 #include <stdlib.h>
-#include <crtdbg.h>
+// #include <crtdbg.h>
 
 void displayMenu();
 
 int main()
 {
-    _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+    // _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
     std::cout << "Assignment 1 - Demo" << std::endl;
     std::cout << "Main Menu" << std::endl;
     std::cout << "========================" << std::endl;
@@ -47,13 +47,13 @@ int main()
             case '2':
                 mapDriver();
                 break;
-            case'3':
+            case '3':
                 break;
             case '4':
                 break;
             case '5':
                 break;
-            case'q':
+            case 'q':
             case 'Q':
                 running = false;
                 break;
