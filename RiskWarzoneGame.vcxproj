@@ -165,6 +165,7 @@
   <ItemGroup>
     <ClInclude Include="src\Cards.h" />
     <ClInclude Include="src\Map.h" />
+    <ClInclude Include="src\MapDriver.h" />
     <ClInclude Include="src\MapLoader.hpp" />
     <ClInclude Include="src\Orders.h" />
     <ClInclude Include="src\Player.h" />
