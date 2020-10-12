@@ -18,12 +18,12 @@
 #include <algorithm>
 #include <iostream>
 
-Territory::Territory(){
-    this->Name = "default";
-    this->TerritoryID = 999;
-    this->Continent = "";
-    this->XCoordinate = 0;
-    this->YCoordinate = 0;
+Territory::Territory() {
+  this->Name = "default";
+  this->TerritoryID = 999;
+  this->Continent = "";
+  this->XCoordinate = 0;
+  this->YCoordinate = 0;
 };
 
 Territory::Territory(std::string name, int territoryID, std::string continent,
@@ -35,7 +35,7 @@ Territory::Territory(std::string name, int territoryID, std::string continent,
   this->YCoordinate = y;
 }
 
- bool Territory::operator==(Territory& Territory) const {
+bool Territory::operator==(Territory& Territory) const {
   return this->TerritoryID == Territory.TerritoryID;
 }
 
@@ -113,7 +113,7 @@ Map::Map(Map& Copy) {
   for (int i = 0; i < 1000; i++)
     ListOfCountries[i] = new std::vector<struct ::Territory*>;
 
-  if(!(**Copy.ListOfCountries).empty()){
+  if (!(**Copy.ListOfCountries).empty()) {
     for (int i = 0; i < *Copy.NumberOfCountries; i++) {
       for (Territory* country : *Copy.ListOfCountries[i]) {
           //calling copy constructor of each Territory
@@ -137,13 +137,14 @@ Map::~Map() {
   delete NumberOfCountries;
   delete MapName;
 
-  
+
 }
 
 void Map::AddEdges(Territory& country1, Territory& country2) {
   Log("Passed by Add Edges\n");
 
-  //When the Array still doesn't have the country yet, it will automatically add a new country
+  // When the Array still doesn't have the country yet, it will automatically
+  // add a new country
   if (this->ListOfCountries[country1.TerritoryID]->size() == 0) {
     Log("HEY HEY");
     this->ListOfCountries[country1.TerritoryID]->push_back(&country1);
@@ -166,16 +167,14 @@ void Map::AddEdges(Territory& country1, Territory& country2) {
   this->ListOfCountries[country1.TerritoryID]->push_back(&country2);
 }
 
-std::vector<struct::Territory*> Map::ReturnListOfCountries()
-{
-    std::vector<Territory*> Temp;
-    for (int i = 0; i < *NumberOfCountries; i++)
-    {
-        Temp.push_back(ListOfCountries[i]->at(0));
-        Log(ListOfCountries[i]->at(0)->Name << std::endl);
-    }
+std::vector<struct ::Territory*> Map::ReturnListOfCountries() {
+  std::vector<Territory*> Temp;
+  for (int i = 0; i < *NumberOfCountries; i++) {
+    Temp.push_back(ListOfCountries[i]->at(0));
+    Log(ListOfCountries[i]->at(0)->Name << std::endl);
+  }
 
-    return Temp;
+  return Temp;
 }
 
 int Map::NumOfCountries() { return *this->NumberOfCountries; }
@@ -357,9 +356,9 @@ void Map::DFS(int x, bool** visited) {
   int i = 0;
 
   for (Territory* temp : *ListOfCountries[0]) {
-    Log("Country???: " <<temp->Name<<temp->TerritoryID<< std::endl);
+    Log("Country???: " << temp->Name << temp->TerritoryID << std::endl);
     Log("temp->territoryID: " << *visited[temp->TerritoryID]);
-    
+
     if (i == 0) {
       i++;
     } else {

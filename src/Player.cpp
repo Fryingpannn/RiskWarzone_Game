@@ -29,7 +29,7 @@ Player::Player() {
   this->Territories = std::vector<Territory *>{};
   this->HandOfCards = new Hand();
   this->ListOfOrders = new OrderList();
-
+  this->PID = "";
   std::cout << "Default Player constructor" << std::endl;
 }
 
@@ -41,11 +41,18 @@ Player::Player() {
  * @param listOfOrders A list of orders the player owns.
  */
 Player::Player(std::vector<Territory *> territories, Hand handOfCards,
-               OrderList listOfOrders) {
+               OrderList listOfOrders, std::string pid) {
   std::cout << "Regular Player constructor" << std::endl;
+
+  // Declare those territories as belonging to this player
+  for (auto &i : territories) {
+    i->OwnedBy = this->PID;
+  }
+
   this->Territories = territories;
   this->HandOfCards = new Hand(handOfCards);
   this->ListOfOrders = new OrderList(listOfOrders);
+  this->PID = pid;
 }
 
 /**
@@ -58,6 +65,7 @@ Player::Player(const Player &p) {
 
   this->HandOfCards = new Hand(*p.HandOfCards);
   this->ListOfOrders = new OrderList(*p.ListOfOrders);
+  this->PID = p.PID;
 
   for (auto i = p.Territories.begin(); i != p.Territories.end(); ++i) {
     auto *country = new Territory(**i);
@@ -71,16 +79,26 @@ Player::Player(const Player &p) {
  * @param p The object to equate.
  */
 Player &Player::operator=(const Player &p) {
-  if (this != &p) {
-    std::cout << "Player = operator\n";
-    this->HandOfCards = new Hand(*p.HandOfCards);
-    this->ListOfOrders = new OrderList(*p.ListOfOrders);
-
-    for (auto i = p.Territories.begin(); i != p.Territories.end(); ++i) {
-      auto *country = new Territory(**i);
-      this->Territories.push_back(country);
+  // clear original reference
+  if (!this->Territories.empty()) {
+    for (auto &i : Territories) {
+      delete i;
+      i = nullptr;
     }
   }
+  delete this->HandOfCards;
+  delete this->ListOfOrders;
+
+  std::cout << "Player = operator\n";
+  this->HandOfCards = new Hand(*p.HandOfCards);
+  this->ListOfOrders = new OrderList(*p.ListOfOrders);
+  this->PID = p.PID;
+
+  for (auto i = p.Territories.begin(); i != p.Territories.end(); ++i) {
+    auto *country = new Territory(**i);
+    this->Territories.push_back(country);
+  }
+
   return *this;
 }
 
@@ -91,14 +109,16 @@ Player &Player::operator=(const Player &p) {
  * @param p The player object to print.
  */
 std::ostream &operator<<(std::ostream &out, const Player &p) {
-  out << "\tCountries: { ";
+  out << p.PID << "\n";
+  out << "\tCountries: \n";
   for (auto i = p.Territories.begin(); i != p.Territories.end(); ++i) {
-    out << "{" << **i << "}  ";
+    out << "\t----------\n";
+    out << **i << "\n";
   }
   out << "\n";
 
   out << "\tCards: " << *p.HandOfCards;
-  out << "\n";
+  out << "\n\n";
 
   out << "\tOrders: " << *p.ListOfOrders;
   out << "\n";
@@ -115,13 +135,11 @@ std::vector<Territory *> Player::toDefend() { return Territories; }
 
 /**
  *  A function that determines the list of territories a player can attack.
- *
+ *  @param listOfCountries Temporary parameter to compare all countries to.
  *  @return A list of territories.
  */
-std::vector<Territory *> Player::toAttack() {
-  // TODO: replace with actual list of countries from map class
-  std::vector<Territory *> listOfCountries{};
-
+std::vector<Territory *> Player::toAttack(
+    std::vector<Territory *> listOfCountries) {
   // Sort list to please compiler
   std::sort(listOfCountries.begin(), listOfCountries.end());
   std::sort(Territories.begin(), Territories.end());
@@ -139,7 +157,8 @@ std::vector<Territory *> Player::toAttack() {
 }
 
 /**
- * A function that creates a method object and adds it to the player's list of orders.
+ * A function that creates a method object and adds it to the player's list of
+ * orders.
  *
  */
 void Player::issueOrder() {

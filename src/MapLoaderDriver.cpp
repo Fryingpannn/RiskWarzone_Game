@@ -29,28 +29,29 @@ void mapLoaderDriver() {
     std::string map_folder_base_path = "./maps/";
     std::string map_file_name;
 
-    std::cout << "Please enter a map file name: ";
+    std::cout << "Please enter a map file name (must be in the ./maps/ directory): ";
     std::cin >> map_file_name;
     trim(map_file_name);
 
+    // Attempt to open the file and read its contents
     MapFile *testMapFile;
     testMapFile = new MapFile(map_folder_base_path + map_file_name);
     Result<void> readMapFileResult = testMapFile->readMapFile();
     if (readMapFileResult.success) {
-        std::cout << "Map file successfully read: " << testMapFile->map_file_name << std::endl;
 
+        std::cout << "Map file successfully read: " << testMapFile->map_file_name << std::endl;
+        
+        // Validate what was read into testMapFile
         Result<void> validateMapFile = testMapFile->validate();
         if (validateMapFile.success) {
-            // Result<Map> generateMapResult;
-            // Map *testMap;
-            // generateMapResult = testMapFile->generateMap();
-            // if (generateMapResult.success) {
-            //     testMap = generateMapResult.returnValue;
-            //     testMap->Display();
-            // } else {
-            //     std::cerr << generateMapResult.message << std::endl;
-            // }
-            testMapFile->generateMap();
+
+            // Valid items in testMapFile
+            // Generate a Map object
+            Map testMap;
+            testMap = testMapFile->generateMap();
+            
+            // Display the map
+            testMap.Display();
         } else {
             std::cerr << "ERROR: testMapFile failed validation checks." << validateMapFile.message << std::endl;
         }
@@ -60,5 +61,4 @@ void mapLoaderDriver() {
 
     delete (testMapFile);
     testMapFile = nullptr;
-    // return 0;
 }

@@ -17,6 +17,8 @@
 #include <string>
 #include <vector>
 
+
+#include "Player.h"
 //this macro will only print when in debug mode :3
 #ifdef _DEBUG
 #define Log(x) std::cout << x << std::endl;
@@ -29,20 +31,27 @@
 #define Log(x)
 #endif
 
+#ifndef H_PLAYER
+#define H_PLAYER
+class Player;
+#endif
 // country only need name, a unique ID and a continent
 // is a struct and not a class, so do what you need to do :)
 struct Territory {
-public:
+ public:
   std::string Name;
   int TerritoryID;
   std::string Continent;
   float XCoordinate;
   float YCoordinate;
+  std::string OwnedBy;
+  int Armies;
 
   bool operator==(Territory &Territory) const;
 
   Territory();
-  Territory(std:: string name, int territoryID, std::string continent, float x, float y);
+  Territory(std::string name, int territoryID, std::string continent, float x,
+            float y);
   Territory(const Territory &t);
   friend std::ostream &operator<<(std::ostream &out, const Territory &t);
   Territory &operator=(const Territory &t);
@@ -61,12 +70,11 @@ struct ContinentData {
 };
 
 class Map {
-
   std::string *MapName;
   std::vector<Territory *> **ListOfCountries;
   int *NumberOfCountries;
 
-  std::vector<Territory*> AllCountries;
+  std::vector<Territory *> AllCountries;
 
  public:
   // minimal Constructor
@@ -87,9 +95,7 @@ class Map {
 
   void AddEdges(Territory &country1, Territory &country2);
 
- 
-
-  std::vector<struct::Territory*> ReturnListOfCountries();
+  std::vector<struct ::Territory *> ReturnListOfCountries();
 
   int NumOfCountries();
   void Display();
