@@ -19,6 +19,7 @@
 #include "MapLoaderDriver.hpp"
 #include "PlayerDriver.h"
 #include "CardsDriver.h"
+#include "OrdersDriver.h"
 
 #include <stdlib.h>
 
@@ -51,7 +52,7 @@ int main()
                 playerDriver();
                 break;
             case '4':
-                std::cout << "Not yet implemented" << std::endl;
+                ordersDriver();
                 break;
             case '5':
                 CardsDeckTest();
