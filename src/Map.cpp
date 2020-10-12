@@ -85,7 +85,7 @@ Map::Map(Map& Copy) {
   MapName = new std::string(*Copy.MapName);
   ListOfCountries = new std::vector<Territory*>*[*Copy.NumberOfCountries];
 
-  for (int i = 0; i < *Copy.NumberOfCountries; i++)
+  for (int i = 0; i < 1000; i++)
     ListOfCountries[i] = new std::vector<struct ::Territory*>;
 
   if(!(**Copy.ListOfCountries).empty()){
@@ -101,7 +101,7 @@ Map::Map(Map& Copy) {
 }
 
 Map::~Map() {
-  for (int i = 0; i < NumOfCountries(); i++) {
+  for (int i = 0; i < 1000; i++) {
     Log("Deleting! : " << i);
     ListOfCountries[i]->clear();
     delete ListOfCountries[i];
