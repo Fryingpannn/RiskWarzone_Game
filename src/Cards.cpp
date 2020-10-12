@@ -112,7 +112,7 @@ void Card::Play(Hand& const h, OrderList& const list, Deck& d) {
 Card& Card::operator=(const Card& c) {
   // check if two pointers dont point to the same address (not self assignment);
   if (this != &c) {
-    this->type = new CardType(*c.type);
+     *this->type = *c.type;
   }
   return *this;
 }
@@ -210,9 +210,9 @@ void Hand::remove(int index) {
     *hand.at(i) = *hand.at(i + 1);
   }
 
-  delete hand.at(hand.size() - 1);
-  hand.at(hand.size() - 1) = nullptr;
-  hand.pop_back();
+  auto it = this->hand.end() - 1;
+  delete* it;
+  this->hand.erase(it);
 }
 
 /**
