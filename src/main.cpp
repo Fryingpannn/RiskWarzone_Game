@@ -17,6 +17,7 @@
 #include <string>
 #include "MapDriver.hpp"
 #include "MapLoaderDriver.hpp"
+#include "OrdersDriver.h"
 // #define _CRTDBG_MAP_ALLOC
 #include <stdlib.h>
 // #include <crtdbg.h>
@@ -48,6 +49,7 @@ int main()
                 mapDriver();
                 break;
             case '3':
+                ordersDriver();
                 break;
             case '4':
                 break;
@@ -72,6 +74,7 @@ void displayMenu()
 {
     std::cout << "1. MapLoader driver" << std::endl;
     std::cout << "2. Map driver" << std::endl;
+    std::cout << "3. Orders driver" << std::endl;
 
 }
 
