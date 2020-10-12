@@ -1,3 +1,18 @@
+/////////////////////////////////////////////
+// Filename:        Orders.cpp
+//
+// Description:     Implementation of Part 4 - Orders List
+//
+// Author:          Matthew Pan
+//
+// Group:           Sandra Buchen
+//                  Le Cherng Lee
+//                  Zahra Nikbakht
+//                  Matthew Pan
+//                  Stefan Russo - 26683320
+//
+/////////////////////////////////////////////
+
 #include "Orders.h"
 
 /*---------------------------------- OrderList class ----------------------------------*/

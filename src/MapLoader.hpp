@@ -1,5 +1,5 @@
 /////////////////////////////////////////////
-// Filename:        MapLoader.h
+// Filename:        MapLoader.hpp
 //
 // Description:     Header file for MapLoader.cpp
 //
@@ -9,7 +9,7 @@
 //                  Le Cherng Lee
 //                  Zahra Nikbakht
 //                  Matthew Pan
-//                  Stefan Russo
+//                  Stefan Russo - 26683320
 //
 /////////////////////////////////////////////
 

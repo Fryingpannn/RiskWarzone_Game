@@ -1,3 +1,18 @@
+/////////////////////////////////////////////
+// Filename:        Map.cpp
+//
+// Description:     Implementation of Part 1 - Map
+//
+// Author:          Le Cherng Lee
+//
+// Group:           Sandra Buchen
+//                  Le Cherng Lee
+//                  Zahra Nikbakht
+//                  Matthew Pan
+//                  Stefan Russo - 26683320
+//
+/////////////////////////////////////////////
+
 #include "Map.h"
 
 #include <algorithm>
@@ -85,7 +100,7 @@ Map::Map(Map& Copy) {
   MapName = new std::string(*Copy.MapName);
   ListOfCountries = new std::vector<Territory*>*[*Copy.NumberOfCountries];
 
-  for (int i = 0; i < 1000; i++)
+  for (int i = 0; i < *Copy.NumberOfCountries; i++)
     ListOfCountries[i] = new std::vector<struct ::Territory*>;
 
   if(!(**Copy.ListOfCountries).empty()){
@@ -101,7 +116,7 @@ Map::Map(Map& Copy) {
 }
 
 Map::~Map() {
-  for (int i = 0; i < 1000; i++) {
+    for (int i = 0; i < NumOfCountries(); i++) {
     Log("Deleting! : " << i);
     ListOfCountries[i]->clear();
     delete ListOfCountries[i];

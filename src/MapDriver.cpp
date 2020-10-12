@@ -1,12 +1,23 @@
+/////////////////////////////////////////////
+// Filename:        MapDriver.cpp
+//
+// Description:     Driver file for the Implementation of Part 1 - Map
+//
+// Author:          Le Cherng Lee
+//
+// Group:           Sandra Buchen
+//                  Le Cherng Lee
+//                  Zahra Nikbakht
+//                  Matthew Pan
+//                  Stefan Russo - 26683320
+//
+/////////////////////////////////////////////
+
 #include <iostream>
 #include "Map.h"
 #include "MapDriver.h"
 
-#define _CRTDBG_MAP_ALLOC
 #include <stdlib.h>
-#include <crtdbg.h>
-
-
 
 void mapDriver() 
 {
@@ -14,9 +25,6 @@ void mapDriver()
 
     //one way to optimise is to put enum
     //all these will be in stack memory
-
-    _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
-
 
     //for maploader people, this is an example on how you can initialize it
     std::string ExampleName = "ahhh";

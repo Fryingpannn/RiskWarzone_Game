@@ -1,3 +1,18 @@
+/////////////////////////////////////////////
+// Filename:        Map.h
+//
+// Description:     Header file for Implementation of Part 1 - Map
+//
+// Author:          Le Cherng Lee
+//
+// Group:           Sandra Buchen
+//                  Le Cherng Lee
+//                  Zahra Nikbakht
+//                  Matthew Pan
+//                  Stefan Russo - 26683320
+//
+/////////////////////////////////////////////
+
 #pragma once
 #include <string>
 #include <vector>

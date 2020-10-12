@@ -1,3 +1,18 @@
+/////////////////////////////////////////////
+// Filename:        Orders.h
+//
+// Description:     Header file for Implementation of Part 4 - Orders List
+//
+// Author:          Matthew Pan
+//
+// Group:           Sandra Buchen
+//                  Le Cherng Lee
+//                  Zahra Nikbakht
+//                  Matthew Pan
+//                  Stefan Russo - 26683320
+//
+/////////////////////////////////////////////
+
 #pragma once
 
 #include <iostream>

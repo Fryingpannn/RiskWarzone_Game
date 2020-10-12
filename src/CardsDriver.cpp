@@ -1,3 +1,18 @@
+/////////////////////////////////////////////
+// Filename:        CardsDriver.cpp
+//
+// Description:     Driver file for Implementation of Part 5 - Cards deck/hand
+//
+// Author:          Zahra Nikbakht
+//
+// Group:           Sandra Buchen
+//                  Le Cherng Lee
+//                  Zahra Nikbakht
+//                  Matthew Pan
+//                  Stefan Russo - 26683320
+//
+/////////////////////////////////////////////
+
 #include "Cards.h"
 #include <time.h>
 #include "Map.h"
