@@ -10,7 +10,7 @@
 //                  Le Cherng Lee
 //                  Zahra Nikbakht
 //                  Matthew Pan
-//                  Stefan Russo
+//                  Stefan Russo - 26683320
 //
 /////////////////////////////////////////////
 
@@ -41,7 +41,7 @@ void mapLoaderDriver() {
 
         Result<void> validateMapFile = testMapFile->validate();
         if (validateMapFile.success) {
-            Result<Map> generateMapResult;
+            // Result<Map> generateMapResult;
             // Map *testMap;
             // generateMapResult = testMapFile->generateMap();
             // if (generateMapResult.success) {

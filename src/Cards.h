@@ -1,10 +1,25 @@
+/////////////////////////////////////////////
+// Filename:        Cards.h
+//
+// Description:     Header file for Implementation of Part 5 - Cards deck/hand
+//
+// Author:          Zahra Nikbakht
+//
+// Group:           Sandra Buchen
+//                  Le Cherng Lee
+//                  Zahra Nikbakht
+//                  Matthew Pan
+//                  Stefan Russo - 26683320
+//
+/////////////////////////////////////////////
+
 #pragma once
 #include <vector> 
 #include <iostream> 
 #include <queue> 
 #include <deque> 
 #include "Orders.h";
-using namespace std;
+//using namespace std;
 
 
 class Card;
@@ -40,7 +55,7 @@ public:
 	void Play(Hand& const h, OrderList& const list, Deck& d);
 
 	//operator overloading
-	friend ostream& operator << (ostream& out, const Card& card);
+	friend std::ostream& operator << (std::ostream& out, const Card& card);
 	Card& operator = (const Card& c);
 };
 
@@ -48,7 +63,7 @@ public:
 class Hand {
 
 private:
-	vector<Card*> hand;
+	std::vector<Card*> hand;
 
 public:
 
@@ -64,7 +79,7 @@ public:
 	Card returnByPos(int pos);
 
 	//operator overloading
-	friend ostream& operator << (ostream& out, const Hand& h);
+	friend std::ostream& operator << (std::ostream& out, const Hand& h);
 	Hand& operator = (const Hand& h);
 
 };
@@ -72,7 +87,7 @@ public:
 class Deck {
 
 private:
-	queue<Card*> deck;
+	std::queue<Card*> deck;
 	int* size;
 public:
 
@@ -88,7 +103,7 @@ public:
 	int GetSize();
 
 	//operator overloading
-	friend ostream& operator << (ostream& out, const Deck& d);
+	friend std::ostream& operator << (std::ostream& out, const Deck& d);
 	Deck& operator = (const Deck& d);
 
 };

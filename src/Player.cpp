@@ -1,3 +1,18 @@
+/////////////////////////////////////////////
+// Filename:        Player.cpp
+//
+// Description:     Implementation of Part 3 - Player
+//
+// Author:          Sandra Buchen
+//
+// Group:           Sandra Buchen
+//                  Le Cherng Lee
+//                  Zahra Nikbakht
+//                  Matthew Pan
+//                  Stefan Russo - 26683320
+//
+/////////////////////////////////////////////
+
 #include "Player.h"
 
 #include <ostream>

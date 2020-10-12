@@ -1,3 +1,18 @@
+/////////////////////////////////////////////
+// Filename:        Player.h
+//
+// Description:     Header file for Implementation of Part 3 - Player
+//
+// Author:          Sandra Buchen
+//
+// Group:           Sandra Buchen
+//                  Le Cherng Lee
+//                  Zahra Nikbakht
+//                  Matthew Pan
+//                  Stefan Russo - 26683320
+//
+/////////////////////////////////////////////
+
 #pragma once
 #include <ostream>
 #include <vector>

@@ -1,78 +1,77 @@
+/////////////////////////////////////////////
+// Filename:        MapDriver.cpp
+//
+// Description:     Driver file for the Implementation of Part 1 - Map
+//
+// Author:          Le Cherng Lee
+//
+// Group:           Sandra Buchen
+//                  Le Cherng Lee
+//                  Zahra Nikbakht
+//                  Matthew Pan
+//                  Stefan Russo - 26683320
+//
+/////////////////////////////////////////////
+
 #include <iostream>
 #include "Map.h"
+#include "MapDriver.h"
 
-#define _CRTDBG_MAP_ALLOC
 #include <stdlib.h>
-#include <crtdbg.h>
 
-
-
-void mapDriver() 
+void mapDriver()
 {
-    
+
 
     //one way to optimise is to put enum
     //all these will be in stack memory
-
-    _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
-
 
     //for maploader people, this is an example on how you can initialize it
     std::string ExampleName = "ahhh";
     std::string Continent = "continent";
     int CountryId = 2;
-    
+
     Territory MapLoaderReference{
-        ExampleName,CountryId,Continent
+        ExampleName,CountryId,Continent, 0, 0
     };
 
     Territory Malaysia{
-        "Malaysia", 0, "ASEAN"
+        "Malaysia", 0, "ASEAN", 0, 0
     };
 
-    Territory Indonesia{
-        "Indonesia", 1, "ASEAN"
+    Territory Indonesia{"Indonesia", 1, "ASEAN", 0, 0
     };
-    Territory Singapore{
-        "Singapore", 2, "ASEAN"
+    Territory Singapore{"Singapore", 2, "ASEAN", 0, 0
     };
 
-    Territory Philippine{
-        "Philippine", 3, "ASEAN"
+    Territory Philippine{"Philippine", 3, "ASEAN", 0, 0
     };
 
-    Territory Thailand{
-        "Thailand", 4, "ASEAN"
+    Territory Thailand{"Thailand", 4, "ASEAN", 0, 0
     };
 
-    Territory Vietnam{
-        "Vietnam", 5, "ASEAN"
+    Territory Vietnam{"Vietnam", 5, "ASEAN", 0, 0
     };
 
-    Territory Japan{
-        "Japan", 6, "EastAsia"
+    Territory Japan{"Japan", 6, "EastAsia", 0, 0
     };
 
-    Territory Korea{
-        "Korea", 7, "EastAsia"
+    Territory Korea{"Korea", 7, "EastAsia", 0, 0
     };
 
-    Territory China{
-        "China", 8, "EastAsia"
+    Territory China{"China", 8, "EastAsia", 0, 0
     };
 
     //incorrect Territory naming cases
-    Territory Germany{
-        "Germany", 8, "EastAsia"
+    Territory Germany{"Germany", 8, "EastAsia", 0, 0
     };
 
-    Territory France{
-        "France", 8, "Europe"
+    Territory France{"France", 8, "Europe", 0, 0
     };
 
-    
+
     Map *WorldMap = new Map(9, "WorldMap");
-    
+
 
     WorldMap->AddEdges(Malaysia, Vietnam);
     WorldMap->AddEdges(Malaysia, Indonesia);
@@ -80,13 +79,13 @@ void mapDriver()
     WorldMap->AddEdges(Indonesia, Philippine);
     WorldMap->AddEdges(Singapore, Vietnam);
     WorldMap->AddEdges(Singapore, Malaysia);
-    
+
     WorldMap->AddEdges(Vietnam, Malaysia);
     WorldMap->AddEdges(Vietnam, Thailand);
 
     WorldMap->Display();
 
-    
+
     WorldMap->AddEdges(Japan, Korea);
     WorldMap->AddEdges(China, Korea);
     WorldMap->AddEdges(Malaysia, Japan);
@@ -104,7 +103,7 @@ void mapDriver()
         std::cout << "\n\nfalse" << std::endl;
     }
 
-    
+
 
 
     //fail cases where the country won't register due to having same ID
@@ -144,7 +143,7 @@ void mapDriver()
         std::cout << "Failed" << std::endl;
 
     }
-   
+
 
     delete WorldMap;
     Log("Deleted WorldMap1");
@@ -153,5 +152,5 @@ void mapDriver()
 
     delete WorldMap3;
 
- 
+
 }

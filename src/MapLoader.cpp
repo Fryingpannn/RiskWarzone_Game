@@ -9,7 +9,7 @@
 //                  Le Cherng Lee
 //                  Zahra Nikbakht
 //                  Matthew Pan
-//                  Stefan Russo
+//                  Stefan Russo - 26683320
 //
 /////////////////////////////////////////////
 
@@ -21,6 +21,8 @@
 #include <sstream>
 #include <string>
 #include <vector>
+
+#include "Map.h"
 
 // Change me to true to enable debug message
 const bool DEBUG = false;
@@ -310,7 +312,8 @@ MapFile::~MapFile() {
 };
 
 /**
- * @brief Reads the map file and calls the appropriate function depending on the section its in
+ * @brief Reads the map file and calls the appropriate function depending on the
+ * section its in
  *
  */
 Result<void> MapFile::readMapFile() {
@@ -407,7 +410,8 @@ Result<void> MapFile::processFileSectionLine(const std::string line) {
 };
 
 /**
- * @brief Processes a line in the continents section into the map_continents vector
+ * @brief Processes a line in the continents section into the map_continents
+ * vector
  *
  * @param line
  */
@@ -456,7 +460,8 @@ Result<void> MapFile::processContinentSectionLine(const std::string line) {
 };
 
 /**
- * @brief Processes a line in the countries section into the map_territories vector
+ * @brief Processes a line in the countries section into the map_territories
+ * vector
  *
  * @param line
  */
@@ -516,8 +521,9 @@ Result<void> MapFile::processTerritorySectionLine(const std::string line) {
 };
 
 /**
- * @brief Processes a line in the borders section into the appropriate territory's borders
- * 
+ * @brief Processes a line in the borders section into the appropriate
+ * territory's borders
+ *
  * @param line
  */
 Result<void> MapFile::processBordersSectionLine(const std::string line) {
@@ -632,9 +638,9 @@ Result<MapFileTerritory> MapFile::getTerritoryByNumber(int territory_number) {
 
 /**
  * @brief Returns a continent object based on continent_number
- * 
- * @param continent_number 
- * @return Result<Continent> 
+ *
+ * @param continent_number
+ * @return Result<Continent>
  */
 Result<Continent> MapFile::getContinentByNumber(int continent_number) {
     Result<Continent> returnResult;
@@ -656,10 +662,10 @@ Result<Continent> MapFile::getContinentByNumber(int continent_number) {
 
 /**
  * @brief Checks if territory_number is valid
- * 
- * @param territory_number 
- * @return true 
- * @return false 
+ *
+ * @param territory_number
+ * @return true
+ * @return false
  */
 bool MapFile::isValidTerritoryNumber(int territory_number) {
     if (map_territories.size() == 0) return false;
@@ -670,10 +676,10 @@ bool MapFile::isValidTerritoryNumber(int territory_number) {
 
 /**
  * @brief Checks if continent_number is valid
- * 
- * @param continent_number 
- * @return true 
- * @return false 
+ *
+ * @param continent_number
+ * @return true
+ * @return false
  */
 bool MapFile::isValidContinentNumber(int continent_number) {
     if (map_continents.size() == 0) return false;
@@ -683,41 +689,55 @@ bool MapFile::isValidContinentNumber(int continent_number) {
 };
 
 /**
- * @brief Simulates the generation of a map.  Will be connected to the map class 
- *          at a later date
- * 
- * @return Result<void> 
- */
-Result<void> MapFile::generateMap() {
-    Result<void> returnResult;
-    returnResult.success = false;
-    returnResult.message =
-        "ERROR: Default failure message. This should not have happened. "
-        "MapFile::generateMap()";
-
+* @brief Generates the map in conjunction with the Map class
+*
+* @return Map
+*/
+Map MapFile::generateMap() {
+    Map returnMap(map_territories.size(), map_file_name);
 
     for (int i = 0; i < map_territories.size(); i++) {
+        Result<Continent> firstContinentResult;
+        firstContinentResult =
+            getContinentByNumber(map_territories[i]->continent_number);
+
         std::string firstTerrName = map_territories[i]->short_name;
+        int firstTerrID = map_territories[i]->number -1;
+        std::string firstTerrContName = firstContinentResult.returnValue->name;
 
         std::cout << "Processing Borders for: " << firstTerrName << std::endl;
         std::cout << "-- Borders: ";
 
+        Territory firstTerritory(firstTerrName, firstTerrID, firstTerrContName, 0.0f, 0.0f);
+
         for (int j = 0; j < map_territories[i]->borders.size(); j++) {
-            std::string secondTerrName = map_territories[j]->short_name;
+            Result<Continent> secondContinentResult;
+            secondContinentResult =
+                getContinentByNumber(map_territories[i]->continent_number);
+
+            Result<MapFileTerritory> secondTerritoryResult;
+            secondTerritoryResult = getTerritoryByNumber(map_territories[i]->borders[j]);
+
+            std::string secondTerrName = secondTerritoryResult.returnValue->short_name;
+            int secondTerrID = secondTerritoryResult.returnValue->number -1;
+            std::string secondTerrContName = secondContinentResult.returnValue->name;
+
+            Territory secondTerritory(secondTerrName, secondTerrID, secondTerrContName, 0.0f, 0.0f);
+
+            returnMap.AddEdges(firstTerritory, secondTerritory);
+
             std::cout << secondTerrName << " -- ";
         }
         std::cout << std::endl;
-
-        returnResult.success = true;
-        returnResult.message = "\nDEBUG: Successfully created map.";
     }
-    return returnResult;
+    return returnMap;
 };
+
 
 /**
  * @brief Validates the MapFile structure
- * 
- * @return Result<void> 
+ *
+ * @return Result<void>
  */
 Result<void> MapFile::validate() {
     Result<void> returnResult;
