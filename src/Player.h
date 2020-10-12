@@ -18,8 +18,11 @@
 #include <vector>
 
 #include "Cards.h"
-#include "Map.h"
 #include "Orders.h"
+#ifndef H_MAP
+#define H_MAP
+class Territory;
+#endif
 /**
  * A class for the object Player which managers territories, cards and orders
  * owned by a player.
@@ -29,19 +32,16 @@ class Player {
   std::vector<Territory *> Territories;
   Hand *HandOfCards;
   OrderList *ListOfOrders;
+  std::string PID;
 
   Player();
-  Player(std::vector<Territory *> territories, Hand hand,
-         OrderList orderList);
+  Player(std::vector<Territory *> territories, Hand hand, OrderList orderList,
+         std::string pID);
   Player(const Player &p);
   Player &operator=(const Player &p);
   std::vector<Territory *> toDefend();
-  std::vector<Territory *> toAttack();
+  std::vector<Territory *> toAttack(std::vector<Territory *> listOfCountries);
   void issueOrder();
   friend std::ostream &operator<<(std::ostream &out, const Player &p);
   ~Player();
 };
-
-
-
-
