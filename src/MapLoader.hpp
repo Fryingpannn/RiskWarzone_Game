@@ -152,7 +152,7 @@ class MapFile {
     bool isValidTerritoryNumber(int territory_number);
     bool isValidContinentNumber(int continent_number);
 
-    Map generateMap();
+    Map *generateMap();
     // Result<void> generateMap();
 
     Result<void> validate();

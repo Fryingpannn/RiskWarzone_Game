@@ -720,9 +720,11 @@ bool MapFile::isValidContinentNumber(int continent_number) {
  *
  * @return Map
  */
-Map MapFile::generateMap() {
+Map *MapFile::generateMap() {
   // Create a Map object to return
-  Map returnMap(map_territories.size(), map_file_name);
+  //Map returnMap(map_territories.size(), map_file_name);
+  Map* returnMap;
+  returnMap = new Map(map_territories.size(), map_file_name);
 
   // Loop through all territories and add them to the map
   for (int i = 0; i < map_territories.size(); i++) {
@@ -741,8 +743,8 @@ Map MapFile::generateMap() {
     std::cout << "-- Borders: ";
 
     // Create the origin territory
-    Territory firstTerritory(firstTerrName, firstTerrID, firstTerrContName,
-                             0.0f, 0.0f);
+    Territory* firstTerritory;
+    firstTerritory = new Territory(firstTerrName, firstTerrID, firstTerrContName, 0.0f, 0.0f);
 
     // Loop through all borders and add them as an edge from firstTerritory to
     // secondTerritory
@@ -768,11 +770,11 @@ Map MapFile::generateMap() {
       std::string secondTerrContName = secondContinentResult.returnValue->name;
 
       // Create the second territory
-      Territory secondTerritory(secondTerrName, secondTerrID,
-                                secondTerrContName, 0.0f, 0.0f);
+      Territory* secondTerritory;
+      secondTerritory = new Territory(secondTerrName, secondTerrID, secondTerrContName, 0.0f, 0.0f);
 
       // Add an edge from first to second
-      returnMap.AddEdges(firstTerritory, secondTerritory);
+      returnMap->AddEdges(*firstTerritory, *secondTerritory);
 
       std::cout << secondTerrName << " -- ";
     }

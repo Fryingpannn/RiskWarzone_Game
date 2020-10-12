@@ -47,11 +47,18 @@ void mapLoaderDriver() {
 
             // Valid items in testMapFile
             // Generate a Map object
-            Map testMap;
+
+            //testMapFile->generateMap();
+
+            /*
+            * Yes, this code is commented out.  For some unknown reason, testMap and 
+            * testMapFile are instantly deleted and we cannot figure out why that's happening.
+            */
+            Map *testMap;
             testMap = testMapFile->generateMap();
             
             // Display the map
-            testMap.Display();
+            testMap->Display();
         } else {
             std::cerr << "ERROR: testMapFile failed validation checks." << validateMapFile.message << std::endl;
         }
