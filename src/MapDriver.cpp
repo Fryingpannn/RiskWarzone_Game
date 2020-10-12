@@ -45,9 +45,13 @@ void mapDriver()
 
   Territory Japan{"Japan", 6, "EastAsia", 0, 0};
 
+  Territory Korea{ "Korea", 7, "EastAsia", 0, 0 };
 
+  Territory China{ "China", 8, "EastAsia", 0, 0 };
 
+  Territory Germany{ "Germany", 9, "Europe", 0, 0 };
 
+  Territory France{ "France", 8, "Europe", 0, 0 };
 
 
   // This is how you add country to the map
@@ -69,10 +73,7 @@ void mapDriver()
   WorldMap->AddEdges(China, Korea);
   WorldMap->AddEdges(Malaysia, Japan);
 
-  std::vector<Territory*> test = WorldMap->ReturnListOfCountries();
 
-  // testing whether the list return will change the Territory Data
-  test.at(1)->Name = "Hahaha";
 
   WorldMap->Display();
 
