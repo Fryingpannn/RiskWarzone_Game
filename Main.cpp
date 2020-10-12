@@ -1,5 +1,6 @@
-#include "Map.h"
-#include "MapDriver.cpp"
+#include "MapDriver.h"
+#include "PlayerDriver.h"
+#include <iostream>
 
 int main()
 {
@@ -9,19 +10,19 @@ int main()
 	switch (choice)
 	{
 	case 0:
-		MapTest();
+		playerDriver();
 		break;
 	case 1:
-		MapTest();
+		mapDriver();
 		break;
 	case 2:
-		MapTest();
+		//MapTest();
 		break;
 	case 3:
-		MapTest();
+		//MapTest();
 		break;
 	case 4:
-		MapTest();
+		//MapTest();
 		break;
 	default:
 		std::cout << "No trolling please\n";

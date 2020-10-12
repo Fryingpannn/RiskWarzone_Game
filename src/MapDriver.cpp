@@ -1,5 +1,6 @@
 #include <iostream>
 #include "Map.h"
+#include "MapDriver.h"
 
 #define _CRTDBG_MAP_ALLOC
 #include <stdlib.h>
@@ -23,51 +24,41 @@ void mapDriver()
     int CountryId = 2;
     
     Territory MapLoaderReference{
-        ExampleName,CountryId,Continent
+        ExampleName,CountryId,Continent, 0, 0
     };
 
     Territory Malaysia{
-        "Malaysia", 0, "ASEAN"
+        "Malaysia", 0, "ASEAN", 0, 0
     };
 
-    Territory Indonesia{
-        "Indonesia", 1, "ASEAN"
+    Territory Indonesia{"Indonesia", 1, "ASEAN", 0, 0
     };
-    Territory Singapore{
-        "Singapore", 2, "ASEAN"
+    Territory Singapore{"Singapore", 2, "ASEAN", 0, 0
     };
 
-    Territory Philippine{
-        "Philippine", 3, "ASEAN"
+    Territory Philippine{"Philippine", 3, "ASEAN", 0, 0
     };
 
-    Territory Thailand{
-        "Thailand", 4, "ASEAN"
+    Territory Thailand{"Thailand", 4, "ASEAN", 0, 0
     };
 
-    Territory Vietnam{
-        "Vietnam", 5, "ASEAN"
+    Territory Vietnam{"Vietnam", 5, "ASEAN", 0, 0
     };
 
-    Territory Japan{
-        "Japan", 6, "EastAsia"
+    Territory Japan{"Japan", 6, "EastAsia", 0, 0
     };
 
-    Territory Korea{
-        "Korea", 7, "EastAsia"
+    Territory Korea{"Korea", 7, "EastAsia", 0, 0
     };
 
-    Territory China{
-        "China", 8, "EastAsia"
+    Territory China{"China", 8, "EastAsia", 0, 0
     };
 
     //incorrect Territory naming cases
-    Territory Germany{
-        "Germany", 8, "EastAsia"
+    Territory Germany{"Germany", 8, "EastAsia", 0, 0
     };
 
-    Territory France{
-        "France", 8, "Europe"
+    Territory France{"France", 8, "Europe", 0, 0
     };
 
     

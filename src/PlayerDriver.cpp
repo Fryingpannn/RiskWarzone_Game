@@ -15,14 +15,14 @@ void playerDriver() {
 
   // Temporary runner variables creation until proper objects are connected
   // Used only for testing the behavior of the player class
-  auto *country1 = new Territory("Canada", 1, "NA");
-  auto *country2 = new Territory("Romania", 2, "Europe");
-  auto *country3 = new Territory("USA", 3, "NA");
-  auto *country4 = new Territory("Croatia", 4, "Europe");
-  auto *country5 = new Territory("Germany", 5, "Europe");
-  auto *country6 = new Territory("Chile", 6, "Latin America");
-  auto *country7 = new Territory("Australia", 7, "Oceania");
-  auto *country8 = new Territory("China", 8, "Asia");
+  auto *country1 = new Territory("Canada", 1, "NA", 0,0);
+  auto *country2 = new Territory("Romania", 2, "Europe", 0, 0);
+  auto *country3 = new Territory("USA", 3, "NA", 0, 0);
+  auto *country4 = new Territory("Croatia", 4, "Europe", 0, 0);
+  auto *country5 = new Territory("Germany", 5, "Europe" ,0, 0);
+  auto *country6 = new Territory("Chile", 6, "Latin America" ,0, 0);
+  auto *country7 = new Territory("Australia", 7, "Oceania" ,0, 0);
+  auto *country8 = new Territory("China", 8, "Asia", 0, 0);
 
   std::vector<Territory *> allCountries;
   allCountries.push_back(country1);
