@@ -45,7 +45,7 @@ Player::Player(std::vector<Territory *> territories, Hand handOfCards,
   std::cout << "Regular Player constructor" << std::endl;
 
   // Declare those territories as belonging to this player
-  for (auto& i : territories) {
+  for (auto &i : territories) {
     i->OwnedBy = this->PID;
   }
 
@@ -79,7 +79,6 @@ Player::Player(const Player &p) {
  * @param p The object to equate.
  */
 Player &Player::operator=(const Player &p) {
-
   // clear original reference
   if (!this->Territories.empty()) {
     for (auto &i : Territories) {
@@ -136,13 +135,11 @@ std::vector<Territory *> Player::toDefend() { return Territories; }
 
 /**
  *  A function that determines the list of territories a player can attack.
- *
+ *  @param listOfCountries Temporary parameter to compare all countries to.
  *  @return A list of territories.
  */
-std::vector<Territory *> Player::toAttack() {
-  // TODO: replace with actual list of countries from map class
-  std::vector<Territory *> listOfCountries{};
-
+std::vector<Territory *> Player::toAttack(
+    std::vector<Territory *> listOfCountries) {
   // Sort list to please compiler
   std::sort(listOfCountries.begin(), listOfCountries.end());
   std::sort(Territories.begin(), Territories.end());

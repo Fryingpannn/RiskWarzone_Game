@@ -28,34 +28,38 @@
 void displayMenu();
 
 int main() {
-
-  mapDriver();
-  /*std::cout << "Assignment 1 - Demo" << std::endl;
+  std::cout << "Assignment 1 - Demo" << std::endl;
   std::cout << "Main Menu" << std::endl;
   std::cout << "========================" << std::endl;
   char choice;
   bool running = true;
+
+loop:
   while (running) {
-    displayMenu();
+    std::cout << "1. Map driver" << std::endl;
+    std::cout << "2. MapLoader driver" << std::endl;
+    std::cout << "3. Player driver" << std::endl;
+    std::cout << "4. Orders driver" << std::endl;
+    std::cout << "5. Cards Driver" << std::endl;
     std::cout << "Please enter your choice 1-5 (q to quit): ";
     std::cin >> choice;
 
     switch (choice) {
       case '1':
         mapDriver();
-        break;
+        goto loop;
       case '2':
         mapLoaderDriver();
-        break;
+        goto loop;
       case '3':
         playerDriver();
-        break;
+        goto loop;
       case '4':
         ordersDriver();
-        break;
+        goto loop;
       case '5':
         CardsDeckTest();
-        break;
+        goto loop;
       case 'q':
       case 'Q':
         running = false;
@@ -64,10 +68,9 @@ int main() {
         std::cout << "Invalid option." << std::endl;
         break;
     }
-  }*/
-  return 0;
+    return 0;
+  }
 }
-
 void displayMenu() {
   std::cout << "1. Map driver" << std::endl;
   std::cout << "2. MapLoader driver" << std::endl;

@@ -30,40 +30,44 @@ void playerDriver() {
 
   // Temporary runner variables creation until proper objects are connected
   // Used only for testing the behavior of the player class
-  auto *country1 = new Territory("Canada", 1, "NA", 0,0);
-  auto *country2 = new Territory("Romania", 2, "Europe", 0, 0);
-  auto *country3 = new Territory("USA", 3, "NA", 0, 0);
-  auto *country4 = new Territory("Croatia", 4, "Europe", 0, 0);
-  auto *country5 = new Territory("Germany", 5, "Europe" ,0, 0);
-  auto *country6 = new Territory("Chile", 6, "Latin America" ,0, 0);
-  auto *country7 = new Territory("Australia", 7, "Oceania" ,0, 0);
-  auto *country8 = new Territory("China", 8, "Asia", 0, 0);
+  auto *Malaysia = new Territory{"Malaysia", 0, "ASEAN", 0, 0};
+  auto *Indonesia = new Territory{"Indonesia", 1, "ASEAN", 0, 0};
+  auto *Singapore = new Territory{"Singapore", 2, "ASEAN", 0, 0};
+  auto *Philippine = new Territory{"Philippine", 3, "ASEAN", 0, 0};
+  auto *Thailand = new Territory{"Thailand", 4, "ASEAN", 0, 0};
+  auto *Vietnam = new Territory{"Vietnam", 5, "ASEAN", 0, 0};
+  auto *Japan = new Territory{"Japan", 6, "EastAsia", 0, 0};
+  auto *Korea = new Territory{"Korea", 7, "EastAsia", 0, 0};
+  auto *China = new Territory{"China", 8, "EastAsia", 0, 0};
 
-  std::vector<Territory *> allCountries;
-  allCountries.push_back(country1);
-  allCountries.push_back(country2);
-  allCountries.push_back(country3);
-  allCountries.push_back(country4);
-  allCountries.push_back(country5);
-  allCountries.push_back(country6);
-  allCountries.push_back(country7);
-  allCountries.push_back(country8);
+  Map *WorldMap = new Map(9, "WorldMap");
+  WorldMap->AddEdges(*Malaysia, *Vietnam);
+  WorldMap->AddEdges(*Malaysia, *Indonesia);
+  WorldMap->AddEdges(*Indonesia, *Malaysia);
+  WorldMap->AddEdges(*Indonesia, *Philippine);
+  WorldMap->AddEdges(*Singapore, *Vietnam);
+  WorldMap->AddEdges(*Singapore, *Malaysia);
+  WorldMap->AddEdges(*Vietnam, *Malaysia);
+  WorldMap->AddEdges(*Vietnam, *Thailand);
+  WorldMap->AddEdges(*Japan, *Korea);
+  WorldMap->AddEdges(*China, *Korea);
+  WorldMap->AddEdges(*Malaysia, *Japan);
 
+  // Creating a list of countries to be owned by a player
   std::vector<Territory *> countries;
-  countries.push_back(country1);
-  countries.push_back(country2);
+  countries.push_back(China);
+  countries.push_back(Malaysia);
 
-  Map *map = new Map(15, "WorldMap");
-  Deck d = Deck(map->NumOfCountries());
+  // Creating a deck the player can draw cards from
+  Deck d = Deck(WorldMap->NumOfCountries());
   Hand hand{};
   d.draw(hand);
   d.draw(hand);
 
+  // Creating orders to be owned by a player
   auto *order = new Deploy();
   OrderList orderlist;
   orderlist.addToList(order);
-
-
 
   ////////////////////////////////////////////////////////////////////////
   // Start of tests
@@ -100,7 +104,7 @@ void playerDriver() {
 
   std::cout << "\nTesting toAttack() method " << std::endl;
   std::cout << "------ toAttack() ------" << std::endl;
-  auto toAttack = player2->toAttack();
+  auto toAttack = player2->toAttack(WorldMap->ReturnListOfCountries());
   for (auto i = toAttack.begin(); i != toAttack.end(); ++i) {
     std::cout << **i << " ";
   }
@@ -119,21 +123,8 @@ void playerDriver() {
   ////////////////////////////////////////////////////////////////////////
 
   // Clearing memory use
-  // country 1 and 2 are deleted by player objects themselves
-  delete country3;
-  country3 = nullptr;
-  delete country4;
-  country4 = nullptr;
-  delete country5;
-  country5 = nullptr;
-  delete country6;
-  country6 = nullptr;
-  delete country7;
-  country7 = nullptr;
-  delete country8;
-  country8 = nullptr;
-  delete map;
-  map = nullptr;
+  delete WorldMap;
+  WorldMap = nullptr;
 
   delete player1;
   delete player2;
@@ -143,7 +134,5 @@ void playerDriver() {
   player2 = nullptr;
   player3 = nullptr;
   player4 = nullptr;
-  allCountries.clear();
   countries.clear();
-
 }
