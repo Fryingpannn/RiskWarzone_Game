@@ -197,6 +197,7 @@ std::ostream &operator<<(std::ostream &output,
     return output;
 };
 
+// Default destructor
 MapFileTerritory::~MapFileTerritory() {
     std::cout << "Deleting MapFileTerritory: " << this->short_name << std::endl;
 };
@@ -352,6 +353,8 @@ Result<void> MapFile::readMapFile() {
                 } else if (current_section == "borders") {
                     result = processBordersSectionLine(line);
                 }
+
+                // Check the results of processing line
                 if (result.success) {
                     returnResult.success = true;
                     returnResult.message = result.message;
@@ -364,7 +367,8 @@ Result<void> MapFile::readMapFile() {
             }
         }
     }
-
+    
+    // close the file
     inputfilestream.close();
 
     returnResult.success = true;
@@ -385,9 +389,11 @@ Result<void> MapFile::processFileSectionLine(const std::string line) {
         "ERROR: Default failure message. This should not have happened. "
         "MapFile::processFileSectionLine()";
 
+    // Split line into a vector of strings
     std::vector<std::string> line_args;
     line_args = split(line, ' ');
 
+    // Parse line_args and set the appropriate variable
     if (line_args.size() == 2) {
         if (toLowerCase(line_args[0]) == "pic") {
             pic_file_name = line_args[1];
@@ -422,14 +428,19 @@ Result<void> MapFile::processContinentSectionLine(const std::string line) {
         "ERROR: Default failure message. This should not have happened. "
         "MapFile::processContinentSectionLine()";
 
+    // Split line into a vector
     std::vector<std::string> line_args;
     line_args = split(line, ' ');
 
+    // Check to ensure the quantity of items on the line is equal to 3.
+    // Not equal to 3 is an invalid line in the continents section
     if (line_args.size() == 3) {
         int second_arg = 0;
         // try/catch example source:
         // Source:
         // https://codereview.stackexchange.com/questions/206754/an-exception-safe-wrapper-for-stdstoi
+
+        // Is the second arg an int?
         try {
             second_arg = std::stoi(line_args[1]);
         } catch (const std::invalid_argument &ia) {
@@ -445,13 +456,17 @@ Result<void> MapFile::processContinentSectionLine(const std::string line) {
                 line_args[1];
             return returnResult;
         }
+
+        // Create a new continent and add it to the continents list
         Continent *tempContinent;
         tempContinent = new Continent(line_args[0], second_arg, line_args[2]);
         map_continents.push_back(tempContinent);
+
         returnResult.success = true;
         returnResult.message =
             "DEBUG: Parsed line from continents section: " + line;
     } else {
+        // This was an invalid continents section line
         returnResult.success = false;
         returnResult.message =
             "ERROR: Invalid continent section config line: " + line;
@@ -471,17 +486,24 @@ Result<void> MapFile::processTerritorySectionLine(const std::string line) {
     returnResult.message =
         "ERROR: Default failure message. This should not have happened. "
         "MapFile::processTerritorySectionLine()";
-
+    
+    // Split the string into a vector
     std::vector<std::string> line_args;
     line_args = split(line, ' ');
+
+    // Declare vars to hold the conversions from string to int
     int arg1 = 0;
     int arg3 = 0;
     int arg4 = 0;
     int arg5 = 0;
+
+    // Validate the number of arguments on the line
     if (line_args.size() == 5) {
         // try/catch example source:
         // Source:
         // https://codereview.stackexchange.com/questions/206754/an-exception-safe-wrapper-for-stdstoi
+
+        // Attempt to convert the args from string to int
         try {
             arg1 = std::stoi(line_args[0]);
             arg3 = std::stoi(line_args[2]);
@@ -499,7 +521,9 @@ Result<void> MapFile::processTerritorySectionLine(const std::string line) {
             return returnResult;
         }
 
+        // Validate the continent arg
         if (isValidContinentNumber(arg3)) {
+            // Create a territory and add it to the map_territories list
             MapFileTerritory *tempTerritory;
             tempTerritory =
                 new MapFileTerritory(arg1, line_args[1], arg3, arg4, arg5);
@@ -533,14 +557,18 @@ Result<void> MapFile::processBordersSectionLine(const std::string line) {
         "ERROR: Default failure message. This should not have happened. "
         "MapFile::processBordersSectionLine()";
 
+    // Split line_args into a vector
     std::vector<std::string> line_args;
     line_args = split(line, ' ');
 
+    // Ensure there is more than 1 argument in the list
     if (line_args.size() > 1) {
         int arg0 = 0;
         // try/catch example source:
         // Source:
         // https://codereview.stackexchange.com/questions/206754/an-exception-safe-wrapper-for-stdstoi
+
+        // Attempt to convert the first arg
         try {
             arg0 = std::stoi(line_args[0]);
         } catch (const std::invalid_argument &ia) {
@@ -555,9 +583,11 @@ Result<void> MapFile::processBordersSectionLine(const std::string line) {
             return returnResult;
         }
 
+        // Get the territory from arg0
         Result<MapFileTerritory> result;
         result = getTerritoryByNumber(arg0);
         if (result.success) {
+            // Its a valid territory
             MapFileTerritory *tempTerritory;
             tempTerritory = result.returnValue;
             for (int i = 1; i < line_args.size(); i++) {
@@ -565,6 +595,8 @@ Result<void> MapFile::processBordersSectionLine(const std::string line) {
                 // try/catch example source:
                 // Source:
                 // https://codereview.stackexchange.com/questions/206754/an-exception-safe-wrapper-for-stdstoi
+                
+                // Attempt to convert the remaining args on the line
                 try {
                     border_territory_number = std::stoi(line_args[i]);
                 } catch (const std::invalid_argument &ia) {
@@ -581,9 +613,11 @@ Result<void> MapFile::processBordersSectionLine(const std::string line) {
                     return returnResult;
                 }
 
+                // Check to see if its a valid territory
                 Result<MapFileTerritory> secondResult;
                 secondResult = getTerritoryByNumber(border_territory_number);
                 if (secondResult.success) {
+                    // Its valid, so add it to the list of borders
                     tempTerritory->borders.push_back(border_territory_number);
                     returnResult.success = true;
                     returnResult.message =
@@ -694,13 +728,18 @@ bool MapFile::isValidContinentNumber(int continent_number) {
 * @return Map
 */
 Map MapFile::generateMap() {
+    // Create a Map object to return
     Map returnMap(map_territories.size(), map_file_name);
 
+    // Loop through all territories and add them to the map
     for (int i = 0; i < map_territories.size(); i++) {
         Result<Continent> firstContinentResult;
         firstContinentResult =
             getContinentByNumber(map_territories[i]->continent_number);
 
+        // TODO Validate firstContinentResult for failure
+
+        // Create the arguments necessary for the Territory constructor
         std::string firstTerrName = map_territories[i]->short_name;
         int firstTerrID = map_territories[i]->number -1;
         std::string firstTerrContName = firstContinentResult.returnValue->name;
@@ -708,22 +747,34 @@ Map MapFile::generateMap() {
         std::cout << "Processing Borders for: " << firstTerrName << std::endl;
         std::cout << "-- Borders: ";
 
+        // Create the origin territory
         Territory firstTerritory(firstTerrName, firstTerrID, firstTerrContName, 0.0f, 0.0f);
 
+        // Loop through all borders and add them as an edge from firstTerritory to secondTerritory
         for (int j = 0; j < map_territories[i]->borders.size(); j++) {
+
+            // Get the continent value
             Result<Continent> secondContinentResult;
             secondContinentResult =
                 getContinentByNumber(map_territories[i]->continent_number);
 
+            // TODO Validate secondContinentNumber
+
+            // Get the territory represented by the borders[j]
             Result<MapFileTerritory> secondTerritoryResult;
             secondTerritoryResult = getTerritoryByNumber(map_territories[i]->borders[j]);
 
+            // TODO Validate secondTerritoryResult
+
+            // Create the arguments necessary for the Territory Constructor
             std::string secondTerrName = secondTerritoryResult.returnValue->short_name;
             int secondTerrID = secondTerritoryResult.returnValue->number -1;
             std::string secondTerrContName = secondContinentResult.returnValue->name;
 
+            // Create the second territory
             Territory secondTerritory(secondTerrName, secondTerrID, secondTerrContName, 0.0f, 0.0f);
 
+            // Add an edge from first to second
             returnMap.AddEdges(firstTerritory, secondTerritory);
 
             std::cout << secondTerrName << " -- ";
@@ -746,25 +797,30 @@ Result<void> MapFile::validate() {
         "\nERROR: Default failure message. This should not have happened. "
         "MapFile::validate()";
 
+    ///////////////////////////////////////////////////
     // There is at least 1 continent
+    //////////////////////////////////////////////////
     if (map_continents.size() == 0) {
         returnResult.success = false;
         returnResult.message = "\nERROR: There are no continents!";
         return returnResult;
     }
 
+    ///////////////////////////////////////////////////
     // Each continent contains at least one territory
+    ///////////////////////////////////////////////////
     const int arr_size = map_continents.size();
-    // int continent_array[arr_size];
     std::vector<int> continent_array(arr_size);
+    // Initialize all elements of the vector to 0
     for (int i = 0; i < arr_size; i++) {
         continent_array[i] = 0;
     }
+    // Add +1 for each continent
     for (int i = 0; i < map_territories.size(); i++) {
         int j = map_territories[i]->continent_number - 1;
         continent_array[j]++;
     }
-
+    // Loop through continent_array to ensure none are 0
     for (int i = 0; i < arr_size; i++) {
         if (continent_array[i] == 0) {
             returnResult.success = false;
@@ -775,14 +831,18 @@ Result<void> MapFile::validate() {
         }
     }
 
+    /////////////////////////////////////////////////////
     // There is at least 1 territory
+    ////////////////////////////////////////////////////
     if (map_territories.size() == 0) {
         returnResult.success = false;
         returnResult.message = "\nERROR: There are no territories!";
         return returnResult;
     }
 
+    /////////////////////////////////////////////////////////
     // There are borders on at least 1 territory
+    ////////////////////////////////////////////////////////
     bool borderFound = false;
     for (int i = 0; i < map_territories.size(); i++) {
         if (map_territories[i]->borders.size() != 0) {
