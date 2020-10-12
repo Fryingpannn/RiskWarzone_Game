@@ -56,6 +56,7 @@ Territory& Territory::operator=(const Territory& t) {
   return *this;
 }
 
+
 std::ostream& operator<<(std::ostream& out, const Territory& t) {
   out << "\tName: " << t.Name << "\n";
   out << "\tID: " << t.TerritoryID << "\n";
@@ -88,6 +89,7 @@ Map::Map(int size, std::string name) {
   MapName = new std::string(name);
 }
 
+//other constructors that other programmers could work with :)
 Map::Map(std::vector<struct ::Territory*>** listOfCountries,
          std::string mapName, int size, Map& continent) {
   NumberOfCountries = new int(size);
@@ -102,17 +104,20 @@ Map::Map(std::vector<struct ::Territory*>** listOfCountries,
   MapName = new std::string(mapName);
 }
 
+//copy constructor
+//iterate each of the countries and create a copy of it
 Map::Map(Map& Copy) {
   MapName = new std::string(*Copy.MapName);
-  ListOfCountries = new std::vector<Territory*>*[*Copy.NumberOfCountries];
+  ListOfCountries = new std::vector<Territory*>*[1000];
 
-  for (int i = 0; i < *Copy.NumberOfCountries; i++)
+  for (int i = 0; i < 1000; i++)
     ListOfCountries[i] = new std::vector<struct ::Territory*>;
 
   if(!(**Copy.ListOfCountries).empty()){
     for (int i = 0; i < *Copy.NumberOfCountries; i++) {
       for (Territory* country : *Copy.ListOfCountries[i]) {
-        ListOfCountries[i]->push_back(country);
+          //calling copy constructor of each Territory
+          ListOfCountries[i]->push_back(country);
       }
     }
   }
@@ -122,7 +127,7 @@ Map::Map(Map& Copy) {
 }
 
 Map::~Map() {
-    for (int i = 0; i < NumOfCountries(); i++) {
+    for (int i = 0; i < 1000; i++) {
     Log("Deleting! : " << i);
     ListOfCountries[i]->clear();
     delete ListOfCountries[i];
@@ -132,7 +137,7 @@ Map::~Map() {
   delete NumberOfCountries;
   delete MapName;
 
-  // will make it into pointer later on
+  
 }
 
 void Map::AddEdges(Territory& country1, Territory& country2) {
@@ -176,7 +181,7 @@ std::vector<struct::Territory*> Map::ReturnListOfCountries()
 int Map::NumOfCountries() { return *this->NumberOfCountries; }
 
 /// <summary>
-/// 
+/// Display the map and list of countries with its adjacent countries :O
 /// </summary>
 void Map::Display() {
   std::cout << "\n\nMap Name: " << *MapName << std::endl;
@@ -345,6 +350,7 @@ bool Map::Validate() {
     return false;
 }
 
+//DFS to check whether the graph is connected, visit through the objects and it will knows
 void Map::DFS(int x, bool** visited) {
   *visited[x] = true;
   Log("visited: " << x << " " << *visited[x] << "\n");

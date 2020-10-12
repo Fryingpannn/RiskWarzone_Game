@@ -17,9 +17,15 @@
 #include <string>
 #include <vector>
 
+//this macro will only print when in debug mode :3
 #ifdef _DEBUG
 #define Log(x) std::cout << x << std::endl;
+#define _CRTDBG_MAP_ALLOC
+#include <stdlib.h>
+#include <crtdbg.h>
+#define FindMemoryLeak()_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 #else
+#define FindMemoryLeak();
 #define Log(x)
 #endif
 

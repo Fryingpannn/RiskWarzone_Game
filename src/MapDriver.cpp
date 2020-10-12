@@ -22,7 +22,7 @@
 void mapDriver()
 {
 
-
+    FindMemoryLeak();
     //one way to optimise is to put enum
     //all these will be in stack memory
 
@@ -89,13 +89,12 @@ void mapDriver()
     WorldMap->AddEdges(China, Korea);
     WorldMap->AddEdges(Malaysia, Japan);
 
-    std::vector<Territory* > test = WorldMap->ReturnListOfCountries();
+    
 
     //testing whether the list return will change the Territory Data
-    test.at(1)->Name = "Hahaha";
+    
 
-    WorldMap->Display();
-
+    //display a continent
     WorldMap->Display("EastAsia");
 
     //not connected graph
@@ -148,6 +147,25 @@ void mapDriver()
 
     }
 
+    //this to test whether copy constructor copies a value
+    std::vector<Territory* > test = WorldMap2->ReturnListOfCountries();
+    test.at(0)->Name = "Hahaha";
+    WorldMap->Display();
+    Log("WorldMap2");
+    WorldMap2->Display();
+
+    
+
+    Territory TestCopy{Malaysia};
+
+    TestCopy.Name = "Hey Hey";
+    test.push_back(&TestCopy);
+
+    WorldMap2->Display();
+    //it shouldn't be affected
+
+    Log(Malaysia.Name);
+    Log(TestCopy.Name);
 
     delete WorldMap;
     Log("Deleted WorldMap1");
