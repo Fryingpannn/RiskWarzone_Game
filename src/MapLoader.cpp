@@ -708,7 +708,7 @@ Map MapFile::generateMap() {
         std::cout << "Processing Borders for: " << firstTerrName << std::endl;
         std::cout << "-- Borders: ";
 
-        Territory firstTerritory(firstTerrName, firstTerrID, firstTerrContName);
+        Territory firstTerritory(firstTerrName, firstTerrID, firstTerrContName, 0.0f, 0.0f);
 
         for (int j = 0; j < map_territories[i]->borders.size(); j++) {
             Result<Continent> secondContinentResult;
@@ -722,7 +722,7 @@ Map MapFile::generateMap() {
             int secondTerrID = secondTerritoryResult.returnValue->number -1;
             std::string secondTerrContName = secondContinentResult.returnValue->name;
 
-            Territory secondTerritory(secondTerrName, secondTerrID, secondTerrContName);
+            Territory secondTerritory(secondTerrName, secondTerrID, secondTerrContName, 0.0f, 0.0f);
 
             returnMap.AddEdges(firstTerritory, secondTerritory);
 
