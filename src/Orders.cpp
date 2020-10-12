@@ -8,11 +8,11 @@
 //default constructor
 OrderList::OrderList() {}
 
-//copy constructor for OrderList /////////////////////this and assignment operator SUS
+//copy constructor for OrderList
 OrderList::OrderList(const OrderList& copy) {
-	this->list.resize(copy.list.size());//resizing new list's vector to same size as copy
+	this->list.resize(copy.list.size()); //resizing new list's vector to same size as copy
 	for (int i = 0; i < copy.list.size(); ++i) {
-		this->list[i] = copy.list[i]->clone();       //new Order(*copy.list[i]); ////ree
+		this->list[i] = copy.list[i]->clone();
 	}
 	std::cout << "OrderList copy constructor done." << std::endl;
 }
