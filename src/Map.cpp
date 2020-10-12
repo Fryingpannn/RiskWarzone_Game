@@ -66,6 +66,33 @@ std::ostream& operator<<(std::ostream& out, const Territory& t) {
   return out;
 }
 
+std::ostream& operator<<(std::ostream& out, const Map& map)
+{
+    std::cout << "\n\nMap Name: " << map.MapName << std::endl;
+
+    for (int i = 0; i < *map.NumberOfCountries; i++) {
+        int j = 0;
+
+        for (Territory* country : *(map.ListOfCountries[i])) {
+            if (j == 0) {
+                std::cout << "Territory: " << i << std::endl;
+                std::cout << "Name: " << country->Name << std::endl;
+                std::cout << "Adjacent Countries " << std::endl;
+                j++;
+            }
+            else {
+                std::cout << "-> ";
+                std::cout << "Country ID: " << country->TerritoryID << " ";
+                std::cout << country->Name << "\n";
+                j++;
+            }
+        }
+        j = 0;
+        std::cout << std::endl;
+    }
+    return out;
+}
+
 Map::Map() {
   Log("Default Constructor" << std::endl);
   NumberOfCountries = new int(0);
@@ -92,6 +119,7 @@ Map::Map(int size, std::string name) {
 //other constructors that other programmers could work with :)
 Map::Map(std::vector<struct ::Territory*>** listOfCountries,
          std::string mapName, int size, Map& continent) {
+
   NumberOfCountries = new int(size);
   ListOfCountries = listOfCountries;
   MapName = new std::string(mapName);
@@ -369,4 +397,13 @@ void Map::DFS(int x, bool** visited) {
       }
     }
   }
+}
+
+Map& Map::operator=(const Map& map)
+{
+    this->NumberOfCountries = map.NumberOfCountries;
+    this->ListOfCountries = map.ListOfCountries;
+    this->MapName = map.MapName;
+
+    return *this;
 }

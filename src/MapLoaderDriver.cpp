@@ -59,6 +59,6 @@ void mapLoaderDriver() {
         std::cerr << "ERROR: Could not read map file: " << readMapFileResult.message << std::endl;
     }
 
-    delete (testMapFile);
+    delete testMapFile;
     testMapFile = nullptr;
 }
