@@ -105,14 +105,13 @@ Map::Map() {
 
 // size defining the size of the map, name defining the map of the name
 Map::Map(int size, std::string name) {
-  Log("It passed" << std::endl);
+  
   NumberOfCountries = new int(size);
 
   ListOfCountries = new std::vector<Territory*>*[1000];
   for (int i = 0; i < 1000; i++)
     ListOfCountries[i] = new std::vector<struct ::Territory*>;
 
-  Log("It passed 2" << std::endl);
   MapName = new std::string(name);
 }
 
@@ -174,12 +173,12 @@ void Map::AddEdges(Territory& country1, Territory& country2) {
   // When the Array still doesn't have the country yet, it will automatically
   // add a new country
   if (this->ListOfCountries[country1.TerritoryID]->size() == 0) {
-    Log("HEY HEY");
+    Log("Added" <<country1.Name);
     this->ListOfCountries[country1.TerritoryID]->push_back(&country1);
   }
 
   if (this->ListOfCountries[country2.TerritoryID]->size() == 0) {
-    Log("HEY HEY 2");
+    Log("Added" << country2.Name);
     this->ListOfCountries[country2.TerritoryID]->push_back(&country2);
   }
 
@@ -187,7 +186,7 @@ void Map::AddEdges(Territory& country1, Territory& country2) {
   // if list of country1 contains country2
   int first = 0;
   for (Territory* country : *(ListOfCountries[country1.TerritoryID])) {
-    Log("HEY HEY 3\n");
+    Log("Error Handling" << country->Name);
     if (*country == country2) return;
   }
 
@@ -399,11 +398,28 @@ void Map::DFS(int x, bool** visited) {
   }
 }
 
-Map& Map::operator=(const Map& map)
+Map& Map::operator=(const Map* map)
 {
-    this->NumberOfCountries = map.NumberOfCountries;
-    this->ListOfCountries = map.ListOfCountries;
-    this->MapName = map.MapName;
+    Log("Using Assignment Operator");
+    MapName = new std::string(*(map->MapName));
+    ListOfCountries = new std::vector<Territory*> * [1000];
+
+    for (int i = 0; i < 1000; i++)
+        ListOfCountries[i] = new std::vector<struct ::Territory*>;
+
+    if (!(**(map->ListOfCountries)).empty()) {
+        for (int i = 0; i < *(map->NumberOfCountries); i++) {
+            for (Territory* country : *(map->ListOfCountries[i])) {
+                //calling copy constructor of each Territory
+                ListOfCountries[i]->push_back(country);
+            }
+        }
+    }
+    Log("Copied successful\n");
+
+    NumberOfCountries = new int(*(map->NumberOfCountries));
+    // TODO: insert return statement here
 
     return *this;
 }
+

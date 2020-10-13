@@ -59,6 +59,7 @@ void mapLoaderDriver() {
             
             // Display the map
             testMap->Display();
+            delete testMap;
         } else {
             std::cerr << "ERROR: testMapFile failed validation checks." << validateMapFile.message << std::endl;
         }
@@ -68,4 +69,6 @@ void mapLoaderDriver() {
 
     delete testMapFile;
     testMapFile = nullptr;
+
+    
 }

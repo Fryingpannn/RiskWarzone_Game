@@ -122,7 +122,7 @@ void mapDriver()
   Log("WorldMap2");
   WorldMap2->Display();
 
-
+  
 
   Territory TestCopy{Malaysia};
 
@@ -135,10 +135,26 @@ void mapDriver()
   Log(Malaysia.Name);
   Log(TestCopy.Name);
   
+  //testing assignment operator
+  std::cout<<"Testing Assignment Operator"<<std::endl;
+  
+  Map* TestMap = WorldMap;
+
+  TestMap->AddEdges(Philippine, China);
+  TestMap->Display();
+
+  WorldMap->Display();
+
   delete WorldMap;
+  WorldMap = nullptr;
   Log("Deleted WorldMap1");
+  
   delete WorldMap2;
+  
+  WorldMap2 = nullptr;
   Log("Deleted WorldMap2");
 
   delete WorldMap3;
+
+
 }

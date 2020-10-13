@@ -106,5 +106,6 @@ class Map {
   void DFS(int x, bool **visited);
 
   friend std::ostream& operator<<(std::ostream& out, const Map& map);
-  Map& operator=(const Map& map);
+  
+  Map& operator=(const Map* map);
 };
