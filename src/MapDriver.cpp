@@ -116,6 +116,7 @@ void mapDriver()
   }
 
   //this to test whether copy constructor copies a value
+  std::cout << "Testing Printing List Of Countries" << std::endl;
   std::vector<Territory* > test = WorldMap2->ReturnListOfCountries();
   test.at(0)->Name = "Hahaha";
   WorldMap->Display();
