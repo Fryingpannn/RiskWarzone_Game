@@ -25,16 +25,19 @@
 #include "OrdersDriver.h"
 #include "PlayerDriver.h"
 
+#include "GameEngine.h"
+
+static std::string PlayerName;
 void displayMenu();
 
 int main() {
-  std::cout << "Assignment 1 - Demo" << std::endl;
+  /*std::cout << "Assignment 2 - Demo" << std::endl;
   std::cout << "Main Menu" << std::endl;
   std::cout << "========================" << std::endl;
   char choice;
   bool running = true;
 
-loop:
+
   while (running) {
     std::cout << "1. Map driver" << std::endl;
     std::cout << "2. MapLoader driver" << std::endl;
@@ -47,19 +50,19 @@ loop:
     switch (choice) {
       case '1':
         mapDriver();
-        goto loop;
+        break;
       case '2':
         mapLoaderDriver();
-        goto loop;
+        break;
       case '3':
         playerDriver();
-        goto loop;
+        break;
       case '4':
         ordersDriver();
-        goto loop;
+        break;
       case '5':
         CardsDeckTest();
-        goto loop;
+        break;
       case 'q':
       case 'Q':
         running = false;
@@ -68,8 +71,14 @@ loop:
         std::cout << "Invalid option." << std::endl;
         break;
     }
-    return 0;
+  }*/
+
+  GameEngine* MainEngine = new GameEngine();
+  if (MainEngine->ObserverOn == false) {
+      //person doing part 5 turn on observer or no in this part :)
   }
+  delete MainEngine;
+  return 0;
 }
 void displayMenu() {
   std::cout << "1. Map driver" << std::endl;
@@ -77,4 +86,17 @@ void displayMenu() {
   std::cout << "3. Player driver" << std::endl;
   std::cout << "4. Orders driver" << std::endl;
   std::cout << "5. Cards Driver" << std::endl;
+}
+
+void MainMenu()
+{
+    std::cout << "Hey there you little filty general! What's your name?" << std::endl;
+    std::cin >> PlayerName;
+
+
+    std::cout << "2. MapLoader driver" << std::endl;
+    std::cout << "3. Player driver" << std::endl;
+    std::cout << "4. Orders driver" << std::endl;
+    std::cout << "5. Cards Driver" << std::endl;
+    
 }

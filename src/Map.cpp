@@ -204,6 +204,49 @@ std::vector<struct ::Territory*> Map::ReturnListOfCountries() {
   return Temp;
 }
 
+std::vector<struct::Territory*> Map::ReturnListOfAdjacentCountriesByID(int ID)
+{
+    std::vector<Territory*> ReturnList;
+    for (Territory* Temp: *ListOfCountries[ID]) {
+        ReturnList.push_back(Temp);
+        Log(Temp->Name << std::endl);
+    }
+    return ReturnList;
+}
+
+std::vector<struct::Territory*> Map::ReturnListOfCountriesOwnedByPlayer(std::string PlayerName)
+{
+    std::vector<Territory*> Temp;
+    for (int i = 0; i < *NumberOfCountries; i++) {
+        if (ListOfCountries[i]->at(0)->OwnedBy == PlayerName) {
+            Temp.push_back(ListOfCountries[i]->at(0));
+            Log("This country "<< ListOfCountries[i]->at(0)->Name <<"Owned by player "<< PlayerName<< std::endl);
+        }
+    }
+    return Temp;
+}
+
+void Map::ShowListOfAdjacentCountriesByID(int ID)
+{
+    std::cout << "Country adjacent by country with ID: " << ID<<std::endl;
+    
+    for (Territory* Temp : *ListOfCountries[ID]) {
+        
+        std::cout<<Temp->Name << std::endl;
+    }
+}
+
+void Map::ShowListOfAdjacentCountriesOwnedByPlater(std::string PlayerName)
+{
+    std::cout << PlayerName << " owns : " << std::endl;
+    for (int i = 0; i < *NumberOfCountries; i++) {
+        if (ListOfCountries[i]->at(0)->OwnedBy == PlayerName) {
+            std::cout <<"Territory ID" <<ListOfCountries[i]->at(0)->TerritoryID<<": "<< ListOfCountries[i]->at(0)->Name << std::endl;
+        }
+    }
+    
+}
+
 int Map::NumOfCountries() { return *this->NumberOfCountries; }
 
 /// <summary>
@@ -219,12 +262,16 @@ void Map::Display() {
       if (j == 0) {
         std::cout << "Territory: " << i << std::endl;
         std::cout << "Name: " << country->Name << std::endl;
+        std::cout << "Owned By: " << country->OwnedBy << std::endl;
+        std::cout << "Armies: " << country->Armies << std::endl;
         std::cout << "Adjacent Countries " << std::endl;
         j++;
       } else {
         std::cout << "-> ";
         std::cout << "Country ID: " << country->TerritoryID << " ";
         std::cout << country->Name << "\n";
+        std::cout << "Owned By: " << country->OwnedBy << std::endl;
+        std::cout << "Armies: " << country->Armies << std::endl;
         j++;
       }
     }
@@ -247,6 +294,9 @@ void Map::Display(std::string continent) {
           std::cout << "Continent: " << country->Continent << std::endl;
           std::cout << "Country: " << j << std::endl;
           std::cout << "Name: " << country->Name << std::endl;
+          std::cout << "Owned By: " << country->OwnedBy << std::endl;
+          std::cout << "Armies: " << country->Armies << std::endl;
+
           std::cout << "Adjacent Countries " << std::endl;
           j++;
         }
@@ -255,6 +305,8 @@ void Map::Display(std::string continent) {
           std::cout << "-> ";
           std::cout << "Country ID: " << country->TerritoryID << " ";
           std::cout << country->Name;
+          std::cout << "Owned By: " << country->OwnedBy << " ";
+          std::cout << "Armies: " << country->Armies << " ";
           j++;
         }
       }
@@ -347,20 +399,21 @@ bool Map::Validate() {
     VisitedB[i] = new bool(false);
   }
   Log("Filling up the array\n\n");
-  DFS(0, VisitedA);
-
+  /*if (_DEBUG) {
+      DFS(0, VisitedA);
+  }*/
   // DFS(*NumberOfCountries-1, VisitedB);
 
   bool IsConnected = true;
   // for the boolean array to check which country is visited
-  for (int i = 0; i < *NumberOfCountries; i++) {
+  /*for (int i = 0; i < *NumberOfCountries; i++) {
     std::cout << "Country: " << i << "  " << *VisitedA[i] << std::endl;
     ;
     if (!*VisitedA[i]) {
       std::cout << "The Country is not connected!" << std::endl;
       IsConnected = false;
     }
-  }
+  }*/
 
   // Delete the boolean array
   for (int i = 0; i < *NumberOfCountries; i++) {

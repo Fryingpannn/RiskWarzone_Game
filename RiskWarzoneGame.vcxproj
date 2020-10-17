@@ -148,6 +148,7 @@
   <ItemGroup>
     <ClCompile Include="src\Cards.cpp" />
     <ClCompile Include="src\CardsDriver.cpp" />
+    <ClCompile Include="src\GameEngine.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\Map.cpp" />
     <ClCompile Include="src\MapDriver.cpp" />
@@ -161,6 +162,7 @@
   <ItemGroup>
     <ClInclude Include="src\Cards.h" />
     <ClInclude Include="src\CardsDriver.h" />
+    <ClInclude Include="src\GameEngine.h" />
     <ClInclude Include="src\Map.h" />
     <ClInclude Include="src\MapDriver.h" />
     <ClInclude Include="src\MapLoader.hpp" />

@@ -44,8 +44,8 @@ struct Territory {
   std::string Continent;
   float XCoordinate;
   float YCoordinate;
-  std::string OwnedBy;
-  int Armies;
+  std::string OwnedBy = "";
+  int Armies = 0;
 
   bool operator==(Territory &Territory) const;
 
@@ -96,6 +96,15 @@ class Map {
   void AddEdges(Territory &country1, Territory &country2);
 
   std::vector<struct ::Territory *> ReturnListOfCountries();
+
+  //This function return the list of adjacent countries by their ID
+  std::vector<struct ::Territory*> ReturnListOfAdjacentCountriesByID(int ID);
+
+  std::vector<struct ::Territory*> ReturnListOfCountriesOwnedByPlayer(std::string PlayerName);
+
+  void ShowListOfAdjacentCountriesByID(int ID);
+
+  void ShowListOfAdjacentCountriesOwnedByPlater(std::string PlayerName);
 
   int NumOfCountries();
   void Display();
