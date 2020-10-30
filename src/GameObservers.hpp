@@ -1,8 +1,8 @@
 /////////////////////////////////////////////
 // Filename:        GameObservers.hpp
 //
-// Description:     Header file for the 
-//                  Implementation of the Observer class 
+// Description:     Header file for the
+//                  Implementation of the Observer class
 //                  and associated functionality
 //
 // Author:          Stefan Russo - 26683320
@@ -15,7 +15,6 @@
 //
 /////////////////////////////////////////////
 
-
 #include <algorithm>
 #include <iostream>
 #include <vector>
@@ -23,44 +22,60 @@
 // abstract classes
 class Observer;
 
-struct State{
+struct State
+{
     // TODO Determine what needs to be here
 };
 
-class Subject {
+class Subject
+{
 protected:
-  std::vector<Observer *> obs;
+    std::vector<Observer *> obs;
 
 public:
-  void attach(Observer *o);
+    void attach(Observer *o);
 
-  void detach(Observer *o);
+    void detach(Observer *o);
 
-  virtual void notify() = 0;
+    virtual void notify() = 0;
 };
 
-class Observer {
+class Observer
+{
 public:
-  virtual void update() = 0;
+    virtual void update() = 0;
 };
 
-class ConcreteSubject : public Subject {
-  int state = 0;
+class ConcreteSubject : public Subject
+{
+    int state = 0;
 
 public:
-  ConcreteSubject(int i) : state(i){};
+    ConcreteSubject(int i) : state(i){};
 
-  void setState(int i);
+    void setState(int i);
 
-  int getState() { return state; };
+    int getState() { return state; };
 
-  void notify();
+    void notify();
 };
 
-class PhaseObserver : public Observer {
-    void update();
+class PhaseObserver : public Observer
+{
+    ConcreteSubject *phase_subject;
+
+public:
+    PhaseObserver(ConcreteSubject *passed_phase_subject);
+
+    virtual void update() override;
 };
 
-class GameStatisticsObserver : public Observer {
-    void update();
+class GameStatisticsObserver : public Observer
+{
+    ConcreteSubject *game_observer_subject;
+
+public:
+    GameStatisticsObserver(ConcreteSubject *passed_game_observer_subject);
+
+    virtual void update() override;
 };
