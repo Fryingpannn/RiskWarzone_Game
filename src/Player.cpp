@@ -15,13 +15,9 @@
 
 #include "Player.h"
 
+#include <algorithm>
 #include <ostream>
 #include <vector>
-#include <algorithm>
-
-#include "Cards.h"
-#include "Map.h"
-#include "Orders.h"
 
 /**
  * Default constructor initialize the members of Player to their default values.
@@ -67,6 +63,7 @@ Player::Player(const Player &p) {
   this->HandOfCards = new Hand(*p.HandOfCards);
   this->ListOfOrders = new OrderList(*p.ListOfOrders);
   this->PID = p.PID;
+  this->ReinforcementPool = p.ReinforcementPool;
 
   for (auto i = p.Territories.begin(); i != p.Territories.end(); ++i) {
     auto *country = new Territory(**i);
@@ -94,6 +91,7 @@ Player &Player::operator=(const Player &p) {
   this->HandOfCards = new Hand(*p.HandOfCards);
   this->ListOfOrders = new OrderList(*p.ListOfOrders);
   this->PID = p.PID;
+  this->ReinforcementPool = p.ReinforcementPool;
 
   for (auto i = p.Territories.begin(); i != p.Territories.end(); ++i) {
     auto *country = new Territory(**i);
@@ -124,6 +122,9 @@ std::ostream &operator<<(std::ostream &out, const Player &p) {
   out << "\tOrders: " << *p.ListOfOrders;
   out << "\n";
 
+  out << "\tReinforcement Pool: " << p.ReinforcementPool;
+  out << "\n";
+
   return out;
 }
 
@@ -136,24 +137,21 @@ std::vector<Territory *> Player::toDefend() { return Territories; }
 
 /**
  *  A function that determines the list of territories a player can attack.
- *  @param listOfCountries Temporary parameter to compare all countries to.
+ *  @param map Map object that contains all the territory data of the game
  *  @return A list of territories.
  */
-std::vector<Territory *> Player::toAttack(
-    std::vector<Territory *> listOfCountries) {
-  // Sort list to please compiler
-  std::sort(listOfCountries.begin(), listOfCountries.end());
-  std::sort(Territories.begin(), Territories.end());
-
-  // The difference between the two to be computed
+std::vector<Territory *> Player::toAttack(Map &map) {
   std::vector<Territory *> territoriesToAttack;
+  for (auto &territory : this->Territories) {
+    // Get list of adjacent territories of a single territory
+    auto adjacentTerritory =
+        map.ReturnListOfAdjacentCountriesByID(territory->TerritoryID);
 
-  // find difference between 2 collections
-  std::set_difference(
-      listOfCountries.begin(), listOfCountries.end(), Territories.begin(),
-      Territories.end(),
-      std::inserter(territoriesToAttack, territoriesToAttack.begin()));
-
+    // Add them to the list of player's territories that can be attacked
+    territoriesToAttack.insert(territoriesToAttack.end(),
+                               adjacentTerritory.begin(),
+                               adjacentTerritory.end());
+  }
   return territoriesToAttack;
 }
 
@@ -162,10 +160,31 @@ std::vector<Territory *> Player::toAttack(
  * orders.
  *
  */
-void Player::issueOrder() {
-  // Temporary order just to demonstrate how method works
-  auto *order = new Advance();
-  this->ListOfOrders->addToList(order);
+void Player::issueOrder(Map &map, Deck &deckOfCards) { 
+
+  auto toAttack = this->toAttack(map);
+  auto toDefend = this->toDefend();
+
+  // Deploy armies until nothing left in pool
+  // TODO change logic to deploy on list of territories from to defend
+  if (this->ReinforcementPool > 0) {
+    auto *order = new Deploy();
+    this->ListOfOrders->addToList(order);
+    this->ReinforcementPool--;
+  } else if(!AdvanceOrderDone) {
+    // TODO change logic to include toAttack OR toDefend
+    auto *order = new Advance();
+    this->ListOfOrders->addToList(order);
+    this->AdvanceOrderDone = true;
+  } else if(!CardPlayed) {
+    // TODO how do we decide which card to pick?
+    this->HandOfCards->returnByPos(0).Play(*HandOfCards, *ListOfOrders,
+                                             deckOfCards);
+    this->CardPlayed = true;
+  } else {
+    std::cout << "No orders left to make" << std::endl;
+  }
+ 
 }
 
 /**
