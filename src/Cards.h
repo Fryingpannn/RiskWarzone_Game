@@ -19,7 +19,7 @@
 #include <queue>
 #include <vector>
 
-#include "Orders.h";
+#include "Orders.h"
 
 class Card;
 class Hand;
@@ -48,7 +48,7 @@ class Card {
 
   // functions
   CardType* getType();
-  void Play(Hand& const h, OrderList& const list, Deck& d);
+  void Play(Hand  &h, OrderList &list, Deck& d);
 
   // operator overloading
   friend std::ostream& operator<<(std::ostream& out, const Card& card);
@@ -66,7 +66,7 @@ class Hand {
   ~Hand();
 
   // functions
-  void add(CardType& const type);
+  void add(CardType const &type);
   void remove(int index);
   int find(Card c);
   Card returnByPos(int pos);

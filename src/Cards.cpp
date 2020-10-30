@@ -69,7 +69,7 @@ CardType* Card::getType() { return (this->type); }
  * @param d The object Deck that the card will be return to.
  * @return void
  */
-void Card::Play(Hand& const h, OrderList& const list, Deck& d) {
+void Card::Play(Hand &h, OrderList &list, Deck& d) {
   int index = h.find(*this);
   if (index > -1) {
     CardType* type = (getType());
@@ -191,7 +191,7 @@ Hand::~Hand() {
  * @param type A CardType
  * @return void
  */
-void Hand::add(CardType& const type) {
+void Hand::add(CardType const &type) {
   if (this->hand.size() < 6) {
     hand.emplace_back(new Card(type));
   } else {
@@ -365,7 +365,7 @@ void Deck::add(CardType const type) { deck.push(new Card(type)); }
  * @param h A Hand object
  * @return A Card object
  */
-Card Deck::draw(Hand& const h) {
+Card Deck::draw(Hand &h) {
   // draw the card on top of the deck and put it in the hand
   Card chosen = *this->deck.front();
   CardType* t = chosen.getType();
