@@ -102,9 +102,13 @@ class Map {
 
   std::vector<struct ::Territory*> ReturnListOfCountriesOwnedByPlayer(std::string PlayerName);
 
+  std::vector<struct ::Territory*> ReturnListOfCountriesByContinent(std::string ContinentName);
+
+  bool IfPlayerOwnContinent(std::string PlayerName, std::string ContinentName);
+
   void ShowListOfAdjacentCountriesByID(int ID);
 
-  void ShowListOfAdjacentCountriesOwnedByPlater(std::string PlayerName);
+  void ShowListOfAdjacentCountriesOwnedByPlayer(std::string PlayerName);
 
   int NumOfCountries();
   void Display();

@@ -194,6 +194,8 @@ void Map::AddEdges(Territory& country1, Territory& country2) {
   this->ListOfCountries[country1.TerritoryID]->push_back(&country2);
 }
 
+//iterate through the array and return the country at first index which is unique according to the ID
+//same method will be same for every other method that return countries by ID or player name etc
 std::vector<struct ::Territory*> Map::ReturnListOfCountries() {
   std::vector<Territory*> Temp;
   for (int i = 0; i < *NumberOfCountries; i++) {
@@ -226,6 +228,43 @@ std::vector<struct::Territory*> Map::ReturnListOfCountriesOwnedByPlayer(std::str
     return Temp;
 }
 
+std::vector<struct::Territory*> Map::ReturnListOfCountriesByContinent(std::string ContinentName)
+{
+    std::vector<Territory*> Temp;
+    for (int i = 0; i < *NumberOfCountries; i++) {
+        if (ListOfCountries[i]->at(0)->Continent == ContinentName) {
+            Temp.push_back(ListOfCountries[i]->at(0));
+            Log("This country " << ListOfCountries[i]->at(0)->Name << "Is in continent" << ContinentName << std::endl);
+        }
+    }
+    return Temp;
+}
+
+//method to check whether the player own continent
+//there's one possibility to break the code, if the parameter ContinentName didn't match any of the continent name in the map it will return true
+//Although it shouldn't even be any way for it to happen but yeah
+bool Map::IfPlayerOwnContinent(std::string PlayerName, std::string ContinentName)
+{
+    for (int i = 0; i < *NumberOfCountries; i++) {
+        //If the continent is found then it will check
+        if (ListOfCountries[i]->at(0)->Continent == ContinentName) {
+            Log("This country " << ListOfCountries[i]->at(0)->Name << "Is in continent" << ContinentName << std::endl);
+            if (ListOfCountries[i]->at(0)->OwnedBy != PlayerName)
+            {
+                Log("This country " << ListOfCountries[i]->at(0)->Name << "Owned by" << ListOfCountries[i]->at(0)->OwnedBy << std::endl);
+                return false;
+            }
+            else 
+            {
+                Log("This country " << ListOfCountries[i]->at(0)->Name << "Owned by" << ContinentName << std::endl);
+
+            }
+        }
+    }
+    return true;
+}
+//show list of adjacent of countries by ID
+//aka where player can attack from this territory
 void Map::ShowListOfAdjacentCountriesByID(int ID)
 {
     std::cout << "Country adjacent by country with ID: " << ID<<std::endl;
@@ -235,8 +274,8 @@ void Map::ShowListOfAdjacentCountriesByID(int ID)
         std::cout<<Temp->Name << std::endl;
     }
 }
-
-void Map::ShowListOfAdjacentCountriesOwnedByPlater(std::string PlayerName)
+//method to display the countries owned by player
+void Map::ShowListOfAdjacentCountriesOwnedByPlayer(std::string PlayerName)
 {
     std::cout << PlayerName << " owns : " << std::endl;
     for (int i = 0; i < *NumberOfCountries; i++) {
