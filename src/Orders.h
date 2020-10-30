@@ -40,7 +40,7 @@ class OrderList {
 
   void prioritize();
 
-  Order pop();
+  // Order pop();
 
   // assignment operator
   OrderList& operator=(const OrderList& o);

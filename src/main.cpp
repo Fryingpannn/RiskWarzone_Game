@@ -28,7 +28,7 @@
 #include "GameEngine.h"
 
 static std::string PlayerName;
-void displayMenu();
+void displayA1DemoMenu();
 
 int main() {
   /*std::cout << "Assignment 2 - Demo" << std::endl;
@@ -80,7 +80,7 @@ int main() {
   delete MainEngine;
   return 0;
 }
-void displayMenu() {
+void displayA1DemoMenu() {
   std::cout << "1. Map driver" << std::endl;
   std::cout << "2. MapLoader driver" << std::endl;
   std::cout << "3. Player driver" << std::endl;
@@ -90,7 +90,7 @@ void displayMenu() {
 
 void MainMenu()
 {
-    std::cout << "Hey there you little filty general! What's your name?" << std::endl;
+    std::cout << "Hey there you little filthy general! What's your name?" << std::endl;
     std::cin >> PlayerName;
 
 
