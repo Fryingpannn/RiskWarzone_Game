@@ -91,7 +91,7 @@ void playerDriver() {
   std::cout << *player3 << std::endl;
 
   std::cout << "\nTesting issue order method of player." << std::endl;
-  player3->issueOrder();
+  player3->issueOrder(*WorldMap, d);
   std::cout << "------ Issue Order ------" << std::endl;
   std::cout << *player3 << std::endl;
 
@@ -104,7 +104,7 @@ void playerDriver() {
 
   std::cout << "\nTesting toAttack() method " << std::endl;
   std::cout << "------ toAttack() ------" << std::endl;
-  auto toAttack = player2->toAttack(WorldMap->ReturnListOfCountries());
+  auto toAttack = player2->toAttack(*WorldMap);
   for (auto i = toAttack.begin(); i != toAttack.end(); ++i) {
     std::cout << **i << " ";
   }

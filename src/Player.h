@@ -19,9 +19,12 @@
 
 #include "Cards.h"
 #include "Orders.h"
+#include "Map.h"
+
 #ifndef H_MAP
 #define H_MAP
-class Territory;
+struct Territory;
+class Map;
 #endif
 /**
  * A class for the object Player which managers territories, cards and orders
@@ -33,6 +36,9 @@ class Player {
   Hand *HandOfCards;
   OrderList *ListOfOrders;
   std::string PID;
+  int ReinforcementPool = 0;
+  bool AdvanceOrderDone = true;
+  bool CardPlayed = true;
 
   Player();
   Player(std::vector<Territory *> territories, Hand hand, OrderList orderList,
@@ -40,8 +46,8 @@ class Player {
   Player(const Player &p);
   Player &operator=(const Player &p);
   std::vector<Territory *> toDefend();
-  std::vector<Territory *> toAttack(std::vector<Territory *> listOfCountries);
-  void issueOrder();
+  std::vector<Territory *> toAttack(Map &map);
+  void issueOrder(Map &map, Deck &deckOfCards);
   friend std::ostream &operator<<(std::ostream &out, const Player &p);
   ~Player();
 };
