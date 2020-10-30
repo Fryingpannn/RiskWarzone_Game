@@ -17,6 +17,7 @@
 
 #include <ostream>
 #include <vector>
+#include <algorithm>
 
 #include "Cards.h"
 #include "Map.h"
