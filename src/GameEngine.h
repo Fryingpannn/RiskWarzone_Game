@@ -43,7 +43,7 @@ class GameEngine {
   void Init();
 
   void mainGameLoop();
-
+  void startupPhase();
   void reinforcementPhase();
   void issueOrdersPhase();
   void executeOrdersPhase();

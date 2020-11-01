@@ -63,7 +63,7 @@ void GameEngine::Init() {
     ListOfPlayers.push_back(new Player());
     std::cout << "Please enter player" << i << "'s name: ";
     std::cin >> PlayerName;
-    ListOfPlayers.at(0)->PID = PlayerName;
+    ListOfPlayers.at(ListOfPlayers.size()-1)->PID = PlayerName;
   }
 
   std::cout << "Successfully added" << NumberOfPlayers
@@ -135,8 +135,9 @@ void GameEngine::Init() {
   // -------------------------------------------------------
   // TODO CALL STARTUP LOOP
 
+  startupPhase();
   // TODO update deck to include actual cards based on map
-  this->DeckOfCards = new Deck();
+  this->DeckOfCards = new Deck(MainMap->NumOfCountries());
 
   // -------------------------------------------------------
   // MAIN GAME LOOP
@@ -241,4 +242,46 @@ void GameEngine::executeOrdersPhase() {
       // TODO add logic
     }
   }
+}
+
+void GameEngine::startupPhase() {
+
+    srand(time(NULL));
+   
+    std::random_shuffle(ListOfPlayers.begin(), ListOfPlayers.end());
+
+    for (auto& i : MainMap->ReturnListOfCountries()) {
+        ListOfPlayers.at(rand() % ListOfPlayers.size())->Territories.emplace_back(i);
+    }
+    
+    switch (ListOfPlayers.size()) {
+    case 2:
+        for (int i =0; i < 2; i++) {
+            ListOfPlayers.at(i)->ReinforcementPool = 40;
+        }
+        break;
+    case 3:
+        for (int i = 0; i < 3; i++) {
+            ListOfPlayers.at(i)->ReinforcementPool = 35;
+        }
+        break;
+    case 4:
+        for (int i = 0; i < 4; i++) {
+            ListOfPlayers.at(i)->ReinforcementPool = 30;
+        }
+        break;
+    case 5:
+        for (int i = 0; i < 5; i++) {
+            ListOfPlayers.at(i)->ReinforcementPool = 25;
+        }
+        break;
+    }
+
+    for (auto& i : ListOfPlayers) {
+ 
+       std::cout << *i;
+       std::cout <<std::endl;
+
+    }
+
 }
