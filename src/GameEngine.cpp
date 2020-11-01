@@ -319,7 +319,7 @@ void GameEngine::startupPhase() {
     for (auto& i : MainMap->ReturnListOfCountries()) {
 
         std::cout << *i;
-        std::cout << "       Owned By: " << i->OwnedBy << std::endl;
+        std::cout << "\tOwned By: " << i->OwnedBy << std::endl;
         std::cout << std::endl;
 
     }
