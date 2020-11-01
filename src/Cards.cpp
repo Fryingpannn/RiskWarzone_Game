@@ -112,7 +112,8 @@ void Card::Play(Hand &h, OrderList &list, Deck& d) {
 Card& Card::operator=(const Card& c) {
   // check if two pointers dont point to the same address (not self assignment);
   if (this != &c) {
-     *this->type = *c.type;
+     delete this->type;  
+     this->type = new CardType(*c.type);
   }
   return *this;
 }
