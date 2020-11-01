@@ -50,7 +50,8 @@ bool OrderList::remove(int position) {
   return true;
 }
 
-// returns: nullptr if list is empty, otherwise a copy of the pointer to next priority element
+// returns: nullptr if list is empty, otherwise returns a pointer to a copy
+//          of the next priority element (needs to be explicitly deleted)
 Order* OrderList::peek() {
     //if list is empty, return null
     if (list.empty())
@@ -78,7 +79,7 @@ Order* OrderList::peek() {
 // pops top priority element from the list; Deploy -> Airlift -> Blockade -> Others
 //
 // returns: nullptr if list is empty (be careful when dereferencing!),
-//          otherwise returns a pointer which needs to be explicitly deleted
+//          otherwise returns a pointer (needs to be explicitly deleted)
 Order* OrderList::pop() {
     //if list is empty, return null
     if (list.empty())
