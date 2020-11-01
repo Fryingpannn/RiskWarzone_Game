@@ -2,6 +2,8 @@
 
 #include <chrono>
 #include <thread>
+#include <algorithm>
+#include <random>
 
 GameEngine::GameEngine() { Init(); }
 
@@ -247,13 +249,37 @@ void GameEngine::executeOrdersPhase() {
 void GameEngine::startupPhase() {
 
     srand(time(NULL));
-   
+   //Shuffle the list of players 
     std::random_shuffle(ListOfPlayers.begin(), ListOfPlayers.end());
+   
+    //create a list of numbers from 0 to the number of countries in the map
+    std::vector<int> randomizedIDs;
 
-    for (auto& i : MainMap->ReturnListOfCountries()) {
-        ListOfPlayers.at(rand() % ListOfPlayers.size())->Territories.emplace_back(i);
+    for (int i = 0; i < MainMap->NumOfCountries(); i++) {
+
+        randomizedIDs.emplace_back(i);
+    }
+
+    //randomize the list of numbers
+    unsigned seed = std::chrono::system_clock::now()
+        .time_since_epoch()
+        .count();
+    std::shuffle(std::begin(randomizedIDs), std::end(randomizedIDs), std::default_random_engine(seed));
+
+    //now iterate through the randomized list, assign countries to players in robin round fashion 
+    //The randomized list plays the role of territory indexes. each territory has a unique ID (index), so it is assigned once and only once.
+    int rr = 0;
+    for (int i = 0; i < MainMap->NumOfCountries(); i++) {
+
+        ListOfPlayers.at(rr)->Territories.emplace_back(MainMap->ReturnListOfCountries().at(randomizedIDs.at(i)));
+        MainMap->ReturnListOfCountries().at(randomizedIDs.at(i))->OwnedBy = ListOfPlayers.at(rr)->PID;
+        rr += 1;
+        if (rr == ListOfPlayers.size()) {
+            rr = 0;
+        }
     }
     
+    //give armies to the players based on the number of players in the game
     switch (ListOfPlayers.size()) {
     case 2:
         for (int i =0; i < 2; i++) {
@@ -277,10 +303,24 @@ void GameEngine::startupPhase() {
         break;
     }
 
+    std::cout << "PLAYERS' INFORMATION:" << std::endl;
+    std::cout << "----------------------------------------------------" << std::endl;
+
     for (auto& i : ListOfPlayers) {
  
        std::cout << *i;
        std::cout <<std::endl;
+
+    }
+
+    std::cout << "TERRITORIES' INFORMATION:" << std::endl;
+    std::cout << "----------------------------------------------------" << std::endl;
+
+    for (auto& i : MainMap->ReturnListOfCountries()) {
+
+        std::cout << *i;
+        std::cout << "       Owned By: " << i->OwnedBy << std::endl;
+        std::cout << std::endl;
 
     }
 
