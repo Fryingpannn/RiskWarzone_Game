@@ -37,6 +37,8 @@ public:
 	bool remove(int position);
 	//removes and returns the top priority element from list
 	Order* pop();
+	//returns a copy of the next top priority element from list
+	Order* peek();
 	//moves/swaps an order from an index with another in the list
 	bool move(int firstIndex, int secondIndex);
 	//returns size/emptyness of current list

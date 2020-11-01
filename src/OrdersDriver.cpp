@@ -19,7 +19,7 @@
 #include <vector> //////////
 
 //This driver file tests the functionalities from the Orders.h/Orders.cpp files.
-void ordersDriver() {
+void main() {
 	std::cout << "-------- OrderList driver program: Let's create some orders! -------\n" << std::endl;
 
 	//creating new OrderList
@@ -42,6 +42,10 @@ void ordersDriver() {
 	testL.addToList(test5);
 	testL.addToList(test3);
 	testL.addToList(test1);
+
+	Order* top = testL.peek();
+	std::cout << "TOP: " << *top << std::endl;
+	delete top;
 
 	//std::priority_queue<Order*, std::vector<Order*>, CompareOrder> list;
 
