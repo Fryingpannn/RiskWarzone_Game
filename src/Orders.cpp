@@ -113,13 +113,6 @@ bool OrderList::move(int first, int second) {
   return true;
 }
 
-void OrderList::prioritize() {
-  // TODO implement method that orders the list by priorities
-}
-
-// TODO implement a way to remove the highest priority oder from list
-//Order OrderList::pop() { return new Order(); }
-
 // assignment operator overload
 OrderList& OrderList::operator=(const OrderList& o) {
   this->list.resize(o.list.size());
