@@ -61,8 +61,7 @@ std::ostream& operator<<(std::ostream& out, const Territory& t) {
   out << "\tName: " << t.Name << "\n";
   out << "\tID: " << t.TerritoryID << "\n";
   out << "\tContinent: " << t.Continent << "\n";
-  out << "\tX Coord: " << t.XCoordinate << "\n";
-  out << "\tY Coord: " << t.YCoordinate << "\n";
+ 
   return out;
 }
 
