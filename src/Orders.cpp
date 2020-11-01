@@ -76,6 +76,31 @@ Order* OrderList::peek() {
         return (*list.begin())->clone();
 }
 
+// returns: nullptr if list is empty, otherwise a copy of the pointer to next priority element
+Order* OrderList::peek() {
+    //if list is empty, return null
+    if (list.empty())
+        return nullptr;
+
+    //return 1st Deploy if available
+    for (auto it = list.begin(); it != list.end(); ++it) {
+        if ((*it)->priority == 1)
+            return (*it)->clone();
+    }
+    //return 1st Airlift if available
+    for (auto it = list.begin(); it != list.end(); ++it) {
+        if ((*it)->priority == 2) 
+            return (*it)->clone();
+        }
+        //return 1st Blockade if available
+        for (auto it = list.begin(); it != list.end(); ++it) {
+            if ((*it)->priority == 3)
+                return (*it)->clone();
+        }
+        //return in FIFO order if no priority orders available
+        return (*list.begin())->clone();
+}
+
 // pops top priority element from the list; Deploy -> Airlift -> Blockade -> Others
 //
 // returns: nullptr if list is empty (be careful when dereferencing!),
