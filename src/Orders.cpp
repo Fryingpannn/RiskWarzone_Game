@@ -76,7 +76,8 @@ Order* OrderList::peek() {
         return (*list.begin())->clone();
 }
 
-// returns: nullptr if list is empty, otherwise a copy of the pointer to next priority element
+// returns: nullptr if list is empty, otherwise returns a pointer to a copy
+//          of the next priority element (needs to be explicitly deleted)
 Order* OrderList::peek() {
     //if list is empty, return null
     if (list.empty())
