@@ -1,5 +1,22 @@
+/////////////////////////////////////////////
+// Filename:        OrdersDriver.cpp
+//
+// Description:     Driver for Implementation of Part 4 - Orders List
+//
+// Author:          Matthew Pan - 40135588
+//
+// Group:           Sandra Buchen - 26317987
+//                  Le Cherng Lee - 40122814
+//                  Zahra Nikbakht - 40138253
+//                  Matthew Pan - 40135588
+//                  Stefan Russo - 26683320
+//
+/////////////////////////////////////////////
+
 #include "OrdersDriver.h"
 #include "Orders.h"
+#include <queue> ////////
+#include <vector> //////////
 
 //This driver file tests the functionalities from the Orders.h/Orders.cpp files.
 void ordersDriver() {
@@ -7,6 +24,43 @@ void ordersDriver() {
 
 	//creating new OrderList
 	OrderList oList;
+
+
+
+
+	//testing priority queue -------------------------------------------
+	Deploy* test1 = new Deploy();
+	Advance* test2 = new Advance();
+	Airlift* test3 = new Airlift();
+	Bomb* test4 = new Bomb();
+	Blockade* test5 = new Blockade();
+
+	//test list
+	OrderList testL;
+	testL.addToList(test2);
+	testL.addToList(test4);
+	testL.addToList(test5);
+	testL.addToList(test3);
+	testL.addToList(test1);
+
+	//std::priority_queue<Order*, std::vector<Order*>, CompareOrder> list;
+
+	//list.push(test4);
+	//list.push(test2);
+	////list.push(test5);
+	////list.push(test3);
+	//list.push(test1);
+
+	//while(!list.empty()) {
+	//	std::cout << list.size() << std::endl;
+	//	std::cout << *list.top() << std::endl;
+	//	list.pop();
+	//}
+
+	///Conclusion: works for the top priorities but missing the other elements... also, would have to rewrite all since queue doesn't support iterators
+
+
+
 
 	//adding orders to the list
 	oList.addToList(new Deploy());

@@ -86,8 +86,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>
-      </PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
     </ClCompile>
     <Link>
@@ -116,10 +115,9 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>
-      </PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Dependencies\SFML\include;$(SolutionDir)src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -148,21 +146,27 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Main.cpp" />
     <ClCompile Include="src\Cards.cpp" />
     <ClCompile Include="src\CardsDriver.cpp" />
+    <ClCompile Include="src\GameEngine.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\Map.cpp" />
+    <ClCompile Include="src\MapDriver.cpp" />
+    <ClCompile Include="src\MapLoader.cpp" />
+    <ClCompile Include="src\MapLoaderDriver.cpp" />
     <ClCompile Include="src\Orders.cpp" />
     <ClCompile Include="src\OrdersDriver.cpp" />
     <ClCompile Include="src\Player.cpp" />
     <ClCompile Include="src\PlayerDriver.cpp" />
-    <ClCompile Include="src\RiskWarzoneGame.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Cards.h" />
     <ClInclude Include="src\CardsDriver.h" />
+    <ClInclude Include="src\GameEngine.h" />
     <ClInclude Include="src\Map.h" />
+    <ClInclude Include="src\MapDriver.h" />
+    <ClInclude Include="src\MapLoader.hpp" />
+    <ClInclude Include="src\MapLoaderDriver.hpp" />
     <ClInclude Include="src\Orders.h" />
     <ClInclude Include="src\OrdersDriver.h" />
     <ClInclude Include="src\Player.h" />

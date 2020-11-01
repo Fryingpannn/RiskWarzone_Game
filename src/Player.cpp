@@ -1,11 +1,23 @@
+/////////////////////////////////////////////
+// Filename:        Player.cpp
+//
+// Description:     Implementation of Part 3 - Player
+//
+// Author:          Sandra Buchen - 26317987
+//
+// Group:           Sandra Buchen - 26317987
+//                  Le Cherng Lee - 40122814
+//                  Zahra Nikbakht - 40138253
+//                  Matthew Pan - 40135588
+//                  Stefan Russo - 26683320
+//
+/////////////////////////////////////////////
+
 #include "Player.h"
 
+#include <algorithm>
 #include <ostream>
 #include <vector>
-
-#include "Cards.h"
-#include "Map.h"
-#include "Orders.h"
 
 /**
  * Default constructor initialize the members of Player to their default values.
@@ -14,7 +26,7 @@ Player::Player() {
   this->Territories = std::vector<Territory *>{};
   this->HandOfCards = new Hand();
   this->ListOfOrders = new OrderList();
-
+  this->PID = "";
   std::cout << "Default Player constructor" << std::endl;
 }
 
@@ -26,11 +38,18 @@ Player::Player() {
  * @param listOfOrders A list of orders the player owns.
  */
 Player::Player(std::vector<Territory *> territories, Hand handOfCards,
-               OrderList listOfOrders) {
+               OrderList listOfOrders, std::string pid) {
   std::cout << "Regular Player constructor" << std::endl;
+
+  // Declare those territories as belonging to this player
+  for (auto &i : territories) {
+    i->OwnedBy = this->PID;
+  }
+
   this->Territories = territories;
   this->HandOfCards = new Hand(handOfCards);
   this->ListOfOrders = new OrderList(listOfOrders);
+  this->PID = pid;
 }
 
 /**
@@ -43,6 +62,8 @@ Player::Player(const Player &p) {
 
   this->HandOfCards = new Hand(*p.HandOfCards);
   this->ListOfOrders = new OrderList(*p.ListOfOrders);
+  this->PID = p.PID;
+  this->ReinforcementPool = p.ReinforcementPool;
 
   for (auto i = p.Territories.begin(); i != p.Territories.end(); ++i) {
     auto *country = new Territory(**i);
@@ -56,16 +77,27 @@ Player::Player(const Player &p) {
  * @param p The object to equate.
  */
 Player &Player::operator=(const Player &p) {
-  if (this != &p) {
-    std::cout << "Player = operator\n";
-    this->HandOfCards = new Hand(*p.HandOfCards);
-    this->ListOfOrders = new OrderList(*p.ListOfOrders);
-
-    for (auto i = p.Territories.begin(); i != p.Territories.end(); ++i) {
-      auto *country = new Territory(**i);
-      this->Territories.push_back(country);
+  // clear original reference
+  if (!this->Territories.empty()) {
+    for (auto &i : Territories) {
+      delete i;
+      i = nullptr;
     }
   }
+  delete this->HandOfCards;
+  delete this->ListOfOrders;
+
+  std::cout << "Player = operator\n";
+  this->HandOfCards = new Hand(*p.HandOfCards);
+  this->ListOfOrders = new OrderList(*p.ListOfOrders);
+  this->PID = p.PID;
+  this->ReinforcementPool = p.ReinforcementPool;
+
+  for (auto i = p.Territories.begin(); i != p.Territories.end(); ++i) {
+    auto *country = new Territory(**i);
+    this->Territories.push_back(country);
+  }
+
   return *this;
 }
 
@@ -76,16 +108,21 @@ Player &Player::operator=(const Player &p) {
  * @param p The player object to print.
  */
 std::ostream &operator<<(std::ostream &out, const Player &p) {
-  out << "\tCountries: { ";
+  out << p.PID << "\n";
+  out << "\tCountries: \n";
   for (auto i = p.Territories.begin(); i != p.Territories.end(); ++i) {
-    out << "{" << **i << "}  ";
+    out << "\t----------\n";
+    out << **i << "\n";
   }
   out << "\n";
 
   out << "\tCards: " << *p.HandOfCards;
-  out << "\n";
+  out << "\n\n";
 
   out << "\tOrders: " << *p.ListOfOrders;
+  out << "\n";
+
+  out << "\tReinforcement Pool: " << p.ReinforcementPool;
   out << "\n";
 
   return out;
@@ -100,37 +137,54 @@ std::vector<Territory *> Player::toDefend() { return Territories; }
 
 /**
  *  A function that determines the list of territories a player can attack.
- *
+ *  @param map Map object that contains all the territory data of the game
  *  @return A list of territories.
  */
-std::vector<Territory *> Player::toAttack() {
-  // TODO: replace with actual list of countries from map class
-  std::vector<Territory *> listOfCountries{};
-
-  // Sort list to please compiler
-  std::sort(listOfCountries.begin(), listOfCountries.end());
-  std::sort(Territories.begin(), Territories.end());
-
-  // The difference between the two to be computed
+std::vector<Territory *> Player::toAttack(Map &map) {
   std::vector<Territory *> territoriesToAttack;
+  for (auto &territory : this->Territories) {
+    // Get list of adjacent territories of a single territory
+    auto adjacentTerritory =
+        map.ReturnListOfAdjacentCountriesByID(territory->TerritoryID);
 
-  // find difference between 2 collections
-  std::set_difference(
-      listOfCountries.begin(), listOfCountries.end(), Territories.begin(),
-      Territories.end(),
-      std::inserter(territoriesToAttack, territoriesToAttack.begin()));
-
+    // Add them to the list of player's territories that can be attacked
+    territoriesToAttack.insert(territoriesToAttack.end(),
+                               adjacentTerritory.begin(),
+                               adjacentTerritory.end());
+  }
   return territoriesToAttack;
 }
 
 /**
- * A function that creates a method object and adds it to the player's list of orders.
+ * A function that creates a method object and adds it to the player's list of
+ * orders.
  *
  */
-void Player::issueOrder() {
-  // Temporary order just to demonstrate how method works
-  auto *order = new Advance();
-  this->ListOfOrders->addToList(order);
+void Player::issueOrder(Map &map, Deck &deckOfCards) { 
+
+  auto toAttack = this->toAttack(map);
+  auto toDefend = this->toDefend();
+
+  // Deploy armies until nothing left in pool
+  // TODO change logic to deploy on list of territories from to defend
+  if (this->ReinforcementPool > 0) {
+    auto *order = new Deploy();
+    this->ListOfOrders->addToList(order);
+    this->ReinforcementPool--;
+  } else if(!AdvanceOrderDone) {
+    // TODO change logic to include toAttack OR toDefend
+    auto *order = new Advance();
+    this->ListOfOrders->addToList(order);
+    this->AdvanceOrderDone = true;
+  } else if(!CardPlayed) {
+    // TODO how do we decide which card to pick?
+    this->HandOfCards->returnByPos(0).Play(*HandOfCards, *ListOfOrders,
+                                             deckOfCards);
+    this->CardPlayed = true;
+  } else {
+    std::cout << "No orders left to make" << std::endl;
+  }
+ 
 }
 
 /**

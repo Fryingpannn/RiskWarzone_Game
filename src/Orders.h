@@ -1,3 +1,18 @@
+/////////////////////////////////////////////
+// Filename:        Orders.h
+//
+// Description:     Header file for Implementation of Part 4 - Orders List
+//
+// Author:          Matthew Pan - 40135588
+//
+// Group:           Sandra Buchen - 26317987
+//                  Le Cherng Lee - 40122814
+//                  Zahra Nikbakht - 40138253
+//                  Matthew Pan - 40135588
+//                  Stefan Russo - 26683320
+//
+/////////////////////////////////////////////
+
 #pragma once
 
 #include <iostream>
@@ -20,8 +35,13 @@ public:
 	bool addToList(Order* order);
 	//removes an order from the list
 	bool remove(int position);
+	//removes and returns the top priority element from list
+	Order* pop();
 	//moves/swaps an order from an index with another in the list
 	bool move(int firstIndex, int secondIndex);
+	//returns size/emptyness of current list
+	int size() { return list.size(); }
+	bool empty() { return list.empty(); }
 	//assignment operator
 	OrderList& operator=(const OrderList& o);
 	//insertion stream operator
@@ -29,6 +49,11 @@ public:
 	//destructor
 	~OrderList();
 };
+
+// operator overloading for the Orders' priority comparisons
+//struct CompareOrder {
+//	bool operator()(Order* const& o1, Order* const& o2);
+//};
 
 //order abstract base class. used to store the different subclasses in the OrderList vector
 class Order
@@ -39,10 +64,12 @@ protected:
 	//true if order has been executed, false otherwise
 	bool executed{ false };
 public:
+	//priority of order
+	const int priority = 0;
 	//constructors
 	Order();
 	//constructor to set name data member, used by subclass constructors
-	Order(const std::string& name);
+	Order(const std::string& name, const int& priority);
 	//clone function for polymorphic classes used by OrderList's copy constructor
 	virtual Order* clone() = 0;
 	//checks if an order is valid
@@ -52,6 +79,7 @@ public:
 	//setter/getter to set/get the execution status of the order
 	void setExecuted(const bool& status);
 	bool getExecuted();
+	virtual int getCount();
 	//setter/getter for order name
 	void setName(std::string name);
 	std::string getName();
@@ -67,7 +95,13 @@ public:
 //Deploy order used to deploy armies onto player territory -------------
 class Deploy : public Order
 {
-public: 
+private:
+	
+public:
+	//time counter for priority comparison
+	static int incrCount;
+	const int counter;
+	int getCount() { return counter; }
 	//constructors
 	Deploy();
 	Deploy(const Deploy& deploy);
@@ -76,6 +110,7 @@ public:
 	//order functions
 	bool validate() override;
 	void execute() override;
+	//get obj priority counter
 	//assignment & stream functions
 	Deploy& operator =(const Deploy& o);
 	std::ostream& doprint(std::ostream& out) override;
@@ -86,6 +121,10 @@ public:
 class Advance : public Order
 {
 public:
+	//time counter for priority comparison
+	static int incrCount;
+	const int counter;
+	int getCount() { return counter; }
 	//constructors
 	Advance();
 	Advance(const Advance& adv);
@@ -104,6 +143,10 @@ public:
 class Bomb : public Order
 {
 public:
+	//time counter for priority comparison
+	static int incrCount;
+	const int counter;
+	int getCount() { return counter; }
 	//constructors
 	Bomb();
 	Bomb(const Bomb& deploy);
