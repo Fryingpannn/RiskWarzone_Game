@@ -50,6 +50,56 @@ bool OrderList::remove(int position) {
   return true;
 }
 
+// pops top priority element from the list; Deploy -> Airlift -> Blockade -> Others
+//
+// returns: nullptr if list is empty (be careful when dereferencing!),
+//          otherwise returns a pointer which needs to be explicitly deleted
+Order* OrderList::pop() {
+    //if list is empty, return null
+    if (list.empty())
+        return nullptr;
+
+    //return Deploy if available
+    for (auto it = list.begin(); it != list.end(); ++it) {
+        if ((*it)->priority == 1) {
+            Order* popped = *it;
+            list.erase(it);
+            return popped;
+        }
+    }
+    //return Airlift if available
+    for (auto it = list.begin(); it != list.end(); ++it) {
+        if ((*it)->priority == 2) {
+            Order* popped = *it;
+            list.erase(it);
+            return popped;
+        }
+    }
+    //return Blockade if available
+    for (auto it = list.begin(); it != list.end(); ++it) {
+        if ((*it)->priority == 3) {
+            Order* popped = *it;
+            list.erase(it);
+            return popped;
+        }
+    }
+    //return in FIFO order if no priority orders available
+    Order* popped = *list.begin();
+    list.erase(list.begin());
+    return popped;
+}
+
+// implements operator overloading for the Order's priority comparison
+//bool CompareOrder::operator()(Order* const& o1, Order* const& o2){
+//      // return "true" if "o1" is ordered before "o2"
+//    if (o1->priority < o2->priority)
+//        return true;
+//    else if (o1->getCount() > o2->getCount())
+//        return true;
+//    else
+//        return false;
+//}
+
 // move (swap) orders around in the list
 bool OrderList::move(int first, int second) {
   auto it1 = this->list.begin() + first;
@@ -94,11 +144,12 @@ std::ostream& operator<<(std::ostream& out, const OrderList& o) {
   return out;
 }
 
-// destructor for OrderList: deletes and clears all pointers in vector list
+// destructor for OrderList: deletes and clears all pointers in vector list.
+// the receiving function does not have to delete pointers inside the vector.
 OrderList::~OrderList() {
   for (int i = 0; i < this->list.size(); ++i) {
-    delete this->list[i];
-    this->list[i] = nullptr;
+    delete list[i];
+    list[i] = nullptr;
   }
   this->list.clear();
   std::cout << "------ Order List has been cleared -----" << std::endl;
@@ -107,13 +158,15 @@ OrderList::~OrderList() {
 /*---------------------------------- Order class
  * ----------------------------------*/
 
+int Order::getCount() { return 0; };
+
 // default constructor
 Order::Order() {
   std::cout << "Orders' default constructor called" << std::endl;
 }
 
 // param constructor to set the name variable of Order from subclasses
-Order::Order(const std::string& name) { setName(name); }
+Order::Order(const std::string& name, const int& priority) : priority(priority){ setName(name); }
 
 // assignment operator
 Order& Order::operator=(const Order& o) {
@@ -144,11 +197,14 @@ Order::~Order() { std::cout << "Cleaning up..." << std::endl; }
 /*---------------------------------- Deploy class
  * ----------------------------------*/
 
+//static variable incrementing keeps track of obj count used for list priority
+int Deploy::incrCount;
+
 // default constructor
-Deploy::Deploy() : Order("- Deploy armies -"){};
+Deploy::Deploy() : Order("- Deploy armies -", 1), counter(incrCount++) { };
 
 // deploy copy constructor
-Deploy::Deploy(const Deploy& deploy) {
+Deploy::Deploy(const Deploy& deploy) : counter(incrCount++) {
   setName("- Deploy armies -");
   std::cout << "Created a copy of Deploy." << std::endl;
 }
@@ -204,11 +260,13 @@ Deploy::~Deploy() { std::cout << "Destroying deploy order." << std::endl; }
 /*----------------------------------- Advance class
  * ----------------------------------*/
 
+int Advance::incrCount;
+
 // default constructor
-Advance::Advance() : Order("- Advance armies -") {}
+Advance::Advance() : Order("- Advance armies -", 0), counter(incrCount++) {}
 
 // copy constructor
-Advance::Advance(const Advance& adv) {
+Advance::Advance(const Advance& adv) : counter(incrCount++) {
   setName("- Advance armies -");
   std::cout << "Created a copy of Advance." << std::endl;
 }
@@ -272,11 +330,13 @@ Advance::~Advance() { std::cout << "Destroying advance order." << std::endl; }
 /*------------------------------------ Bomb class
  * ------------------------------------*/
 
+int Bomb::incrCount;
+
 // default constructor
-Bomb::Bomb() : Order("- Bomb target country -"){};
+Bomb::Bomb() : Order("- Bomb target country -", 0), counter(incrCount++) {};
 
 // copy constructor
-Bomb::Bomb(const Bomb& deploy) {
+Bomb::Bomb(const Bomb& deploy) : counter(incrCount++) {
   setName("- Bomb target country -");
   std::cout << "Created a copy of Bomb." << std::endl;
 }
@@ -334,7 +394,7 @@ Bomb::~Bomb() { std::cout << "Destroying bomb order." << std::endl; }
  * ------------------------------------*/
 
 // default constructor
-Blockade::Blockade() : Order("- Blockade target country -"){};
+Blockade::Blockade() : Order("- Blockade target country -", 3){};
 
 // copy constructor
 Blockade::Blockade(const Blockade& deploy) {
@@ -398,7 +458,7 @@ Blockade::~Blockade() {
  * ------------------------------------*/
 
 // default constructor
-Airlift::Airlift() : Order("- Airlift to target country -"){};
+Airlift::Airlift() : Order("- Airlift to target country -", 2){};
 
 // copy constructor
 Airlift::Airlift(const Airlift& deploy) {
@@ -460,7 +520,7 @@ Airlift::~Airlift() { std::cout << "Destroying airlift order." << std::endl; }
  * ------------------------------------*/
 
 // default constructor
-Negotiate::Negotiate() : Order("- Negotiate with target player -") {}
+Negotiate::Negotiate() : Order("- Negotiate with target player -", 0) {}
 
 // copy constructor
 Negotiate::Negotiate(const Negotiate& n) {
