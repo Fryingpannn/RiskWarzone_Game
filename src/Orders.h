@@ -72,7 +72,7 @@ protected:
 	Territory* src;
 	Territory* target;
 	std::vector<Territory*> adj; //adjacent territories
-	Map& map; //used to get the adjacent territories
+	Map* map; //used to get the adjacent territories
 public:
 	//priority of order
 	const int priority = 0;
@@ -84,6 +84,7 @@ public:
 	virtual Order* clone() = 0;
 	//executes an order if it's valid
 	virtual void execute() = 0;
+	virtual bool validate() = 0;
 	//setter/getter to set/get the execution status of the order
 	void setExecuted(const bool& status);
 	bool getExecuted();
@@ -111,7 +112,7 @@ public:
 	//clone function for polymorphic classes
 	Deploy* clone() override;
 	//order functions
-	bool validate();
+	bool validate() override;
 	void execute() override;
 	//get obj priority counter
 	//assignment & stream functions
@@ -127,7 +128,7 @@ public:
 	//constructors
 	Advance();
 	Advance(const Advance& adv);
-	Advance(const int& armyNb, Territory* src, Territory* target, Map& map);
+	Advance(const int& armyNb, Territory* src, Territory* target, Map* map);
 	//clone function
 	Advance* clone() override;
 	//order functions

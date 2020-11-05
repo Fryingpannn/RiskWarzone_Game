@@ -14,6 +14,7 @@
 /////////////////////////////////////////////
 
 #include "Orders.h"
+#include <random>
 
 /*---------------------------------- OrderList class
  * ----------------------------------*/
@@ -181,7 +182,7 @@ Order::Order() {
 }
 
 // param constructor to set the name variable of Order from subclasses
-Order::Order(const std::string& name, const int& priority) : priority(priority){ setName(name); }
+Order::Order(const std::string& name, const int& priority) : priority(priority) { setName(name); }
 
 // assignment operator
 Order& Order::operator=(const Order& o) {
@@ -244,6 +245,7 @@ void Deploy::execute() {
     //add the armies to target territory if it belongs to the player
     if (validate()) {
         target->Armies += armyNb;
+        "[Valid] 1 Deploy order executed.";
     }
     else
         "[Invalid] 1 Deploy order not executed.";
@@ -283,13 +285,16 @@ Advance::Advance(const Advance& adv) {
   std::cout << "Created a copy of Advance." << std::endl;
 }
 
-/* constructor to advance armies from source territory to target territory
+/* constructor to advance armies from source territory to target territory.
+*  the calling function must remove the nb of armies sent from their reinforcement pool.
+*  this army nb is only returned if remove() is used on the order.
+* 
  *  @armyNb : number of armies to advance
  *  @src    : starting point
  *  @target : the target territory to advance to
- *  @adj    : list of adjacent
+ *  @map    : pointer to current map
  */
-Advance::Advance(const int& armyNb, Territory* src, Territory* target, Map& map) {
+Advance::Advance(const int& armyNb, Territory* src, Territory* target, Map* map) {
     this->armyNb = armyNb;
     this->src = src;
     this->target = target;
@@ -303,7 +308,7 @@ Advance* Advance::clone() { return new Advance(*this); }
 bool Advance::validate() {
   std::cout << " Validating order..." << std::endl;
   //returns list of territories adjacent to source
-  adj = map.ReturnListOfAdjacentCountriesByID(src->TerritoryID);
+  adj = map->ReturnListOfAdjacentCountriesByID(src->TerritoryID);
 
   //checks if target is an adjacent territory of source
   bool isAdjacent = false;
@@ -323,13 +328,47 @@ bool Advance::validate() {
 void Advance::execute() {
   if (validate()) {
      //if target territory is also owned by user, simply move armies there
-    if(target->OwnedBy.compare(playerID) == 0){
+    if(target->OwnedBy.compare(playerID) == 0)
         target->Armies += armyNb;
-        src->Armies -= armyNb;
-    } 
-    //if target territory not owned by user, attack
+    //if target territory not owned by user, attack initiated
     else {
-      
+        std::default_random_engine generator;
+        std::uniform_int_distribution<int> distribution(1, 100);
+
+        while (target->Armies > 0 || src->Armies > 0) {
+            int targetArmies = target->Armies;
+            //each attacking army has 60% chance of killing
+            for (int i = 0; i < armyNb; i++) {
+                int result = distribution(generator);
+                if (result <= 60)
+                    target->Armies -= 1;
+            }
+            //each defending army has 70% chance of killing
+            for (int i = 0; i < targetArmies; i++) {
+                int result = distribution(generator);
+                if (result <= 70)
+                    armyNb -= 1;
+            }
+        }
+        //possible results from the attack
+        if (target->Armies <= 0 && armyNb <= 0) {
+            //if both lost all their armies during the attack
+            target->Armies = 0;
+            armyNb = 0;
+            target->OwnedBy = playerID;
+            std::cout << "[Valid] 1 Advance order executed. Both territories lost their armies. Target territory captured." << std::endl;
+        }
+        else if (target->Armies <= 0) {
+            //if attacker won
+            target->Armies = armyNb;
+            target->OwnedBy = playerID;
+            std::cout << "[Valid] 1 Advance order executed. Target territory captured." << std::endl;
+        }
+        else if (armyNb <= 0) {
+            //if defender won
+            armyNb = 0; 
+            std::cout << "[Valid] 1 Advance order executed. Failed to capture target territory." << std::endl;
+        }
     }
     setExecuted(true);
   } else {
