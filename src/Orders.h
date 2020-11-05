@@ -18,6 +18,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include "Map.h"
 
 class Order;
 
@@ -34,7 +35,8 @@ public:
 	//adds an order to the list
 	bool addToList(Order* order);
 	//removes an order from the list
-	bool remove(int position);
+	//returns: the armyNb of the order to refill reinforcement pool of player
+	int remove(int position);
 	//removes and returns the top priority element from list
 	Order* pop();
 	//returns a copy of the next top priority element from list
@@ -63,8 +65,14 @@ class Order
 protected:
 	//name of order
 	std::string name{ "None" };
-	//true if order has been executed, false otherwise
+	//true if order is to be executed by game engine, false otherwise
 	bool executed{ false };
+	int armyNb; //the number of armies to change within order
+	std::string playerID;
+	Territory* src;
+	Territory* target;
+	std::vector<Territory*> adj; //adjacent territories
+	Map& map; //used to get the adjacent territories
 public:
 	//priority of order
 	const int priority = 0;
@@ -74,17 +82,15 @@ public:
 	Order(const std::string& name, const int& priority);
 	//clone function for polymorphic classes used by OrderList's copy constructor
 	virtual Order* clone() = 0;
-	//checks if an order is valid
-	virtual bool validate() = 0;
 	//executes an order if it's valid
 	virtual void execute() = 0;
 	//setter/getter to set/get the execution status of the order
 	void setExecuted(const bool& status);
 	bool getExecuted();
-	virtual int getCount();
 	//setter/getter for order name
-	void setName(std::string name);
+	void setName(const std::string& name);
 	std::string getName();
+	int getArmyNb();
 	//assignment operator
 	Order& operator =(const Order& o);
 	//insertion stream operator, also used by all subclasses
@@ -97,20 +103,15 @@ public:
 //Deploy order used to deploy armies onto player territory -------------
 class Deploy : public Order
 {
-private:
-	
 public:
-	//time counter for priority comparison
-	static int incrCount;
-	const int counter;
-	int getCount() { return counter; }
-	//constructors
+	//constructors: default, copy, and to deploy armies
 	Deploy();
 	Deploy(const Deploy& deploy);
+	Deploy(const int& armyNb, Territory* target, const std::string& playerID);
 	//clone function for polymorphic classes
 	Deploy* clone() override;
 	//order functions
-	bool validate() override;
+	bool validate();
 	void execute() override;
 	//get obj priority counter
 	//assignment & stream functions
@@ -123,17 +124,14 @@ public:
 class Advance : public Order
 {
 public:
-	//time counter for priority comparison
-	static int incrCount;
-	const int counter;
-	int getCount() { return counter; }
 	//constructors
 	Advance();
 	Advance(const Advance& adv);
+	Advance(const int& armyNb, Territory* src, Territory* target, Map& map);
 	//clone function
 	Advance* clone() override;
 	//order functions
-	bool validate() override;
+	bool validate();
 	void execute() override;
 	//assignment & stream functions
 	Advance& operator =(const Advance& adv);
@@ -145,10 +143,6 @@ public:
 class Bomb : public Order
 {
 public:
-	//time counter for priority comparison
-	static int incrCount;
-	const int counter;
-	int getCount() { return counter; }
 	//constructors
 	Bomb();
 	Bomb(const Bomb& deploy);

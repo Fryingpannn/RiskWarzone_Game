@@ -18,9 +18,6 @@
 /*---------------------------------- OrderList class
  * ----------------------------------*/
 
-/*---------------------------------- OrderList class
- * ----------------------------------*/
-
 // default constructor
 OrderList::OrderList() { this->list = std::vector<Order*>{}; }
 
@@ -42,12 +39,13 @@ bool OrderList::addToList(Order* order) {
 }
 
 // remove from list
-bool OrderList::remove(int position) {
+int OrderList::remove(int position) {
   auto it = this->list.begin() + position;
+  int reArmyNb = (*it)->getArmyNb();
   delete *it;
   this->list.erase(it);
   std::cout << "-> Order " << position << " has been removed." << std::endl;
-  return true;
+  return reArmyNb;
 }
 
 // returns: nullptr if list is empty, otherwise returns a pointer to a copy
@@ -177,8 +175,6 @@ OrderList::~OrderList() {
 /*---------------------------------- Order class
  * ----------------------------------*/
 
-int Order::getCount() { return 0; };
-
 // default constructor
 Order::Order() {
   std::cout << "Orders' default constructor called" << std::endl;
@@ -197,17 +193,15 @@ Order& Order::operator=(const Order& o) {
 // printing
 std::ostream& operator<<(std::ostream& out, Order& o) { return o.doprint(out); }
 
-// accessor for name
+// getter/setter for name
 std::string Order::getName() { return this->name; }
+void Order::setName(const std::string& name) { this->name = name; }
 
-// mutator for name
-void Order::setName(std::string name) { this->name = name; }
+//getter for armyNb
+int Order::getArmyNb() { return armyNb; }
 
-// executes the order and sets the execution status of the order; inherited by
-// all subclasses
+// getter/setter for executed status
 void Order::setExecuted(const bool& status) { this->executed = status; }
-
-// gets the execution status of the order
 bool Order::getExecuted() { return this->executed; }
 
 // virtual destructor
@@ -216,43 +210,44 @@ Order::~Order() { std::cout << "Cleaning up..." << std::endl; }
 /*---------------------------------- Deploy class
  * ----------------------------------*/
 
-//static variable incrementing keeps track of obj count used for list priority
-int Deploy::incrCount;
-
 // default constructor
-Deploy::Deploy() : Order("- Deploy armies -", 1), counter(incrCount++) { };
+Deploy::Deploy() : Order("- Deploy armies -", 1) { };
 
 // deploy copy constructor
-Deploy::Deploy(const Deploy& deploy) : counter(incrCount++) {
+Deploy::Deploy(const Deploy& deploy) {
   setName("- Deploy armies -");
   std::cout << "Created a copy of Deploy." << std::endl;
+}
+
+// constructor to deploy armies to target territory (note: territory passed is a pointer)
+Deploy::Deploy(const int& armyNb, Territory* target, const std::string& playerID) {
+    this->armyNb = armyNb;
+    this->target = target;
+    this->playerID = playerID;
 }
 
 // clone function for Deploy
 Deploy* Deploy::clone() { return new Deploy(*this); }
 
-// validates order
+// validates deploy; returns true if target territory belongs to player
 bool Deploy::validate() {
   std::cout << " Validating order..." << std::endl;
-  /*validation here, can user deploy units?*/
-  if (true) {
-    return true;
-  } else
-    return false;
+  if (target->OwnedBy.compare(playerID) != 0 || armyNb <= 0)
+      return false;
+  else
+      return true;
 }
 
 // executes deploy if valid
+// the army count in reinforcement pool must be deducted in Player class
 void Deploy::execute() {
-  if (validate()) {
-    // implementation of deploy
-    setExecuted(true);
-  } else {
-    // order failed
-    std::cout << "[Deploy] Cannot deploy armies. Deploy order not executed."
-              << std::endl;
-    setExecuted(false);
+    //add the armies to target territory if it belongs to the player
+    if (validate()) {
+        target->Armies += armyNb;
+    }
+    else
+        "[Invalid] 1 Deploy order not executed.";
   }
-}
 
 // assignment operator
 Deploy& Deploy::operator=(const Deploy& o) {
@@ -279,15 +274,26 @@ Deploy::~Deploy() { std::cout << "Destroying deploy order." << std::endl; }
 /*----------------------------------- Advance class
  * ----------------------------------*/
 
-int Advance::incrCount;
-
 // default constructor
-Advance::Advance() : Order("- Advance armies -", 0), counter(incrCount++) {}
+Advance::Advance() : Order("- Advance armies -", 0) {}
 
 // copy constructor
-Advance::Advance(const Advance& adv) : counter(incrCount++) {
+Advance::Advance(const Advance& adv) {
   setName("- Advance armies -");
   std::cout << "Created a copy of Advance." << std::endl;
+}
+
+/* constructor to advance armies from source territory to target territory
+ *  @armyNb : number of armies to advance
+ *  @src    : starting point
+ *  @target : the target territory to advance to
+ *  @adj    : list of adjacent
+ */
+Advance::Advance(const int& armyNb, Territory* src, Territory* target, Map& map) {
+    this->armyNb = armyNb;
+    this->src = src;
+    this->target = target;
+    this->map = map;
 }
 
 // clone function for Advance
@@ -296,26 +302,39 @@ Advance* Advance::clone() { return new Advance(*this); }
 // validates the Advance order
 bool Advance::validate() {
   std::cout << " Validating order..." << std::endl;
-  /*validation here, can user advance units to this territory? attack/move*/
-  if (true) {
-    return true;
-  } else
-    return false;
+  //returns list of territories adjacent to source
+  adj = map.ReturnListOfAdjacentCountriesByID(src->TerritoryID);
+
+  //checks if target is an adjacent territory of source
+  bool isAdjacent = false;
+  for (int i = 0; i < adj.size(); i++) {
+      if (adj[i]->TerritoryID == target->TerritoryID)
+          isAdjacent = true;
+  }
+
+  //returns true if src is owned by player and also adjacent to target
+  if (src->OwnedBy.compare(playerID) != 0 || isAdjacent == false || armyNb <= 0)
+      return false;
+  else
+      return true;
 }
 
 // executes the Advance order
 void Advance::execute() {
   if (validate()) {
-    if (true /*if territory belong to current player*/) {
-      // move armies
-    } else {
-      // attack armies
+     //if target territory is also owned by user, simply move armies there
+    if(target->OwnedBy.compare(playerID) == 0){
+        target->Armies += armyNb;
+        src->Armies -= armyNb;
+    } 
+    //if target territory not owned by user, attack
+    else {
+      
     }
     setExecuted(true);
   } else {
     // order failed
-    std::cout << "[Advance] Armies cannot be moved. Advance order not executed."
-              << std::endl;
+    std::cout << "[Invalid] 1 Advance order not executed." << std::endl;
     setExecuted(false);
   }
 }
@@ -349,13 +368,11 @@ Advance::~Advance() { std::cout << "Destroying advance order." << std::endl; }
 /*------------------------------------ Bomb class
  * ------------------------------------*/
 
-int Bomb::incrCount;
-
 // default constructor
-Bomb::Bomb() : Order("- Bomb target country -", 0), counter(incrCount++) {};
+Bomb::Bomb() : Order("- Bomb target country -", 0) {};
 
 // copy constructor
-Bomb::Bomb(const Bomb& deploy) : counter(incrCount++) {
+Bomb::Bomb(const Bomb& deploy) {
   setName("- Bomb target country -");
   std::cout << "Created a copy of Bomb." << std::endl;
 }
