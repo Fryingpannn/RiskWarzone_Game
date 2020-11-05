@@ -108,7 +108,8 @@ public:
 	//constructors: default, copy, and to deploy armies
 	Deploy();
 	Deploy(const Deploy& deploy);
-	Deploy(const int& armyNb, Territory* target, const std::string& playerID);
+	//playerID is the player who issued this order
+	Deploy(const std::string& playerID, const int& armyNb, Territory* target);
 	//clone function for polymorphic classes
 	Deploy* clone() override;
 	//order functions
@@ -128,7 +129,8 @@ public:
 	//constructors
 	Advance();
 	Advance(const Advance& adv);
-	Advance(const int& armyNb, Territory* src, Territory* target, Map* map);
+	Advance(const std:: string& playerID, const int& armyNb, Territory* src, 
+		Territory* target, Map* map);
 	//clone function
 	Advance* clone() override;
 	//order functions
@@ -141,12 +143,14 @@ public:
 };
 
 //Bomb order used to bomb target country making them lose half their army units -------------
+//- can only be created by playing bomb card
 class Bomb : public Order
 {
 public:
 	//constructors
 	Bomb();
 	Bomb(const Bomb& deploy);
+	Bomb(const std::string& playerID, Territory* target);
 	//clone function for polymorphic classes
 	Bomb* clone() override;
 	//order functions
@@ -165,6 +169,7 @@ public:
 	//constructors
 	Blockade();
 	Blockade(const Blockade& deploy);
+	Blockade(const std::string& playerID, Territory* src);
 	//clone function for polymorphic classes
 	Blockade* clone() override;
 	//order functions
@@ -183,6 +188,7 @@ public:
 	//constructors
 	Airlift();
 	Airlift(const Airlift& deploy);
+	Airlift(std::string playerID, const int& armyNb, Territory* src, Territory* target);
 	//clone function for polymorphic classes
 	Airlift* clone() override;
 	//order functions
