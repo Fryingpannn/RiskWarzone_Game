@@ -298,15 +298,17 @@ Advance::Advance(const Advance& adv) {
  *  armyNb : number of armies to advance
  *  src    : starting point
  *  target : the target territory to advance to
- *  map    : pointer to current map
+ *  map    : pointer to current map, used to get adjacent territories to src
+ *  enemy  : pointer to current territory's Player obj
  */
 Advance::Advance(const std::string& playerID, const int& armyNb, Territory* src,
-    Territory* target, Map* map) {
+    Territory* target, Map* map, Player* const current) {
     this->playerID = playerID;
     this->armyNb = armyNb;
     this->src = src;
     this->target = target;
     this->map = map;
+    this->current = current;
     // subtract sent armies from original
     src->Armies -= armyNb;
 }
@@ -318,31 +320,35 @@ Advance* Advance::clone() { return new Advance(*this); }
 bool Advance::validate() {
   std::cout << " Validating order..." << std::endl;
   //return false if src doesn't belong to player
-  if (src == nullptr || src->OwnedBy.compare(playerID) != 0)
+  if (src == nullptr || armyNb <= 0 || src->OwnedBy.compare(playerID) != 0)
+      return false;
+  
+  //return false if target territory's owner and current owner are on diplomatic status (negotiation)
+  if (enemy->set->find(target->OwnedBy) != enemy->set->end())
       return false;
 
-  //returns list of territories adjacent to source
+  //adj: list of territories adjacent to source
   adj = map->ReturnListOfAdjacentCountriesByID(src->TerritoryID);
 
   //checks if target is an adjacent territory of source
   bool isAdjacent = false;
   for (int i = 0; i < adj.size(); i++) {
-      if (adj[i]->TerritoryID == target->TerritoryID)
-          isAdjacent = true;
+      if (adj[i]->TerritoryID == target->TerritoryID) {
+          return true;
+      }
   }
-  //returns true if src is adjacent to target
-  if (isAdjacent == false || armyNb <= 0)
-      return false;
-  else
-      return true;
+  //returns false if src and target aren't adjacent territories
+  return false;
 }
 
 // executes the Advance order
 void Advance::execute() {
   if (validate()) {
      //if target territory is also owned by user, simply move armies there
-    if(target->OwnedBy.compare(playerID) == 0)
+    if (target->OwnedBy.compare(playerID) == 0) {
         target->Armies += armyNb;
+        std::cout << "[Valid] 1 Advance order executed. Armies moved to new territory." << std::endl;
+    }
     //if target territory not owned by user, attack initiated
     else {
         std::default_random_engine generator;
@@ -411,7 +417,6 @@ std::ostream& Advance::doprint(std::ostream& out) {
       out << " [Advance] Armies are now attacking enemy territory."
           << std::endl;
   }
-
   return out;
 }
 
@@ -431,10 +436,11 @@ Bomb::Bomb(const Bomb& deploy) {
 }
 
 // constructor to bomb half the armies in target territory.
-// playerID is the player who issued this order
-Bomb::Bomb(const std::string& playerID, Territory* target) {
+// playerID and current correspond to the player who issued this order
+Bomb::Bomb(const std::string& playerID, Territory* target, Player* const current) {
     this->playerID = playerID;
     this->target = target;
+    this->current = current;
 }
 
 // clone function
@@ -443,7 +449,9 @@ Bomb* Bomb::clone() { return new Bomb(*this); }
 // validates order
 bool Bomb::validate() {
   std::cout << " Validating order..." << std::endl;
-  if (target == nullptr || target->OwnedBy.compare(playerID) == 0)
+  //don't bomb if target territory belongs to current player or if diplomacy status exists with target player.
+  if (target == nullptr || target->OwnedBy.compare(playerID) == 0 || 
+      current->set->find(target->OwnedBy) != current->set->end())
       return false;
   else
       return true;
@@ -648,16 +656,15 @@ Negotiate::Negotiate(const Negotiate& n) {
   std::cout << "Created a copy of Negotiate." << std::endl;
 }
 
-/* constructor; prevent further attacks between two players for the turn
- * - playerID: current player's PID
- * - enemyID:  target player to negotiate with's PID
- * - set:      set of players with whom playerID cannot attack or be attacked by this turn
+/* constructor; prevent further attacks between two players for the turn.
+*  Negotiation can only be created with diplomacy card.
+ * - current:  the current player who created this order
+ * - player:   the enemy player to negotiate with
  */
-Negotiate::Negotiate(const std::string& playerID, const std::string& enemyID,
-    std::unordered_set<std::string>* set) {
-    this->playerID = playerID;
-    this->enemyID = enemyID;
-    this->set = set;
+Negotiate::Negotiate(Player* const current, Player* const enemy) {
+    this->playerID = current->PID;
+    this->current = current;
+    this->enemy = enemy;
 }
 
 // clone function
@@ -666,7 +673,7 @@ Negotiate* Negotiate::clone() { return new Negotiate(*this); }
 // validates order; return true if target player is not self
 bool Negotiate::validate() {
   std::cout << " Validating order...";
-  if (enemy == nullptr || enemy->PID.compare(playerID) != 0)
+  if (enemy == nullptr || enemy->PID.compare(playerID) == 0)
       return false;
   else
       return true;
@@ -675,11 +682,14 @@ bool Negotiate::validate() {
 // executes Negotiate order if valid
 void Negotiate::execute() {
   if (validate()) {
-    //how is it gonna know it's these 2 specific players which cannot attack each other?
+    //insert the current player ID into diplomacy set of enemy player
+    enemy->set->insert(playerID);
+    //insert the enemy ID into diplomacy set of current player
+    current->set->insert(enemy->PID);
     setExecuted(true);
   } else {
     std::cout
-        << "[Negotiate] Negotiation failed. Negotiation order not executed."
+        << "[Invalid] 1 Negotiate/Diplomacy order not executed."
         << std::endl;
     setExecuted(false);
   }
