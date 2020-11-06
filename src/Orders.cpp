@@ -652,7 +652,10 @@ void Airlift::execute() {
     if (validate()) {
        //if target territory is owned by user, simply move armies there
        target->Armies += armyNb;
+<<<<<<< HEAD
        std::cout << "[Valid] 1 Airlift order executed." << std::endl;
+=======
+>>>>>>> negotiation order remaining
        setExecuted(true);
     }
     else {
@@ -698,6 +701,7 @@ Negotiate::Negotiate(const Negotiate& n) {
   std::cout << "Created a copy of Negotiate." << std::endl;
 }
 
+<<<<<<< HEAD
 /* constructor; prevent further attacks between two players for the turn.
 *  Negotiation can only be created with diplomacy card.
  * - current:  the current player who created this order
@@ -707,6 +711,18 @@ Negotiate::Negotiate(Player* const current, Player* const enemy) {
     this->playerID = current->PID;
     this->current = current;
     this->enemy = enemy;
+=======
+/* constructor; prevent further attacks between two players for the turn
+ * - playerID: current player's PID
+ * - enemyID:  target player to negotiate with's PID
+ * - set:      set of players with whom playerID cannot attack or be attacked by this turn
+ */
+Negotiate::Negotiate(const std::string& playerID, const std::string& enemyID,
+    std::unordered_set<std::string>* set) {
+    this->playerID = playerID;
+    this->enemyID = enemyID;
+    this->set = set;
+>>>>>>> negotiation order remaining
 }
 
 // clone function
@@ -715,7 +731,11 @@ Negotiate* Negotiate::clone() { return new Negotiate(*this); }
 // validates order; return true if target player is not self
 bool Negotiate::validate() {
   std::cout << " Validating order...";
+<<<<<<< HEAD
   if (enemy == nullptr || enemy->PID.compare(playerID) == 0)
+=======
+  if (enemy == nullptr || enemy->PID.compare(playerID) != 0)
+>>>>>>> negotiation order remaining
       return false;
   else
       return true;
@@ -724,11 +744,15 @@ bool Negotiate::validate() {
 // executes Negotiate order if valid
 void Negotiate::execute() {
   if (validate()) {
+<<<<<<< HEAD
     //insert the current player ID into diplomacy set of enemy player
     enemy->set->insert(playerID);
     //insert the enemy ID into diplomacy set of current player
     current->set->insert(enemy->PID);
     std::cout << "[Valid] 1 Negotiate order executed." << std::endl;
+=======
+    //how is it gonna know it's these 2 specific players which cannot attack each other?
+>>>>>>> negotiation order remaining
     setExecuted(true);
   } else {
     std::cout
