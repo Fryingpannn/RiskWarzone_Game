@@ -178,7 +178,7 @@ OrderList::~OrderList() {
  * ----------------------------------*/
 
 // default constructor
-Order::Order() {
+Order::Order() : armyNb(0) {
   std::cout << "Orders' default constructor called" << std::endl;
 }
 
@@ -250,10 +250,10 @@ void Deploy::execute() {
     //add the armies to target territory if it belongs to the player
     if (validate()) {
         target->Armies += armyNb;
-        "[Valid] 1 Deploy order executed.";
+        std::cout << "[Valid] 1 Deploy order executed." << std::endl;
     }
     else
-        "[Invalid] 1 Deploy order not executed.";
+        std::cout << "[Invalid] 1 Deploy order not executed." << std::endl;
   }
 
 // assignment operator
@@ -474,6 +474,7 @@ bool Bomb::validate() {
 void Bomb::execute() {
   if (validate()) {
       target->Armies /= 2;
+      std::cout << "[Valid] 1 Bomb order executed." << std::endl;
     setExecuted(true);
   } else {
     // order failed
@@ -543,6 +544,7 @@ void Blockade::execute() {
   if (validate()) {
     src->Armies *= 2;
     src->OwnedBy = "neutral";
+    std::cout << "[Valid] 1 Blockade order executed" << std::endl;
     setExecuted(true);
   } 
   else {
@@ -624,6 +626,7 @@ void Airlift::execute() {
     if (validate()) {
        //if target territory is owned by user, simply move armies there
        target->Armies += armyNb;
+       std::cout << "[Valid] 1 Airlift order executed." << std::endl;
        setExecuted(true);
     }
     else {
@@ -699,6 +702,7 @@ void Negotiate::execute() {
     enemy->set->insert(playerID);
     //insert the enemy ID into diplomacy set of current player
     current->set->insert(enemy->PID);
+    std::cout << "[Valid] 1 Negotiate order executed." << std::endl;
     setExecuted(true);
   } else {
     std::cout
