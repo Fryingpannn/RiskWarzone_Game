@@ -15,11 +15,9 @@
 
 #include "OrdersDriver.h"
 #include "Orders.h"
-#include <queue> ////////
-#include <vector> //////////
 
 //This driver file tests the functionalities from the Orders.h/Orders.cpp files.
-void main() {
+ void main() {
 	std::cout << "-------- OrderList driver program: Let's create some orders! -------\n" << std::endl;
 
 	//creating new OrderList

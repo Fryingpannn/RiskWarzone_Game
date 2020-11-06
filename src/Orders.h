@@ -19,13 +19,14 @@
 #include <string>
 #include <vector>
 #include <unordered_set>
-#include "Map.h"
-#include "Player.h"
+
+class Map;
+class Hand;
+class Deck;
+class Player;
+struct Territory;
 
 class Order;
-struct Territory;
-class Map;
-class Player;
 
 //list of orders used by each player
 class OrderList
@@ -138,7 +139,7 @@ public:
 	Advance();
 	Advance(const Advance& adv);
 	//if executed and conquered enemy territory, need to add that to the player's list
-	Advance(const std:: string& playerID, const int& armyNb, Territory* src, 
+	Advance(const std::string& playerID, const int& armyNb, Territory* src, 
 		Territory* target, Map* map, Player* const current, Deck* const deck);
 	//clone function
 	Advance* clone() override;
