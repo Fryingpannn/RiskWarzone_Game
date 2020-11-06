@@ -295,20 +295,22 @@ Advance::Advance(const Advance& adv) {
 *     needs to be added to the player's list.
 * 
 * parameters:
- *  armyNb : number of armies to advance
- *  src    : starting point
- *  target : the target territory to advance to
- *  map    : pointer to current map, used to get adjacent territories to src
- *  enemy  : pointer to current territory's Player obj
+*   playerID: current player's PID
+ *  armyNb  : number of armies to advance
+ *  src     : starting point
+ *  target  : the target territory to advance to
+ *  map     : pointer to current map, used to get adjacent territories to src
+ *  deck    : pointer to deck of the game, used to give a card to player
  */
 Advance::Advance(const std::string& playerID, const int& armyNb, Territory* src,
-    Territory* target, Map* map, Player* const current) {
+    Territory* target, Map* map, Player* const current, Deck* const deck) {
     this->playerID = playerID;
     this->armyNb = armyNb;
     this->src = src;
     this->target = target;
     this->map = map;
     this->current = current;
+    this->deck = deck;
     // subtract sent armies from original
     src->Armies -= armyNb;
 }
@@ -375,6 +377,11 @@ void Advance::execute() {
             target->Armies = 0;
             armyNb = 0;
             target->OwnedBy = playerID;
+            //give new card to player if not given yet this turn
+            if (current->cardNotGiven) {
+                deck->draw(*current->HandOfCards);
+                current->cardNotGiven = false;
+            }
             std::cout << "[Valid] 1 Advance order executed. Both territories lost their armies. Target"
                 << " territory captured." << std::endl;
         }
@@ -382,6 +389,11 @@ void Advance::execute() {
             //if attacker won
             target->Armies = armyNb;
             target->OwnedBy = playerID;
+            //give new card to player if not given yet this turn
+            if (current->cardNotGiven) {
+                deck->draw(*current->HandOfCards);
+                current->cardNotGiven = false;
+            }
             std::cout << "[Valid] 1 Advance order executed. Target territory captured." << std::endl;
         }
         else if (armyNb <= 0) {
