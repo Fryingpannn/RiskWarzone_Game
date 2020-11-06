@@ -576,7 +576,7 @@ Airlift::Airlift(const Airlift& deploy) {
      needs to be added to the player's list.
    - the armyNb is only returned if remove() is used on the order.
  */
-Airlift::Airlift(const std::string playerID, const int& armyNb, Territory* src, Territory* target) {
+Airlift::Airlift(const std::string& playerID, const int& armyNb, Territory* src, Territory* target) {
     this->playerID = playerID;
     this->armyNb = armyNb;
     this->src = src;
@@ -601,55 +601,13 @@ bool Airlift::validate() {
 // executes Airlift order if valid
 void Airlift::execute() {
     if (validate()) {
-        //if target territory is also owned by user, simply move armies there
-        if (target->OwnedBy.compare(playerID) == 0)
-            target->Armies += armyNb;
-        //if target territory not owned by user, attack initiated
-        else {
-            std::default_random_engine generator;
-            std::uniform_int_distribution<int> distribution(1, 100);
-
-            while (target->Armies > 0 || src->Armies > 0) {
-                int targetArmies = target->Armies;
-                //each attacking army has 60% chance of killing
-                for (int i = 0; i < armyNb; i++) {
-                    int result = distribution(generator);
-                    if (result <= 60)
-                        target->Armies -= 1;
-                }
-                //each defending army has 70% chance of killing
-                for (int i = 0; i < targetArmies; i++) {
-                    int result = distribution(generator);
-                    if (result <= 70)
-                        armyNb -= 1;
-                }
-            }
-            //possible results from the attack
-            if (target->Armies <= 0 && armyNb <= 0) {
-                //if both lost all their armies during the attack
-                target->Armies = 0;
-                armyNb = 0;
-                target->OwnedBy = playerID;
-                std::cout << "[Valid] 1 Advance order executed. Both territories lost their armies. Target"
-                    << " territory captured." << std::endl;
-            }
-            else if (target->Armies <= 0) {
-                //if attacker won
-                target->Armies = armyNb;
-                target->OwnedBy = playerID;
-                std::cout << "[Valid] 1 Advance order executed. Target territory captured." << std::endl;
-            }
-            else if (armyNb <= 0) {
-                //if defender won
-                armyNb = 0;
-                std::cout << "[Valid] 1 Advance order executed. Failed to capture target territory." << std::endl;
-            }
-        }
-        setExecuted(true);
+       //if target territory is owned by user, simply move armies there
+       target->Armies += armyNb;
+       setExecuted(true);
     }
     else {
         // order failed
-        std::cout << "[Invalid] 1 Advance order not executed." << std::endl;
+        std::cout << "[Invalid] 1 Airlift order not executed." << std::endl;
         setExecuted(false);
     }
 }
@@ -690,24 +648,34 @@ Negotiate::Negotiate(const Negotiate& n) {
   std::cout << "Created a copy of Negotiate." << std::endl;
 }
 
+/* constructor; prevent further attacks between two players for the turn
+ * - playerID: current player's PID
+ * - enemyID:  target player to negotiate with's PID
+ * - set:      set of players with whom playerID cannot attack or be attacked by this turn
+ */
+Negotiate::Negotiate(const std::string& playerID, const std::string& enemyID,
+    std::unordered_set<std::string>* set) {
+    this->playerID = playerID;
+    this->enemyID = enemyID;
+    this->set = set;
+}
+
 // clone function
 Negotiate* Negotiate::clone() { return new Negotiate(*this); }
 
-// validates order
+// validates order; return true if target player is not self
 bool Negotiate::validate() {
   std::cout << " Validating order...";
-  // validation here, can user use Negotiate card?
-  if (true) {
-    return true;
-  } else {
-    return false;
-  }
+  if (enemy == nullptr || enemy->PID.compare(playerID) != 0)
+      return false;
+  else
+      return true;
 }
 
 // executes Negotiate order if valid
 void Negotiate::execute() {
   if (validate()) {
-    // implement negotiate
+    //how is it gonna know it's these 2 specific players which cannot attack each other?
     setExecuted(true);
   } else {
     std::cout
