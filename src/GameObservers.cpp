@@ -67,7 +67,7 @@ public:
 
     ~Subject() {
         std::cout << "Deleting Observer Subject" << std::endl;
-    };
+    }
 };
 
 
@@ -109,10 +109,10 @@ public:
 
 class PhaseObserver : public Observer
 {
-    ConcreteSubject *phase_subject;
+    Subject *phase_subject;
 
 public:
-    PhaseObserver(ConcreteSubject *passed_phase_subject)
+    PhaseObserver(Subject *passed_phase_subject)
     {
         phase_subject = passed_phase_subject;
     };
@@ -129,10 +129,10 @@ public:
 
 class GameStatisticsObserver : public Observer
 {
-    ConcreteSubject *game_observer_subject;
+    Subject *game_observer_subject;
 
 public:
-    GameStatisticsObserver(ConcreteSubject *passed_game_observer_subject)
+    GameStatisticsObserver(Subject *passed_game_observer_subject)
     {
         game_observer_subject = passed_game_observer_subject;
     };

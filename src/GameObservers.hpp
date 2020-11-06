@@ -48,28 +48,28 @@ public:
 
 
 
-class ConcreteSubject : public Subject
-{
-    int state = 0;
+// class ConcreteSubject : public Subject
+// {
+//     int state = 0;
 
-public:
-    ConcreteSubject(int i) : state(i){};
+// public:
+//     ConcreteSubject(int i) : state(i){};
 
-    void setState(int i);
+//     void setState(int i);
 
-    int getState() { return state; };
+//     int getState() { return state; };
 
-    void notify();
+//     void notify();
 
-    virtual ~ConcreteSubject();
-};
+//     virtual ~ConcreteSubject();
+// };
 
 class PhaseObserver : public Observer
 {
-    ConcreteSubject *phase_subject;
+    Subject *phase_subject;
 
 public:
-    PhaseObserver(ConcreteSubject *passed_phase_subject);
+    PhaseObserver(Subject *passed_phase_subject);
 
     void update();
 
@@ -78,10 +78,10 @@ public:
 
 class GameStatisticsObserver : public Observer
 {
-    ConcreteSubject *game_observer_subject;
+    Subject *game_observer_subject;
 
 public:
-    GameStatisticsObserver(ConcreteSubject *passed_game_observer_subject);
+    GameStatisticsObserver(Subject *passed_game_observer_subject);
 
     void update();
 

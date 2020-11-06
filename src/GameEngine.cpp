@@ -157,7 +157,7 @@ void GameEngine::mainGameLoop() {
   // Loop until a player owns all territories
   while (!gameOver) {
     // CHECK: Can we remove any players who have no territories?
-    for (int i = 0; i < ListOfPlayers.size(); i++) {
+    for (unsigned int i = 0; i < ListOfPlayers.size(); i++) {
       if (ListOfPlayers.at(i)->Territories.empty()) {
         // Remove player from game by removing him from the list
         ListOfPlayers.erase(ListOfPlayers.begin() + i);

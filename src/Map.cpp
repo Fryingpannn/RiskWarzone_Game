@@ -24,7 +24,7 @@ Territory::Territory() {
   this->Continent = "";
   this->XCoordinate = 0;
   this->YCoordinate = 0;
-};
+}
 
 Territory::Territory(std::string name, int territoryID, std::string continent,
                      float x, float y) {
@@ -389,7 +389,7 @@ bool Map::Validate() {
       }
     }
 
-    for (int j = 0; j < this->ListOfCountries[i]->size() - 1; j++) {
+    for (unsigned int j = 0; j < this->ListOfCountries[i]->size() - 1; j++) {
       // using my code, and how I design it. You don't even need to check
       // whether a country has two continents. They will have each individual
       // string
@@ -408,7 +408,7 @@ bool Map::Validate() {
       }
 
       // checking whether same country ID is found or same country name is found
-      for (int k = j + 1; k < this->ListOfCountries[i]->size(); k++) {
+      for (unsigned int k = j + 1; k < this->ListOfCountries[i]->size(); k++) {
         if (ListOfCountries[i]->at(j)->TerritoryID ==
             ListOfCountries[i]->at(k)->TerritoryID) {
           std::cout << "Same Territory ID found!! Error " << std::endl;

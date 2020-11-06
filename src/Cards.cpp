@@ -207,7 +207,7 @@ void Hand::add(CardType const &type) {
  * @return void
  */
 void Hand::remove(int index) {
-  for (int i = index; i < hand.size() - 1; i++) {
+  for (unsigned int i = index; i < hand.size() - 1; i++) {
     *hand.at(i) = *hand.at(i + 1);
   }
 
@@ -227,7 +227,7 @@ int Hand::find(Card c) {
   int index = -1;
 
   // iterate through the hand and find the index of the given card
-  for (int i = 0; i < hand.size(); i++) {
+  for (unsigned int i = 0; i < hand.size(); i++) {
     if (*(*hand.at(i)).getType() == *c.getType()) {
       index = i;
       break;
