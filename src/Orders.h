@@ -80,6 +80,7 @@ protected:
 	Map* map; //used to get the adjacent territories by Advance
 	Player* enemy; //used by negotiation execution to update diplomacy status
 	Player* current; //player who created this order
+	Deck* deck; //draw card from deck if new territory won from advance
 public:
 	//priority of order
 	const int priority = 0;
@@ -138,7 +139,7 @@ public:
 	Advance(const Advance& adv);
 	//if executed and conquered enemy territory, need to add that to the player's list
 	Advance(const std:: string& playerID, const int& armyNb, Territory* src, 
-		Territory* target, Map* map, Player* const current);
+		Territory* target, Map* map, Player* const current, Deck* const deck);
 	//clone function
 	Advance* clone() override;
 	//order functions
