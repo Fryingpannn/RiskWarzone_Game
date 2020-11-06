@@ -20,15 +20,21 @@
 #include <vector>
 #include <unordered_set>
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> fixed compilation errors due to circular dependency of header files
 
 class Map;
 class Hand;
 class Deck;
 class Player;
 struct Territory;
+<<<<<<< HEAD
 =======
 #include "Map.h"
 >>>>>>> negotiation order remaining
+=======
+>>>>>>> fixed compilation errors due to circular dependency of header files
 
 class Order;
 
