@@ -17,7 +17,7 @@
 #include "Orders.h"
 
 //This driver file tests the functionalities from the Orders.h/Orders.cpp files.
- void main() {
+ void ordersDriver() {
 	std::cout << "-------- OrderList driver program: Let's create some orders! -------\n" << std::endl;
 
 	//creating new OrderList
