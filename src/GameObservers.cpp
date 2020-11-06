@@ -18,8 +18,12 @@
 #include <iostream>
 #include <vector>
 
-// abstract classes
-class Observer;
+
+class Observer
+{
+public:
+    void update();
+};
 
 struct State
 {
@@ -28,6 +32,9 @@ struct State
 
 class Subject
 {
+private:
+    int state = 0;
+
 protected:
     std::vector<Observer *> obs;
 
@@ -39,14 +46,31 @@ public:
         obs.erase(std::remove(obs.begin(), obs.end(), o), obs.end());
     }
 
-    virtual void notify() = 0;
+    void notify()
+    {
+        // Copy the current observer list to a clone to avoid one being deleted mid-operation
+        std::vector<Observer *> obs_clone;
+        for (auto obs_item : obs) 
+            obs_clone.push_back(new Observer(*obs_item));
+
+        // Update all the observers
+        for (auto o : obs_clone)
+        {
+            o->update();
+        }
+
+        // Delete the clone
+        for (auto o : obs_clone)
+            delete o;
+        obs_clone.clear();
+    }
+
+    ~Subject() {
+        std::cout << "Deleting Observer Subject" << std::endl;
+    };
 };
 
-class Observer
-{
-public:
-    virtual void update() = 0;
-};
+
 
 class ConcreteSubject : public Subject
 {
@@ -61,10 +85,25 @@ public:
 
     void notify()
     {
-        for (auto o : obs)
+        // Copy the current observer list to a clone to avoid one being deleted mid-operation
+        std::vector<Observer *> obs_clone;
+        for (auto obs_item : obs) 
+            obs_clone.push_back(new Observer(*obs_item));
+
+        // Update all the observers
+        for (auto o : obs_clone)
         {
             o->update();
         }
+
+        // Delete the clone
+        for (auto o : obs_clone)
+            delete o;
+        obs_clone.clear();
+    }
+
+    virtual ~ConcreteSubject() {
+        std::cout << "Deleting ConcreteSubject" << std::endl;
     }
 };
 
@@ -78,10 +117,14 @@ public:
         phase_subject = passed_phase_subject;
     };
 
-    virtual void update() override
+    void update()
     {
         std::cout << "Game Statistics Observer Updating" << std::endl;
     };
+
+    virtual ~PhaseObserver() {
+        std::cout << "Deleting PhaseObserver" << std::endl;
+    }
 };
 
 class GameStatisticsObserver : public Observer
@@ -94,8 +137,12 @@ public:
         game_observer_subject = passed_game_observer_subject;
     };
 
-    virtual void update() override
+    void update()
     {
         std::cout << "Phase Observer Updating" << std::endl;
     };
+
+    virtual ~GameStatisticsObserver() {
+        std::cout << "Deleting GameStatisticsObserver." << std::endl;
+    }
 };

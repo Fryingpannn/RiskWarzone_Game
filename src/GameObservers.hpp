@@ -19,12 +19,17 @@
 #include <iostream>
 #include <vector>
 
-// abstract classes
-class Observer;
-
 struct State
 {
     // TODO Determine what needs to be here
+};
+
+
+class Observer
+{
+public:
+    void update();
+    virtual ~Observer();
 };
 
 class Subject
@@ -38,13 +43,10 @@ public:
     void detach(Observer *o);
 
     virtual void notify() = 0;
+    virtual ~Subject();
 };
 
-class Observer
-{
-public:
-    virtual void update() = 0;
-};
+
 
 class ConcreteSubject : public Subject
 {
@@ -58,6 +60,8 @@ public:
     int getState() { return state; };
 
     void notify();
+
+    virtual ~ConcreteSubject();
 };
 
 class PhaseObserver : public Observer
@@ -67,7 +71,9 @@ class PhaseObserver : public Observer
 public:
     PhaseObserver(ConcreteSubject *passed_phase_subject);
 
-    virtual void update() override;
+    void update();
+
+    virtual ~PhaseObserver();
 };
 
 class GameStatisticsObserver : public Observer
@@ -77,5 +83,7 @@ class GameStatisticsObserver : public Observer
 public:
     GameStatisticsObserver(ConcreteSubject *passed_game_observer_subject);
 
-    virtual void update() override;
+    void update();
+
+    virtual ~GameStatisticsObserver();
 };
