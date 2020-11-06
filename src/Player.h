@@ -16,6 +16,7 @@
 #pragma once
 #include <ostream>
 #include <vector>
+#include <unordered_set>
 
 #include "Cards.h"
 #include "Orders.h"
@@ -39,6 +40,8 @@ class Player {
   int ReinforcementPool = 0;
   bool AdvanceOrderDone = true;
   bool CardPlayed = true;
+  //set of players with whom playerID cannot attack or be attacked by this turn; used by Negotiation
+  std::unordered_set<std::string>* set;
 
   Player();
   Player(std::vector<Territory *> territories, Hand hand, OrderList orderList,

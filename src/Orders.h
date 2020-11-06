@@ -20,8 +20,12 @@
 #include <vector>
 #include <unordered_set>
 #include "Map.h"
+#include "Player.h"
 
 class Order;
+struct Territory;
+class Map;
+class Player;
 
 //list of orders used by each player
 class OrderList
@@ -70,13 +74,12 @@ protected:
 	bool executed{ false };
 	int armyNb; //the number of armies to change within order
 	std::string playerID; //current player's ID
-	std::string enemyID; //target player's ID
 	Territory* src;
 	Territory* target;
-	std::vector<Territory*> adj; //adjacent territories
-	//stores enemy player ids against whom playerID cannot attack; used by Negotiation
-	std::unordered_set<std::string>* set;
+	std::vector<Territory*> adj; //adjacent territories of src
 	Map* map; //used to get the adjacent territories by Advance
+	Player* enemy; //used by negotiation execution to update diplomacy status
+	Player* current; //player who created this order
 public:
 	//priority of order
 	const int priority = 0;
@@ -133,8 +136,9 @@ public:
 	//constructors
 	Advance();
 	Advance(const Advance& adv);
+	//if executed and conquered enemy territory, need to add that to the player's list
 	Advance(const std:: string& playerID, const int& armyNb, Territory* src, 
-		Territory* target, Map* map);
+		Territory* target, Map* map, Player* const current);
 	//clone function
 	Advance* clone() override;
 	//order functions
@@ -154,7 +158,7 @@ public:
 	//constructors
 	Bomb();
 	Bomb(const Bomb& deploy);
-	Bomb(const std::string& playerID, Territory* target);
+	Bomb(const std::string& playerID, Territory* target, Player* const current);
 	//clone function for polymorphic classes
 	Bomb* clone() override;
 	//order functions
@@ -173,6 +177,7 @@ public:
 	//constructors
 	Blockade();
 	Blockade(const Blockade& deploy);
+	//if executed, need to remove neutral territory from player list
 	Blockade(const std::string& playerID, Territory* src);
 	//clone function for polymorphic classes
 	Blockade* clone() override;
@@ -192,7 +197,7 @@ public:
 	//constructors
 	Airlift();
 	Airlift(const Airlift& deploy);
-	Airlift(std::string& playerID, const int& armyNb, Territory* src, Territory* target);
+	Airlift(const std::string& playerID, const int& armyNb, Territory* src, Territory* target);
 	//clone function for polymorphic classes
 	Airlift* clone() override;
 	//order functions
@@ -205,13 +210,14 @@ public:
 };
 
 //Negotiate order used to prevent attacks between current and another player until end of turn -------------
+//Enables 'diplomatic status' between two players.
 class Negotiate : public Order {
 public:
 	//default constructors
 	Negotiate();
 	Negotiate(const Negotiate&);
 	//the set contains players with whom playerID cannot attack this turn
-	Negotiate(const std::string& playerID, const std::string& enemyID, std::unordered_set<std::string>* set);
+	Negotiate(Player* const current, Player* const player);
 	//clone function for polymorphic class
 	Negotiate* clone() override;
 	//order functions
@@ -222,4 +228,3 @@ public:
 	std::ostream& doprint(std::ostream& out) override;
 	~Negotiate();
 };
-
