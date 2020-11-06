@@ -18,6 +18,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <unordered_set>
 #include "Map.h"
 
 class Order;
@@ -68,11 +69,14 @@ protected:
 	//true if order is to be executed by game engine, false otherwise
 	bool executed{ false };
 	int armyNb; //the number of armies to change within order
-	std::string playerID;
+	std::string playerID; //current player's ID
+	std::string enemyID; //target player's ID
 	Territory* src;
 	Territory* target;
 	std::vector<Territory*> adj; //adjacent territories
-	Map* map; //used to get the adjacent territories
+	//stores enemy player ids against whom playerID cannot attack; used by Negotiation
+	std::unordered_set<std::string>* set;
+	Map* map; //used to get the adjacent territories by Advance
 public:
 	//priority of order
 	const int priority = 0;
@@ -188,7 +192,7 @@ public:
 	//constructors
 	Airlift();
 	Airlift(const Airlift& deploy);
-	Airlift(std::string playerID, const int& armyNb, Territory* src, Territory* target);
+	Airlift(std::string& playerID, const int& armyNb, Territory* src, Territory* target);
 	//clone function for polymorphic classes
 	Airlift* clone() override;
 	//order functions
@@ -206,6 +210,8 @@ public:
 	//default constructors
 	Negotiate();
 	Negotiate(const Negotiate&);
+	//the set contains players with whom playerID cannot attack this turn
+	Negotiate(const std::string& playerID, const std::string& enemyID, std::unordered_set<std::string>* set);
 	//clone function for polymorphic class
 	Negotiate* clone() override;
 	//order functions
