@@ -135,23 +135,17 @@ void GameEngine::Init() {
     } else {
       std::cout << "Invalid Selection" << std::endl;
     }
-    // std::cout << "Observer on or off? [y/n]\n ";
-    // std::cin >> InputObserver;
-
-    // if (InputObserver == "y") {
-    //   InputObserverNotSucceed = false;
-    //   ObserverOn = true;
-    // } else if (InputObserver == "n") {
-    //   InputObserverNotSucceed = false;
-    //   ObserverOn = false;
-    // } else {
-    //   std::cout << "Please don't troll around =__=\n\n" << std::endl;
-    // }
-    
   }
 
+  // TODO Create a list of observers to delete at the end of this function
+  // std::list<Observer *> observerList;
+  for(auto *player : ListOfPlayers) {
+    if (phaseObserverToggle)
+      PhaseObserver *newPhaseObserver = new PhaseObserver(player);
+    if (gameStatsObserverToggle)
+      GameStatisticsObserver *newGameStatsObserver = new GameStatisticsObserver(player);
+  }
   
-
   std::cout << "now the game is ready to go! (≧▽≦)!! \n";
 
   // -------------------------------------------------------
@@ -167,6 +161,9 @@ void GameEngine::Init() {
   // MAIN GAME LOOP
   // -------------------------------------------------------
   // TODO CALL MAIN GAME LOOP
+  // mainGameLoop();
+
+  // TODO Delete list of observers
 }
 
 /**
@@ -221,6 +218,10 @@ void GameEngine::reinforcementPhase() {
     // TODO add + bonus per continent from mapLoader
 
     player->ReinforcementPool = armies;
+
+    player->setState(State_enum::REINFORCEMENT_PHASE);
+    player->Notify();
+
   }
 }
 
@@ -248,6 +249,9 @@ void GameEngine::issueOrdersPhase() {
         ordersLeft--;
       } else {
         player->issueOrder(*MainMap, *DeckOfCards);
+        
+        player->setState(State_enum::ISSUE_ORDERS_PHASE);
+        player->Notify();
       }
     }
   }
@@ -264,6 +268,9 @@ void GameEngine::executeOrdersPhase() {
   while (ordersLeft > 0) {
     for (auto& player : ListOfPlayers) {
       // TODO add logic
+
+      player->setState(State_enum::EXECUTE_ORDERS_PHASE);
+      player->Notify();
     }
   }
 }
@@ -295,6 +302,10 @@ void GameEngine::startupPhase() {
 
         ListOfPlayers.at(rr)->Territories.emplace_back(MainMap->ReturnListOfCountries().at(randomizedIDs.at(i)));
         MainMap->ReturnListOfCountries().at(randomizedIDs.at(i))->OwnedBy = ListOfPlayers.at(rr)->PID;
+
+        ListOfPlayers.at(rr)->setState(State_enum::SETUP_PHASE);
+        ListOfPlayers.at(rr)->Notify();
+
         rr += 1;
         if (rr == ListOfPlayers.size()) {
             rr = 0;
