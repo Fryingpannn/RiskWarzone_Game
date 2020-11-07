@@ -12,7 +12,7 @@
 //                  Stefan Russo - 26683320
 //
 /////////////////////////////////////////////
-#define _DEBUG
+// #define _DEBUG  // Removed by Stef.  VS will set the flag depending on what you have selected for compilation "release/debug"
 #ifdef _DEBUG
 #define _CRTDBG_MAP_ALLOC
 #include <stdlib.h>
@@ -26,7 +26,7 @@
 #include "Cards.h"
 
 //This driver file tests the functionalities from the Orders.h/Orders.cpp files.
- void ordersDriver() {
+void ordersDriver() {
 //when ran in debug
 #ifdef _DEBUG
 	 _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
