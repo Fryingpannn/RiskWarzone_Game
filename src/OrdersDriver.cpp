@@ -19,7 +19,7 @@
 #include "Cards.h"
 
 //This driver file tests the functionalities from the Orders.h/Orders.cpp files.
- void main() {
+ void ordersDriver() {
 	std::cout << "-------- OrderList driver program: Let's create some orders! -------\n" << std::endl;
 	std::cout << "-------- Assignment 2 code tests -------\n" << std::endl;
 
