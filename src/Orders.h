@@ -19,22 +19,12 @@
 #include <string>
 #include <vector>
 #include <unordered_set>
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> fixed compilation errors due to circular dependency of header files
 
 class Map;
 class Hand;
 class Deck;
 class Player;
 struct Territory;
-<<<<<<< HEAD
-=======
-#include "Map.h"
->>>>>>> negotiation order remaining
-=======
->>>>>>> fixed compilation errors due to circular dependency of header files
 
 class Order;
 
@@ -83,7 +73,6 @@ protected:
 	std::string name{ "None" };
 	//true if order is to be executed by game engine, false otherwise
 	bool executed{ false };
-<<<<<<< HEAD
 	int armyNb{}; //the number of armies to change within order
 	std::string playerID; //current player's ID
 	Territory* src;
@@ -93,17 +82,6 @@ protected:
 	Player* enemy; //used by negotiation execution to update diplomacy status
 	Player* current; //player who created this order
 	Deck* deck; //draw card from deck if new territory won from advance
-=======
-	int armyNb; //the number of armies to change within order
-	std::string playerID; //current player's ID
-	std::string enemyID; //target player's ID
-	Territory* src;
-	Territory* target;
-	std::vector<Territory*> adj; //adjacent territories
-	//stores enemy player ids against whom playerID cannot attack; used by Negotiation
-	std::unordered_set<std::string>* set;
-	Map* map; //used to get the adjacent territories by Advance
->>>>>>> negotiation order remaining
 public:
 	//priority of order
 	const int priority = 0;
@@ -221,11 +199,7 @@ public:
 	//constructors
 	Airlift();
 	Airlift(const Airlift& deploy);
-<<<<<<< HEAD
 	Airlift(const std::string& playerID, const int& armyNb, Territory* src, Territory* target);
-=======
-	Airlift(std::string& playerID, const int& armyNb, Territory* src, Territory* target);
->>>>>>> negotiation order remaining
 	//clone function for polymorphic classes
 	Airlift* clone() override;
 	//order functions
@@ -245,11 +219,7 @@ public:
 	Negotiate();
 	Negotiate(const Negotiate&);
 	//the set contains players with whom playerID cannot attack this turn
-<<<<<<< HEAD
 	Negotiate(Player* const current, Player* const player);
-=======
-	Negotiate(const std::string& playerID, const std::string& enemyID, std::unordered_set<std::string>* set);
->>>>>>> negotiation order remaining
 	//clone function for polymorphic class
 	Negotiate* clone() override;
 	//order functions
