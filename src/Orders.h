@@ -82,6 +82,7 @@ public:
 	const int priority = 0;
 	//constructors
 	Order();
+	Order(const Order& copy);
 	//constructor to set name data member, used by subclass constructors
 	Order(const std::string& name, const int& priority);
 	//clone function for polymorphic classes used by OrderList's copy constructor
@@ -111,7 +112,7 @@ class Deploy : public Order
 public:
 	//constructors: default, copy, and to deploy armies
 	Deploy();
-	Deploy(const Deploy& deploy);
+	Deploy(const Deploy&);
 	//playerID is the player who issued this order
 	Deploy(const std::string& playerID, const int& armyNb, Territory* target);
 	//clone function for polymorphic classes
@@ -132,7 +133,7 @@ class Advance : public Order
 public:
 	//constructors
 	Advance();
-	Advance(const Advance& adv);
+	Advance(const Advance&);
 	//if executed and conquered enemy territory, need to add that to the player's list
 	Advance(const std::string& playerID, const int& armyNb, Territory* src, 
 		Territory* target, Map* map, Player* const current, Deck* const deck);
@@ -154,7 +155,7 @@ class Bomb : public Order
 public:
 	//constructors
 	Bomb();
-	Bomb(const Bomb& deploy);
+	Bomb(const Bomb&);
 	Bomb(const std::string& playerID, Territory* target, Player* const current);
 	//clone function for polymorphic classes
 	Bomb* clone() override;
@@ -173,7 +174,7 @@ class Blockade : public Order
 public:
 	//constructors
 	Blockade();
-	Blockade(const Blockade& deploy);
+	Blockade(const Blockade&);
 	//if executed, need to remove neutral territory from player list
 	Blockade(const std::string& playerID, Territory* src);
 	//clone function for polymorphic classes
@@ -193,8 +194,9 @@ class Airlift : public Order
 public:
 	//constructors
 	Airlift();
-	Airlift(const Airlift& deploy);
-	Airlift(const std::string& playerID, const int& armyNb, Territory* src, Territory* target);
+	Airlift(const Airlift&);
+	Airlift(const std::string& playerID, const int& armyNb, Territory* src, Territory* target,
+		Player* const current, Deck* const deck);
 	//clone function for polymorphic classes
 	Airlift* clone() override;
 	//order functions
@@ -214,7 +216,7 @@ public:
 	Negotiate();
 	Negotiate(const Negotiate&);
 	//the set contains players with whom playerID cannot attack this turn
-	Negotiate(Player* const current, Player* const player);
+	Negotiate(Player* const current, Player* const enemy);
 	//clone function for polymorphic class
 	Negotiate* clone() override;
 	//order functions

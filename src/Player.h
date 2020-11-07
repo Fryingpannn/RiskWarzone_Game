@@ -43,7 +43,7 @@ class Player : public Subject {
   bool CardPlayed = true;
   // set of players with whom playerID cannot attack or be attacked by this turn; 
   // this set is used by Negotiation order's execute function.
-  std::unordered_set<std::string>* set = nullptr;
+  std::unordered_set<std::string> set;
   // a player can only receive one new card each turn. reset this value to true 
   // at the end of every turn. this is used by Advance order's execute function.
   bool cardNotGiven = true;
