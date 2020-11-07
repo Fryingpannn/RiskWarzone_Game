@@ -115,17 +115,6 @@ Order* OrderList::pop() {
     return popped;
 }
 
-// implements operator overloading for the Order's priority comparison
-//bool CompareOrder::operator()(Order* const& o1, Order* const& o2){
-//      // return "true" if "o1" is ordered before "o2"
-//    if (o1->priority < o2->priority)
-//        return true;
-//    else if (o1->getCount() > o2->getCount())
-//        return true;
-//    else
-//        return false;
-//}
-
 // move (swap) orders around in the list
 bool OrderList::move(int first, int second) {
   auto it1 = this->list.begin() + first;

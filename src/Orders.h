@@ -60,11 +60,6 @@ public:
 	~OrderList();
 };
 
-// operator overloading for the Orders' priority comparisons
-//struct CompareOrder {
-//	bool operator()(Order* const& o1, Order* const& o2);
-//};
-
 //order abstract base class. used to store the different subclasses in the OrderList vector
 class Order
 {
