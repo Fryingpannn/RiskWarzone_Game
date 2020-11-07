@@ -70,13 +70,13 @@ protected:
 	bool executed{ false };
 	int armyNb{}; //the number of armies to change within order
 	std::string playerID; //current player's ID
-	Territory* src;
-	Territory* target;
-	std::vector<Territory*> adj; //adjacent territories of src
-	Map* map; //used to get the adjacent territories by Advance
-	Player* enemy; //used by negotiation execution to update diplomacy status
-	Player* current; //player who created this order
-	Deck* deck; //draw card from deck if new territory won from advance
+	Territory* src = nullptr;
+	Territory* target = nullptr;
+	std::vector<Territory*> adj{}; //adjacent territories of src
+	Map* map = nullptr; //used to get the adjacent territories by Advance
+	Player* enemy = nullptr; //used by negotiation execution to update diplomacy status
+	Player* current = nullptr; //player who created this order
+	Deck* deck = nullptr; //draw card from deck if new territory won from advance
 public:
 	//priority of order
 	const int priority = 0;

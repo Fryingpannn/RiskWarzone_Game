@@ -167,9 +167,7 @@ OrderList::~OrderList() {
  * ----------------------------------*/
 
 // default constructor
-Order::Order() : armyNb(0) {
-  std::cout << "Orders' default constructor called" << std::endl;
-}
+Order::Order() {}
 
 // param constructor to set the name variable of Order from subclasses
 Order::Order(const std::string& name, const int& priority) : priority(priority) { setName(name); }
@@ -290,6 +288,7 @@ Advance::Advance(const Advance& adv) {
  *  src     : starting point
  *  target  : the target territory to advance to
  *  map     : pointer to current map, used to get adjacent territories to src
+ *  current : pointer to player who issued this order
  *  deck    : pointer to deck of the game, used to give a card to player
  */
 Advance::Advance(const std::string& playerID, const int& armyNb, Territory* src,
@@ -301,8 +300,6 @@ Advance::Advance(const std::string& playerID, const int& armyNb, Territory* src,
     this->map = map;
     this->current = current;
     this->deck = deck;
-    // subtract sent armies from original
-    src->Armies -= armyNb;
 }
 
 // clone function for Advance
@@ -312,18 +309,18 @@ Advance* Advance::clone() { return new Advance(*this); }
 bool Advance::validate() {
   std::cout << " Validating order..." << std::endl;
   //return false if src doesn't belong to player
-  if (src == nullptr || armyNb <= 0 || src->OwnedBy.compare(playerID) != 0)
+  if (src == nullptr || armyNb <= 0 || armyNb > src->Armies 
+      || src->OwnedBy.compare(playerID) != 0 || target->TerritoryID == src->TerritoryID)
       return false;
-  
+
   //return false if target territory's owner and current owner are on diplomatic status (negotiation)
-  if (enemy->set->find(target->OwnedBy) != enemy->set->end())
+  if (current->set != nullptr && current->set->find(target->OwnedBy) != current->set->end())
       return false;
 
   //adj: list of territories adjacent to source
   adj = map->ReturnListOfAdjacentCountriesByID(src->TerritoryID);
 
   //checks if target is an adjacent territory of source
-  bool isAdjacent = false;
   for (int i = 0; i < adj.size(); i++) {
       if (adj[i]->TerritoryID == target->TerritoryID) {
           return true;
@@ -336,32 +333,41 @@ bool Advance::validate() {
 // executes the Advance order
 void Advance::execute() {
   if (validate()) {
-     //if target territory is also owned by user, simply move armies there
-    if (target->OwnedBy.compare(playerID) == 0) {
+     //if target territory is also owned by user or neutral, simply move armies there
+    if (target->OwnedBy.compare(playerID) == 0 || target->OwnedBy.compare("neutral") == 0) {
         target->Armies += armyNb;
+        // subtract sent armies from original
+        src->Armies -= armyNb;
+        target->OwnedBy = playerID; //needs to be added to player territory list if neutral
         std::cout << "[Valid] 1 Advance order executed. Armies moved to new territory." << std::endl;
     }
     //if target territory not owned by user, attack initiated
     else {
+        int armySent = armyNb; //used if attacker won to subtract from src
         std::default_random_engine generator;
         std::uniform_int_distribution<int> distribution(1, 100);
+        std::cout << " --> Initiating attack!" << std::endl;
 
-        while (target->Armies > 0 || src->Armies > 0) {
+        //initiating attack; loops through number of armies for each territory.
+        //each army has a probability to kill off the other, the first
+        //territory that reaches zero armies left loses.
+        int result1{}, result2{};
+        while (target->Armies > 0 && armyNb > 0) {
             int targetArmies = target->Armies;
             //each attacking army has 60% chance of killing
             for (int i = 0; i < armyNb; i++) {
-                int result = distribution(generator);
-                if (result <= 60)
+                result1 = distribution(generator);
+                if (result1 <= 60)
                     target->Armies -= 1;
             }
             //each defending army has 70% chance of killing
             for (int i = 0; i < targetArmies; i++) {
-                int result = distribution(generator);
-                if (result <= 70)
+                result2 = distribution(generator);
+                if (result2 <= 70)
                     armyNb -= 1;
             }
         }
-        //possible results from the attack
+        //after attacked finished; possible results from the attack
         if (target->Armies <= 0 && armyNb <= 0) {
             //if both lost all their armies during the attack
             target->Armies = 0;
@@ -377,18 +383,22 @@ void Advance::execute() {
         }
         else if (target->Armies <= 0) {
             //if attacker won
+            std::cout << " --> " << armyNb << " army/armies from " << playerID << " were sacrificed in battle." << std::endl;
+            std::cout << " --> " << target->OwnedBy << "'s army/armies have been eliminated. F has been pressed to pay respects." << std::endl;
+            std::cout << " --> ";
             target->Armies = armyNb;
             target->OwnedBy = playerID;
-            //give new card to player if not given yet this turn
+            src->Armies -= armySent;
+            //give new card to player's hand if not given yet this turn
             if (current->cardNotGiven) {
-                deck->draw(*current->HandOfCards);
+                current->HandOfCards->add(*deck->draw(*current->HandOfCards).getType());
                 current->cardNotGiven = false;
             }
-            std::cout << "[Valid] 1 Advance order executed. Target territory captured." << std::endl;
+            std::cout << "[Valid] 1 Advance order executed. Target territory captured by " << playerID << "." << std::endl;
         }
         else if (armyNb <= 0) {
             //if defender won
-            armyNb = 0; 
+            src->Armies -= armySent;
             std::cout << "[Valid] 1 Advance order executed. Failed to capture target territory." << std::endl;
         }
     }
@@ -593,8 +603,6 @@ Airlift::Airlift(const std::string& playerID, const int& armyNb, Territory* src,
     this->armyNb = armyNb;
     this->src = src;
     this->target = target;
-    // subtract sent armies from source territory
-    src->Armies -= armyNb;
 }
 
 // clone function
@@ -603,7 +611,8 @@ Airlift* Airlift::clone() { return new Airlift(*this); }
 // validates order; returns true if src and target are owned by the player
 bool Airlift::validate() {
   std::cout << " Validating order..." << std::endl;
-  if (src == nullptr || target == nullptr || src->OwnedBy.compare(playerID) != 0 ||
+  if (src == nullptr || target == nullptr || armyNb <= 0 ||
+      armyNb > src->Armies || src->OwnedBy.compare(playerID) != 0 ||
       target->OwnedBy.compare(playerID) != 0)
       return false;
   else
@@ -615,6 +624,8 @@ void Airlift::execute() {
     if (validate()) {
        //if target territory is owned by user, simply move armies there
        target->Armies += armyNb;
+       // subtract sent armies from source territory
+       src->Armies -= armyNb;
        std::cout << "[Valid] 1 Airlift order executed." << std::endl;
        setExecuted(true);
     }
