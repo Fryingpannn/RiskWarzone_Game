@@ -30,7 +30,7 @@
 static std::string PlayerName;
 void displayA1DemoMenu();
 
-int ok() {
+int main() {
   /*std::cout << "Assignment 2 - Demo" << std::endl;
   std::cout << "Main Menu" << std::endl;
   std::cout << "========================" << std::endl;

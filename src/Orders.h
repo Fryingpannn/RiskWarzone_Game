@@ -82,6 +82,7 @@ public:
 	const int priority = 0;
 	//constructors
 	Order();
+	Order(const Order& copy);
 	//constructor to set name data member, used by subclass constructors
 	Order(const std::string& name, const int& priority);
 	//clone function for polymorphic classes used by OrderList's copy constructor
@@ -194,7 +195,8 @@ public:
 	//constructors
 	Airlift();
 	Airlift(const Airlift& deploy);
-	Airlift(const std::string& playerID, const int& armyNb, Territory* src, Territory* target);
+	Airlift(const std::string& playerID, const int& armyNb, Territory* src, Territory* target,
+		Player* const current, Deck* const deck);
 	//clone function for polymorphic classes
 	Airlift* clone() override;
 	//order functions
@@ -214,7 +216,7 @@ public:
 	Negotiate();
 	Negotiate(const Negotiate&);
 	//the set contains players with whom playerID cannot attack this turn
-	Negotiate(Player* const current, Player* const player);
+	Negotiate(Player* const current, Player* const enemy);
 	//clone function for polymorphic class
 	Negotiate* clone() override;
 	//order functions
