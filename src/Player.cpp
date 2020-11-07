@@ -41,6 +41,7 @@ Player::Player(std::vector<Territory *> territories, Hand handOfCards,
                OrderList listOfOrders, std::string pid) {
   std::cout << "Regular Player constructor" << std::endl;
 
+  this->PID = pid; //<=========== HERE
   // Declare those territories as belonging to this player
   for (auto &i : territories) {
     i->OwnedBy = this->PID;
@@ -49,7 +50,6 @@ Player::Player(std::vector<Territory *> territories, Hand handOfCards,
   this->Territories = territories;
   this->HandOfCards = new Hand(handOfCards);
   this->ListOfOrders = new OrderList(listOfOrders);
-  this->PID = pid;
 }
 
 /**

@@ -15,54 +15,96 @@
 
 #include "OrdersDriver.h"
 #include "Orders.h"
+#include "Map.h"
+#include "Cards.h"
 
 //This driver file tests the functionalities from the Orders.h/Orders.cpp files.
- void ordersDriver() {
+ void main() {
 	std::cout << "-------- OrderList driver program: Let's create some orders! -------\n" << std::endl;
+	std::cout << "-------- Assignment 2 code tests -------\n" << std::endl;
 
+	//creating territories to test orders with
+	auto* Malaysia = new Territory{ "Malaysia", 0, "ASEAN", 0, 0 };
+	Malaysia->OwnedBy = "neutral";
+	auto* Indonesia = new Territory{ "Indonesia", 1, "ASEAN", 0, 0 };
+	Indonesia->OwnedBy = "Sandra";
+	Indonesia->Armies = 2;
+	auto* Singapore = new Territory{ "Singapore", 2, "ASEAN", 0, 0 };
+	Singapore->OwnedBy = "Matthew";
+	auto* Philippine = new Territory{ "Philippine", 3, "ASEAN", 0, 0 };
+	Philippine->OwnedBy = "Penguin";
+
+	//creating map to link territories
+	Map* WorldMap = new Map(9, "WorldMap");
+	WorldMap->AddEdges(*Malaysia, *Indonesia);
+	WorldMap->AddEdges(*Indonesia, *Malaysia);
+	WorldMap->AddEdges(*Singapore, *Malaysia);
+	WorldMap->AddEdges(*Malaysia, *Singapore);
+	WorldMap->AddEdges(*Indonesia, *Philippine);
+	WorldMap->AddEdges(*Philippine, *Indonesia);
+	
+	//creating deck & player to test orders with
+	Deck* deck = new Deck(12);
+	Hand hand{};
+	OrderList orders{};
+	std::vector<Territory*> playerOwned{};
+	playerOwned.push_back(Singapore); //player owns only singapore
+	Player* matthew = new Player(playerOwned, hand, orders, "Matthew");
+
+	//testing valid deploy order
+	std::cout << std::endl << "----- Valid Deploy -----" << std::endl << std::endl;
+	std::cout << "- Singapore's owner & army count: " << Singapore->OwnedBy << ", " << Singapore->Armies << std::endl;
+	std::cout << "Matthew: [Deploy] Deploying 5 armies to Singapore." << std::endl;
+	Order* deploy1 = new Deploy("Matthew", 5, Singapore);
+	deploy1->execute();
+	std::cout << "- Singapore's owner & army count: " << Singapore->OwnedBy << ", " << Singapore->Armies << std::endl;
+
+	//testing invalid deploy order
+	std::cout << std::endl << "----- Invalid Deploy (Wrong territory) -----" << std::endl << std::endl;
+	std::cout << "- Malaysia's owner & army count: " << Malaysia->OwnedBy << ", " << Malaysia->Armies << std::endl;
+	std::cout << "Matthew: [Deploy] Deploying 5 armies to Malaysia." << std::endl;
+	Order* deploy2 = new Deploy("Matthew", 5, Malaysia);
+	deploy2->execute();
+	std::cout << "- Malaysia's owner & army count: " << Malaysia->OwnedBy << ", " << Malaysia->Armies << std::endl;
+
+	//testing valid advance order with no attack
+	std::cout << std::endl << "----- Valid Advance (No Attack) -----" << std::endl << std::endl;
+	std::cout << "- Singapore's owner & army count: " << Singapore->OwnedBy << ", " << Singapore->Armies << std::endl;
+	std::cout << "- Malaysia's owner & army count: " << Malaysia->OwnedBy << ", " << Malaysia->Armies << std::endl;
+	std::cout << "Matthew: [Advance] Advancing 4 armies from Singapore to Malaysia." << std::endl;
+	Order* advance1 = new Advance("Matthew", 4, Singapore, Malaysia, WorldMap, matthew, deck);
+	advance1->execute();
+	std::cout << "- Singapore's owner & army count: " << Singapore->OwnedBy << ", " << Singapore->Armies << std::endl;
+	std::cout << "- Malaysia's owner & army count: " << Malaysia->OwnedBy << ", " << Malaysia->Armies << std::endl;
+
+	//testing valid advance order; attack
+	std::cout << std::endl << "----- Valid Advance (Attack) -----" << std::endl << std::endl;
+	std::cout << "- Malaysia's owner & army count: " << Malaysia->OwnedBy << ", " << Malaysia->Armies << std::endl;
+	std::cout << "- Indonesia's owner & army count: " << Indonesia->OwnedBy << ", " << Indonesia->Armies << std::endl;
+	std::cout << "Matthew: [Advance] Advancing 3 armies from Malaysia to Indonesia." << std::endl;
+	Order* advance2 = new Advance("Matthew", 2, Malaysia, Indonesia, WorldMap, matthew, deck);
+	advance2->execute();
+	std::cout << "- Malaysia's owner & army count: " << Malaysia->OwnedBy << ", " << Malaysia->Armies << std::endl;
+	std::cout << "- Indonesia's owner & army count: " << Indonesia->OwnedBy << ", " << Indonesia->Armies << std::endl;
+
+	//testing invalid advance order; non-adjacent territory
+	std::cout << std::endl << "----- Invalid Advance (Non-adjacent Territory) -----" << std::endl << std::endl;
+	std::cout << "- Singapore's owner & army count: " << Singapore->OwnedBy << ", " << Singapore->Armies << std::endl;
+	std::cout << "- Indonesia's owner & army count: " << Indonesia->OwnedBy << ", " << Indonesia->Armies << std::endl;
+	std::cout << "Matthew: [Advance] Advancing 3 armies from Singapore to Indonesia." << std::endl;
+	Order* advance3 = new Advance("Matthew", 3, Singapore, Indonesia, WorldMap, matthew, deck);
+	advance3->execute();
+	std::cout << "- Singapore's owner & army count: " << Singapore->OwnedBy << ", " << Singapore->Armies << std::endl;
+	std::cout << "- Indonesia's owner & army count: " << Indonesia->OwnedBy << ", " << Indonesia->Armies << std::endl;
+	
+	delete deploy1, delete deploy2, delete advance1, delete advance2, delete advance3;
+	delete Malaysia, delete Singapore, delete Philippine, delete Indonesia;
+	delete deck, delete matthew, delete WorldMap;
+	/*------------------------------------------------------------------------------------------------------*/
+
+	std::cout << "-------- Assignment 1 code tests -------\n" << std::endl;
 	//creating new OrderList
 	OrderList oList;
-
-
-
-
-	//testing priority queue -------------------------------------------
-	Deploy* test1 = new Deploy();
-	Advance* test2 = new Advance();
-	Airlift* test3 = new Airlift();
-	Bomb* test4 = new Bomb();
-	Blockade* test5 = new Blockade();
-
-	//test list
-	OrderList testL;
-	testL.addToList(test2);
-	testL.addToList(test4);
-	testL.addToList(test5);
-	testL.addToList(test3);
-	testL.addToList(test1);
-
-	Order* top = testL.peek();
-	std::cout << "TOP: " << *top << std::endl;
-	delete top;
-
-	//std::priority_queue<Order*, std::vector<Order*>, CompareOrder> list;
-
-	//list.push(test4);
-	//list.push(test2);
-	////list.push(test5);
-	////list.push(test3);
-	//list.push(test1);
-
-	//while(!list.empty()) {
-	//	std::cout << list.size() << std::endl;
-	//	std::cout << *list.top() << std::endl;
-	//	list.pop();
-	//}
-
-	///Conclusion: works for the top priorities but missing the other elements... also, would have to rewrite all since queue doesn't support iterators
-
-
-
 
 	//adding orders to the list
 	oList.addToList(new Deploy());
