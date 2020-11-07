@@ -18,6 +18,13 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <unordered_set>
+
+class Map;
+class Hand;
+class Deck;
+class Player;
+struct Territory;
 
 class Order;
 
@@ -34,9 +41,12 @@ public:
 	//adds an order to the list
 	bool addToList(Order* order);
 	//removes an order from the list
-	bool remove(int position);
+	//returns: the armyNb of the order to refill reinforcement pool of player
+	int remove(int position);
 	//removes and returns the top priority element from list
 	Order* pop();
+	//returns a copy of the next top priority element from list
+	Order* peek();
 	//moves/swaps an order from an index with another in the list
 	bool move(int firstIndex, int secondIndex);
 	//returns size/emptyness of current list
@@ -50,19 +60,23 @@ public:
 	~OrderList();
 };
 
-// operator overloading for the Orders' priority comparisons
-//struct CompareOrder {
-//	bool operator()(Order* const& o1, Order* const& o2);
-//};
-
 //order abstract base class. used to store the different subclasses in the OrderList vector
 class Order
 {
 protected:
 	//name of order
 	std::string name{ "None" };
-	//true if order has been executed, false otherwise
+	//true if order is to be executed by game engine, false otherwise
 	bool executed{ false };
+	int armyNb{}; //the number of armies to change within order
+	std::string playerID; //current player's ID
+	Territory* src;
+	Territory* target;
+	std::vector<Territory*> adj; //adjacent territories of src
+	Map* map; //used to get the adjacent territories by Advance
+	Player* enemy; //used by negotiation execution to update diplomacy status
+	Player* current; //player who created this order
+	Deck* deck; //draw card from deck if new territory won from advance
 public:
 	//priority of order
 	const int priority = 0;
@@ -72,17 +86,16 @@ public:
 	Order(const std::string& name, const int& priority);
 	//clone function for polymorphic classes used by OrderList's copy constructor
 	virtual Order* clone() = 0;
-	//checks if an order is valid
-	virtual bool validate() = 0;
 	//executes an order if it's valid
 	virtual void execute() = 0;
+	virtual bool validate() = 0;
 	//setter/getter to set/get the execution status of the order
 	void setExecuted(const bool& status);
 	bool getExecuted();
-	virtual int getCount();
 	//setter/getter for order name
-	void setName(std::string name);
+	void setName(const std::string& name);
 	std::string getName();
+	int getArmyNb();
 	//assignment operator
 	Order& operator =(const Order& o);
 	//insertion stream operator, also used by all subclasses
@@ -95,16 +108,12 @@ public:
 //Deploy order used to deploy armies onto player territory -------------
 class Deploy : public Order
 {
-private:
-	
 public:
-	//time counter for priority comparison
-	static int incrCount;
-	const int counter;
-	int getCount() { return counter; }
-	//constructors
+	//constructors: default, copy, and to deploy armies
 	Deploy();
 	Deploy(const Deploy& deploy);
+	//playerID is the player who issued this order
+	Deploy(const std::string& playerID, const int& armyNb, Territory* target);
 	//clone function for polymorphic classes
 	Deploy* clone() override;
 	//order functions
@@ -121,17 +130,16 @@ public:
 class Advance : public Order
 {
 public:
-	//time counter for priority comparison
-	static int incrCount;
-	const int counter;
-	int getCount() { return counter; }
 	//constructors
 	Advance();
 	Advance(const Advance& adv);
+	//if executed and conquered enemy territory, need to add that to the player's list
+	Advance(const std::string& playerID, const int& armyNb, Territory* src, 
+		Territory* target, Map* map, Player* const current, Deck* const deck);
 	//clone function
 	Advance* clone() override;
 	//order functions
-	bool validate() override;
+	bool validate();
 	void execute() override;
 	//assignment & stream functions
 	Advance& operator =(const Advance& adv);
@@ -140,16 +148,14 @@ public:
 };
 
 //Bomb order used to bomb target country making them lose half their army units -------------
+//- can only be created by playing bomb card
 class Bomb : public Order
 {
 public:
-	//time counter for priority comparison
-	static int incrCount;
-	const int counter;
-	int getCount() { return counter; }
 	//constructors
 	Bomb();
 	Bomb(const Bomb& deploy);
+	Bomb(const std::string& playerID, Territory* target, Player* const current);
 	//clone function for polymorphic classes
 	Bomb* clone() override;
 	//order functions
@@ -168,6 +174,8 @@ public:
 	//constructors
 	Blockade();
 	Blockade(const Blockade& deploy);
+	//if executed, need to remove neutral territory from player list
+	Blockade(const std::string& playerID, Territory* src);
 	//clone function for polymorphic classes
 	Blockade* clone() override;
 	//order functions
@@ -186,6 +194,7 @@ public:
 	//constructors
 	Airlift();
 	Airlift(const Airlift& deploy);
+	Airlift(const std::string& playerID, const int& armyNb, Territory* src, Territory* target);
 	//clone function for polymorphic classes
 	Airlift* clone() override;
 	//order functions
@@ -198,11 +207,14 @@ public:
 };
 
 //Negotiate order used to prevent attacks between current and another player until end of turn -------------
+//Enables 'diplomatic status' between two players.
 class Negotiate : public Order {
 public:
 	//default constructors
 	Negotiate();
 	Negotiate(const Negotiate&);
+	//the set contains players with whom playerID cannot attack this turn
+	Negotiate(Player* const current, Player* const player);
 	//clone function for polymorphic class
 	Negotiate* clone() override;
 	//order functions
@@ -213,4 +225,3 @@ public:
 	std::ostream& doprint(std::ostream& out) override;
 	~Negotiate();
 };
-
