@@ -779,7 +779,7 @@ Map *MapFile::generateMap() {
       std::cout << secondTerrName << " -- ";
     }
     std::cout << std::endl;
-    delete firstTerritory;
+    // delete firstTerritory;
   }
   return returnMap;
 }

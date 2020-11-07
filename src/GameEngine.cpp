@@ -115,20 +115,42 @@ void GameEngine::Init() {
     }
   }
 
+  bool phaseObserverToggle = true;
+  bool gameStatsObserverToggle = true;
+
   while (InputObserverNotSucceed) {
-    std::cout << "Observer on or off? [y/n]\n ";
+    std::cout << std::boolalpha;
+    std::cout << "1. Phase Observer: " << phaseObserverToggle << std::endl;
+    std::cout << "2. Game Statistics Observer: " << gameStatsObserverToggle << std::endl;
+    std::cout << "Enter your selection ('q' to quit and save your selection): ";
     std::cin >> InputObserver;
 
-    if (InputObserver == "y") {
+
+    if (InputObserver == "1") {
+      phaseObserverToggle = !phaseObserverToggle;
+    } else if (InputObserver == "2") {
+      gameStatsObserverToggle = !gameStatsObserverToggle;
+    } else if (InputObserver == "q") {
       InputObserverNotSucceed = false;
-      ObserverOn = true;
-    } else if (InputObserver == "n") {
-      InputObserverNotSucceed = false;
-      ObserverOn = false;
     } else {
-      std::cout << "Please don't troll around =__=\n\n" << std::endl;
+      std::cout << "Invalid Selection" << std::endl;
     }
+    // std::cout << "Observer on or off? [y/n]\n ";
+    // std::cin >> InputObserver;
+
+    // if (InputObserver == "y") {
+    //   InputObserverNotSucceed = false;
+    //   ObserverOn = true;
+    // } else if (InputObserver == "n") {
+    //   InputObserverNotSucceed = false;
+    //   ObserverOn = false;
+    // } else {
+    //   std::cout << "Please don't troll around =__=\n\n" << std::endl;
+    // }
+    
   }
+
+  
 
   std::cout << "now the game is ready to go! (≧▽≦)!! \n";
 

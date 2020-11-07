@@ -4,6 +4,7 @@
 #include "Orders.h"
 #include "Player.h"
 #include "Map.h"
+#include "GameObservers.hpp"
 
 #ifdef _DEBUG
 #define Log(x) std::cout << x << std::endl;
@@ -21,7 +22,7 @@
 
 // Look at how all the members are public, other programmers can access to the
 // component they want easily :)
-class GameEngine {
+class GameEngine : Subject {
  public:
   // members of the GameEngine
   MapFile* MainFile;
