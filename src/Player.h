@@ -16,6 +16,7 @@
 #pragma once
 #include <ostream>
 #include <vector>
+#include <map>
 #include <unordered_set>
 
 #include "Cards.h"
@@ -47,15 +48,28 @@ class Player : public Subject {
   // a player can only receive one new card each turn. reset this value to true 
   // at the end of every turn. this is used by Advance order's execute function.
   bool cardNotGiven = true;
+  Map *MainMap;
+  Deck *DeckOfCards;
 
   Player();
   Player(std::vector<Territory *> territories, Hand hand, OrderList orderList,
          std::string pID);
   Player(const Player &p);
   Player &operator=(const Player &p);
-  std::vector<Territory *> toDefend();
-  std::vector<Territory *> toAttack(Map &map);
-  void issueOrder(Map &map, Deck &deckOfCards);
+
+  // Helper function for game engine
+  void bindGameElements(Map *mapIn, Deck *deckIn);
+  void initIssueOrder();
+
+  std::map<int, Territory *> toDefend();
+  std::map<int, Territory *> toAttack();
+  void issueOrder();
+  // Helper functions of issue order
+  void reinforce();
+  void advanceAttack();
+  void advanceTransfer();
+  void playCard();
+
   friend std::ostream &operator<<(std::ostream &out, const Player &p);
   ~Player();
   

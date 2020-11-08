@@ -248,6 +248,9 @@ Card Hand::returnByPos(int pos) {
     return *this->hand.at(pos);
   }
 }
+
+int Hand::size() { return hand.size(); }
+
 // Operator overloading
 
 /**

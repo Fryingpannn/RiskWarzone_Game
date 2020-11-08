@@ -128,6 +128,7 @@ bool OrderList::move(int first, int second) {
   return true;
 }
 
+
 // assignment operator overload
 OrderList& OrderList::operator=(const OrderList& o) {
   this->list.resize(o.list.size());

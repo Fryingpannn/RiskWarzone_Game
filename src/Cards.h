@@ -70,6 +70,7 @@ class Hand {
   void remove(int index);
   int find(Card c);
   Card returnByPos(int pos);
+  int size();
 
   // operator overloading
   friend std::ostream& operator<<(std::ostream& out, const Hand& h);
