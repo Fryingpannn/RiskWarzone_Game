@@ -129,7 +129,8 @@ std::ostream &operator<<(std::ostream &out, const Player &p) {
   return out;
 }
 
-void Player::bindGameElements(Map *mapIn, Deck *deckIn) {
+void Player::bindGameElements(std::vector<Player *> &Players, Map *mapIn,
+                              Deck *deckIn) {
   this->MainMap = mapIn;
   this->DeckOfCards = deckIn;
 }
@@ -137,6 +138,7 @@ void Player::bindGameElements(Map *mapIn, Deck *deckIn) {
 void Player::initIssueOrder() {
   this->AdvanceOrderDone = false;
   this->CardPlayed = false;
+  this->ReinforcementsDeployed = 0;
 }
 
 /**
@@ -185,9 +187,9 @@ std::map<int, Territory *> Player::toAttack() {
  */
 void Player::issueOrder() {
   // Deploy armies until nothing left in pool
-  if (this->ReinforcementPool > 0) {
+  if (this->ReinforcementPool-this->ReinforcementsDeployed > 0) {
     std::cout << "Reinforcement\n";
-    reinforce();
+    createDeploy();
 
     // Perform an advance order that either attacks or transfers
   } else if (!AdvanceOrderDone) {
@@ -235,7 +237,7 @@ void Player::issueOrder() {
 /**
  * Helper function for issuing orders related to deploying reinforcements.
  */
-void Player::reinforce() {
+void Player::createDeploy() {
   auto toDefendMap = this->toDefend();
   // Print territories that can be defended
   for (auto &t : toDefendMap) {
@@ -272,7 +274,7 @@ void Player::reinforce() {
   while (!validInput) {
     std::cout << "Pick the number of armies to reinforce "
               << toDefendMap.at(indexToReinforce)->Name << " with.\n"
-              << "You have " << ReinforcementPool
+              << "You have " << ReinforcementPool-ReinforcementsDeployed
               << " armies left to deploy.\nNumber of armies: ";
     std::cin >> armies;
     std::cout << "\n";
@@ -282,7 +284,7 @@ void Player::reinforce() {
       getline(std::cin, discard);
       std::cout << "Enter an INTEGER value\n";
     } else {
-      if (armies < 1 || armies > ReinforcementPool) {
+      if (armies < 1 || armies > ReinforcementPool - ReinforcementsDeployed) {
         std::cout << "The number of armies (" << armies
                   << ") is not a valid input. \n";
       } else {
@@ -292,10 +294,10 @@ void Player::reinforce() {
   }
 
   // Perform the deploy order
-  auto *order = new Deploy(this->PID, armies, toDefendMap.at(indexToReinforce));
+  auto *order =
+      new Deploy(this->PID, armies, toDefendMap.at(indexToReinforce), this);
   this->ListOfOrders->addToList(order);
-  this->ReinforcementPool -= armies;
-
+  this->ReinforcementsDeployed += armies;
   std::cout << "Player " << this->PID << " - issued deploy on "
             << toDefendMap.at(indexToReinforce)->Name << " of " << armies
             << " armies.\n";
@@ -551,16 +553,190 @@ void Player::playCard() {
     }
     auto cardToPlay = this->HandOfCards->returnByPos(input);
     // Method inside cards class creates the order and adds it to the list
-    cardToPlay.Play(*this, *this->HandOfCards,
-                    *this->DeckOfCards);
+    cardToPlay.Play(*this, *this->HandOfCards, *this->DeckOfCards);
   }
 }
 
-void Player::createBomb() {}
-void Player::createAirlift() {}
-void Player::createBlockade() {}
-void Player::createNegotiate() {}
-void Player::createDeploy() {}
+void Player::createBomb() {
+  // TODO show list of territories that can be bombed
+
+  bool validInput{false};
+  int input{-1};
+  while (!validInput) {
+    std::cout << "Pick a territory ID to bomb.\nTerritory ID: ";
+    std::cin >> input;
+    std::cout << "\n";
+
+    if (std::cin.fail()) {
+      std::cin.clear();
+      std::string discard;
+      getline(std::cin, discard);
+      std::cout << "Enter an INTEGER value\n";
+    } else {
+      if (input < 0 || input > this->MainMap->NumOfCountries()) {
+        std::cout << "The input " << input << " is not valid. Try again.\n";
+      } else {
+        validInput = true;
+      }
+    }
+  }
+
+  for (auto &t : this->MainMap->ReturnListOfCountries()) {
+    if (t->TerritoryID == input) {
+      auto *order = new Bomb(this->PID, t, this);
+      this->ListOfOrders->addToList(order);
+      break;
+    }
+  }
+}
+void Player::createAirlift() {
+  auto toDefendMap = this->toDefend();
+  std::cout << "These are the territories you defend:\n";
+  for (auto &t : toDefendMap) {
+    std::cout << "[" << t.first << "]: " << t.second->Name << std::endl;
+  }
+
+  bool validInput{false};
+  int inputAirliftTo{-1};
+  while (!validInput) {
+    std::cout << "Pick a territory ID to airlift armies to.\nTerritory ID: ";
+    std::cin >> inputAirliftTo;
+    std::cout << "\n";
+
+    if (std::cin.fail()) {
+      std::cin.clear();
+      std::string discard;
+      getline(std::cin, discard);
+      std::cout << "Enter an INTEGER value\n";
+    } else {
+      if (inputAirliftTo < 0 ||
+          inputAirliftTo > this->MainMap->NumOfCountries()) {
+        std::cout << "The input " << inputAirliftTo
+                  << " is not valid. Try again.\n";
+      } else {
+        validInput = true;
+      }
+    }
+  }
+
+  validInput = false;
+  int inputAirliftFrom{-1};
+  while (!validInput) {
+    std::cout << "Pick a territory ID to airlift armies from.\nTerritory ID: ";
+    std::cin >> inputAirliftFrom;
+    std::cout << "\n";
+
+    if (std::cin.fail()) {
+      std::cin.clear();
+      std::string discard;
+      getline(std::cin, discard);
+      std::cout << "Enter an INTEGER value\n";
+    } else {
+      if (inputAirliftFrom < 0 ||
+          inputAirliftFrom > this->MainMap->NumOfCountries()) {
+        std::cout << "The input " << inputAirliftFrom
+                  << " is not valid. Try again.\n";
+      } else {
+        validInput = true;
+      }
+    }
+  }
+
+  int nbArmies{-1};
+  validInput = false;
+  while (!validInput) {
+    std::cout
+        << "How many armies do you wish to transfer? You can choose up to "
+        << toDefendMap.at(inputAirliftFrom)->Armies << "\nNumber of armies: ";
+    std::cin >> nbArmies;
+    std::cout << "\n";
+
+    if (std::cin.fail()) {
+      std::cin.clear();
+      std::string discard;
+      getline(std::cin, discard);
+      std::cout << "Enter an INTEGER value\n";
+    } else {
+      if (nbArmies < 0 || nbArmies > toDefendMap.at(inputAirliftFrom)->Armies) {
+        std::cout << nbArmies << " is not an acceptable input. Try again.";
+      } else {
+        validInput = true;
+      }
+    }
+  }
+
+  auto *order =
+      new Airlift(this->PID, nbArmies, toDefendMap.at(inputAirliftFrom),
+                  toDefendMap.at(inputAirliftTo), this, this->DeckOfCards);
+  this->ListOfOrders->addToList(order);
+}
+void Player::createBlockade() {
+  auto toDefendMap = this->toDefend();
+  std::cout << "These are the territories you defend:\n";
+  for (auto &t : toDefendMap) {
+    std::cout << "[" << t.first << "]: " << t.second->Name << std::endl;
+  }
+
+  bool validInput{false};
+  int input{-1};
+  while (!validInput) {
+    std::cout << "Pick a territory ID to blockade.\nTerritory ID: ";
+    std::cin >> input;
+    std::cout << "\n";
+
+    if (std::cin.fail()) {
+      std::cin.clear();
+      std::string discard;
+      getline(std::cin, discard);
+      std::cout << "Enter an INTEGER value\n";
+    } else {
+      if (input < 0 || input > this->MainMap->NumOfCountries()) {
+        std::cout << "The input " << input << " is not valid. Try again.\n";
+      } else {
+        validInput = true;
+      }
+    }
+  }
+
+  auto *order = new Blockade(this->PID, toDefendMap.at(input));
+  this->ListOfOrders->addToList(order);
+}
+void Player::createNegotiate() {
+  std::cout << "Your opponents are: \n";
+  for (auto &p : this->ListOfPlayers) {
+    if (p->PID != this->PID) {
+      std::cout << "\t" << p->PID << "\n";
+    }
+  }
+
+  bool validInput{false};
+  std::string input{" "};
+  Order *order = nullptr;
+  while (!validInput) {
+    std::cout << "Pick an enemy to negotiate with.\nEnemy ID: ";
+    std::cin >> input;
+    std::cout << "\n";
+
+    if (std::cin.fail()) {
+      std::cin.clear();
+      std::string discard;
+      getline(std::cin, discard);
+      std::cout << "Enter a STRING value\n";
+    } else {
+      for (auto &p : this->ListOfPlayers) {
+        if (p->PID != this->PID && p->PID == input) {
+          order = new Negotiate(this, p);
+        }
+      }
+      if (order == nullptr) {
+        std::cout << "That is not a valid enemy ID.\n";
+      } else {
+        validInput = true;
+      }
+    }
+  }
+  this->ListOfOrders->addToList(order);
+}
 
 /**
  * Destructor of the player object.

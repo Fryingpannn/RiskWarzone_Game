@@ -14,20 +14,20 @@
 /////////////////////////////////////////////
 
 #pragma once
-#include <ostream>
-#include <vector>
 #include <map>
+#include <ostream>
 #include <unordered_set>
+#include <vector>
 
 #include "Cards.h"
-#include "Orders.h"
-#include "Map.h"
 #include "GameObservers.hpp"
-
+#include "Map.h"
+#include "Orders.h"
 
 struct Territory;
 class Map;
 class Deck;
+
 
 /**
  * A class for the object Player which managers territories, cards and orders
@@ -42,14 +42,18 @@ class Player : public Subject {
   int ReinforcementPool = 0;
   bool AdvanceOrderDone = true;
   bool CardPlayed = true;
-  // set of players with whom playerID cannot attack or be attacked by this turn; 
-  // this set is used by Negotiation order's execute function.
+  // set of players with whom playerID cannot attack or be attacked by this
+  // turn; this set is used by Negotiation order's execute function.
   std::unordered_set<std::string> set;
-  // a player can only receive one new card each turn. reset this value to true 
+  // a player can only receive one new card each turn. reset this value to true
   // at the end of every turn. this is used by Advance order's execute function.
   bool cardNotGiven = true;
+
+  // Game knowledge
+  std::vector<Player *> ListOfPlayers;
   Map *MainMap;
   Deck *DeckOfCards;
+  int ReinforcementsDeployed;
 
   Player();
   Player(std::vector<Territory *> territories, Hand hand, OrderList orderList,
@@ -58,14 +62,15 @@ class Player : public Subject {
   Player &operator=(const Player &p);
 
   // Helper function for game engine
-  void bindGameElements(Map *mapIn, Deck *deckIn);
+  void bindGameElements(std::vector<Player *> &Players, Map *mapIn, Deck *deckIn);
   void initIssueOrder();
 
   std::map<int, Territory *> toDefend();
   std::map<int, Territory *> toAttack();
   void issueOrder();
+
   // Helper functions of issue order
-  void reinforce();
+  void createDeploy();
   void advanceAttack();
   void advanceTransfer();
   void playCard();
@@ -75,9 +80,7 @@ class Player : public Subject {
   void createAirlift();
   void createBlockade();
   void createNegotiate();
-  void createDeploy();
 
   friend std::ostream &operator<<(std::ostream &out, const Player &p);
   ~Player();
-  
 };

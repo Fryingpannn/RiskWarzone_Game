@@ -14,11 +14,11 @@
 /////////////////////////////////////////////
 
 #include "Orders.h"
-#include "Map.h"
-#include "Player.h"
+
 #include <random>
 
 #include "Map.h"
+#include "Player.h"
 
 /*---------------------------------- OrderList class
  * ----------------------------------*/
@@ -41,7 +41,7 @@ bool OrderList::addToList(Order* order) {
   std::cout << "-> New order added!" << std::endl;
   return true;
 }
-    // remove from list
+// remove from list
 int OrderList::remove(int position) {
   auto it = this->list.begin() + position;
   int reArmyNb = (*it)->getArmyNb();
@@ -162,23 +162,24 @@ OrderList::~OrderList() {
 // default constructor
 Order::Order() {}
 
-// copy constructor; the pointers need to be shallow copies in order to track the changes being
-// made in the rest of the game.
+// copy constructor; the pointers need to be shallow copies in order to track
+// the changes being made in the rest of the game.
 Order::Order(const Order& copy, const int& priority) : priority(priority) {
-    name = copy.name;
-    armyNb = copy.armyNb;
-    playerID = copy.playerID;
-    src = copy.src;
-    target = copy.target;
-    adj = copy.adj;
-    map = copy.map;
-    enemy = copy.enemy;
-    current = copy.current;
-    deck = copy.deck;
+  name = copy.name;
+  armyNb = copy.armyNb;
+  playerID = copy.playerID;
+  src = copy.src;
+  target = copy.target;
+  adj = copy.adj;
+  map = copy.map;
+  enemy = copy.enemy;
+  current = copy.current;
+  deck = copy.deck;
 }
 
 // param constructor to set the name variable of Order from subclasses
-Order::Order(const std::string& name, const int& priority) : name(name), priority(priority) { }
+Order::Order(const std::string& name, const int& priority)
+    : name(name), priority(priority) {}
 
 // assignment operator; the pointers need to be shallow copies in order to track
 // the changes being made in the rest of the game.
@@ -218,20 +219,22 @@ Order::~Order() { std::cout << "Cleaning up..." << std::endl; }
  * ----------------------------------*/
 
 // default constructor
-Deploy::Deploy() : Order("DEPLOY", 1) { }
+Deploy::Deploy() : Order("DEPLOY", 1) {}
 
 // deploy copy constructor
-Deploy::Deploy(const Deploy& deploy) : Order(deploy, 1) { }
+Deploy::Deploy(const Deploy& deploy) : Order(deploy, 1) {}
 
-/* -constructor to deploy armies to target territory (note: territory passed is a pointer).
- * -current is the player who issued this order
- * -the armyNb is only returned if remove() is used on the order.
+/* -constructor to deploy armies to target territory (note: territory passed is
+ * a pointer). -current is the player who issued this order -the armyNb is only
+ * returned if remove() is used on the order.
  */
-Deploy::Deploy(const std::string& playerID, const int& armyNb, Territory* target, Player* const current) : Order("DEPLOY", 1) {
-    this->armyNb = armyNb;
-    this->target = target;
-    this->playerID = playerID;
-    this->current = current;
+Deploy::Deploy(const std::string& playerID, const int& armyNb,
+               Territory* target, Player* const current)
+    : Order("DEPLOY", 1) {
+  this->armyNb = armyNb;
+  this->target = target;
+  this->playerID = playerID;
+  this->current = current;
 }
 
 // clone function for Deploy
@@ -250,15 +253,14 @@ bool Deploy::validate() {
 // executes deploy if valid
 // the army count in reinforcement pool must be deducted in Player class
 void Deploy::execute() {
-    //add the armies to target territory if it belongs to the player
-    if (validate()) {
-        target->Armies += armyNb;
-        current->ReinforcementPool -= armyNb;
-        std::cout << "[Valid] 1 Deploy order executed." << std::endl;
-    }
-    else
-        std::cout << "[Invalid] 1 Deploy order not executed." << std::endl;
-  }
+  // add the armies to target territory if it belongs to the player
+  if (validate()) {
+    target->Armies += armyNb;
+    current->ReinforcementPool -= armyNb;
+    std::cout << "[Valid] 1 Deploy order executed." << std::endl;
+  } else
+    std::cout << "[Invalid] 1 Deploy order not executed." << std::endl;
+}
 
 // assignment operator
 Deploy& Deploy::operator=(const Deploy& o) {
@@ -288,7 +290,7 @@ Deploy::~Deploy() { std::cout << "Destroying deploy order." << std::endl; }
 Advance::Advance() : Order("ADVANCE", 0) {}
 
 // copy constructor
-Advance::Advance(const Advance& adv) : Order(adv, 0) { }
+Advance::Advance(const Advance& adv) : Order(adv, 0) {}
 
 /* constructor to advance armies from source territory to target territory.
  *  - armyNb is only returned if remove() is used on the order.
@@ -305,14 +307,16 @@ Advance::Advance(const Advance& adv) : Order(adv, 0) { }
  *  deck    : pointer to deck of the game, used to give a card to player
  */
 Advance::Advance(const std::string& playerID, const int& armyNb, Territory* src,
-    Territory* target, Map* map, Player* const current, Deck* const deck) : Order("ADVANCE", 0) {
-    this->playerID = playerID;
-    this->armyNb = armyNb;
-    this->src = src;
-    this->target = target;
-    this->map = map;
-    this->current = current;
-    this->deck = deck;
+                 Territory* target, Map* map, Player* const current,
+                 Deck* const deck)
+    : Order("ADVANCE", 0) {
+  this->playerID = playerID;
+  this->armyNb = armyNb;
+  this->src = src;
+  this->target = target;
+  this->map = map;
+  this->current = current;
+  this->deck = deck;
 }
 
 // clone function for Advance
@@ -462,7 +466,7 @@ Advance::~Advance() { std::cout << "Destroying advance order." << std::endl; }
  * ------------------------------------*/
 
 // default constructor
-Bomb::Bomb() : Order("BOMB", 0) {};
+Bomb::Bomb() : Order("BOMB", 0){};
 
 // copy constructor
 Bomb::Bomb(const Bomb& bomb) : Order(bomb, 0) {}
@@ -470,10 +474,12 @@ Bomb::Bomb(const Bomb& bomb) : Order(bomb, 0) {}
 // constructor to bomb half the armies in target territory.
 // playerID and current correspond to the player who issued this order
 // the player object is used to prevent attack is diplomacy status is present
-Bomb::Bomb(const std::string& playerID, Territory* target, Player* const current) : Order("BOMB", 0) {
-    this->playerID = playerID;
-    this->target = target;
-    this->current = current;
+Bomb::Bomb(const std::string& playerID, Territory* target,
+           Player* const current)
+    : Order("BOMB", 0) {
+  this->playerID = playerID;
+  this->target = target;
+  this->current = current;
 }
 
 // clone function
@@ -541,11 +547,14 @@ Blockade::Blockade(const Blockade& blockade) : Order(blockade, 3) {
 }
 
 // constructor; double friendly territory and transform it to neutral
-// - playerID is the player who issued this order. Can only be played with the blockade card.
-// - after execution, the territory need to be removed from the player's list as it's now neutral.
-Blockade::Blockade(const std::string& playerID, Territory* src) : Order("BLOCKADE", 3) {
-    this->playerID = playerID;
-    this->src = src;
+// - playerID is the player who issued this order. Can only be played with the
+// blockade card.
+// - after execution, the territory need to be removed from the player's list as
+// it's now neutral.
+Blockade::Blockade(const std::string& playerID, Territory* src)
+    : Order("BLOCKADE", 3) {
+  this->playerID = playerID;
+  this->src = src;
 }
 
 // clone function
@@ -625,14 +634,15 @@ Airlift::Airlift(const Airlift& airlift) : Order(airlift, 2) {}
  *  current : pointer to player who issued this order
  *  deck    : pointer to deck of the game, used to give a card to player
  */
-Airlift::Airlift(const std::string& playerID, const int& armyNb, Territory* src, Territory* target, 
-    Player* const current, Deck* const deck) : Order("AIRLIFT", 2) {
-    this->playerID = playerID;
-    this->armyNb = armyNb;
-    this->src = src;
-    this->target = target;
-    this->current = current;
-    this->deck = deck;
+Airlift::Airlift(const std::string& playerID, const int& armyNb, Territory* src,
+                 Territory* target, Player* const current, Deck* const deck)
+    : Order("AIRLIFT", 2) {
+  this->playerID = playerID;
+  this->armyNb = armyNb;
+  this->src = src;
+  this->target = target;
+  this->current = current;
+  this->deck = deck;
 }
 
 // clone function
@@ -780,10 +790,11 @@ Negotiate::Negotiate(const Negotiate& n) : Order(n, 0) {}
  * - current:  the current player who created this order
  * - player:   the enemy player to negotiate with
  */
-Negotiate::Negotiate(Player* const current, Player* const enemy) : Order("NEGOTIATE", 0) {
-    this->playerID = current->PID;
-    this->current = current;
-    this->enemy = enemy;
+Negotiate::Negotiate(Player* const current, Player* const enemy)
+    : Order("NEGOTIATE", 0) {
+  this->playerID = current->PID;
+  this->current = current;
+  this->enemy = enemy;
 }
 
 // clone function

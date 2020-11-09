@@ -33,7 +33,6 @@ void GameEngine::Init() {
   std::string InputObserver;
   bool InputObserverNotSucceed = true;
 
- 
   /// DEBUG code creates 3 players automatically
   /// set to false to create your own players!!!
   bool debugMainLoop{true};
@@ -106,8 +105,7 @@ void GameEngine::Init() {
     std::cout << "Now tell me the name of the map you want to load? (must be "
                  "in the ./maps/ directory)\n ";
 
-
-    ///  DEBUG CODE choses map previously
+    ///  DEBUG CODE choses map already for us
     if (!debugMainLoop) {
       std::cin >> MapFileName;
     }
@@ -187,7 +185,8 @@ void GameEngine::Init() {
 
   // Bind map and deck elements to each player object
   for (auto& player : ListOfPlayers) {
-    player->bindGameElements(this->MainMap, this->DeckOfCards);
+    player->bindGameElements(this->ListOfPlayers, this->MainMap,
+                             this->DeckOfCards);
   }
 
   std::cout << "now the game is ready to go! (≧▽≦)!! \n";
