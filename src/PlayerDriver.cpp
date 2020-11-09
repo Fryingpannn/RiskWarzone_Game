@@ -90,31 +90,31 @@ void playerDriver() {
   std::cout << "------ Player3 ------" << std::endl;
   std::cout << *player3 << std::endl;
 
-  std::cout << "\nTesting issue order method of player." << std::endl;
-  player3->issueOrder(*WorldMap, d);
-  std::cout << "------ Issue Order ------" << std::endl;
-  std::cout << *player3 << std::endl;
+  //std::cout << "\nTesting issue order method of player." << std::endl;
+  //player3->issueOrder(*WorldMap, d);
+  //std::cout << "------ Issue Order ------" << std::endl;
+  //std::cout << *player3 << std::endl;
 
-  std::cout << "\nTesting assignment operator of player." << std::endl;
-  Player *player4 = new Player();
-  *player4 = *player2;
-  d.draw(*(player4->HandOfCards));
-  std::cout << "------ Player4 ------" << std::endl;
-  std::cout << *player4 << std::endl;
+  //std::cout << "\nTesting assignment operator of player." << std::endl;
+  //Player *player4 = new Player();
+  //*player4 = *player2;
+  //d.draw(*(player4->HandOfCards));
+  //std::cout << "------ Player4 ------" << std::endl;
+  //std::cout << *player4 << std::endl;
 
-  std::cout << "\nTesting toAttack() method " << std::endl;
-  std::cout << "------ toAttack() ------" << std::endl;
-  auto toAttack = player2->toAttack(*WorldMap);
-  for (auto i = toAttack.begin(); i != toAttack.end(); ++i) {
-    std::cout << **i << " ";
-  }
+  //std::cout << "\nTesting toAttack() method " << std::endl;
+  //std::cout << "------ toAttack() ------" << std::endl;
+  //auto toAttack = player2->toAttack(*WorldMap);
+  //for (auto i = toAttack.begin(); i != toAttack.end(); ++i) {
+  //  std::cout << **i << " ";
+  //}
 
-  std::cout << "\n\nTesting toDefend() method " << std::endl;
-  std::cout << "------ toDefend() ------" << std::endl;
-  auto toDefend = player2->toDefend();
-  for (auto i = toDefend.begin(); i != toDefend.end(); ++i) {
-    std::cout << **i << " ";
-  }
+  //std::cout << "\n\nTesting toDefend() method " << std::endl;
+  //std::cout << "------ toDefend() ------" << std::endl;
+  //auto toDefend = player2->toDefend();
+  //for (auto i = toDefend.begin(); i != toDefend.end(); ++i) {
+  //  std::cout << **i << " ";
+  //}
 
   std::cout << "\n\nFinished player driver." << std::endl;
 
@@ -129,10 +129,10 @@ void playerDriver() {
   delete player1;
   delete player2;
   delete player3;
-  delete player4;
+  //delete player4;
   player1 = nullptr;
   player2 = nullptr;
   player3 = nullptr;
-  player4 = nullptr;
+  //player4 = nullptr;
   countries.clear();
 }

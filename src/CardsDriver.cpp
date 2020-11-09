@@ -54,9 +54,9 @@ void CardsDeckTest() {
 
   std::cout << "My hand now is: " << *p.HandOfCards << std::endl;
 
-  for (int i = 0; i < 5; i++) {
-    p.HandOfCards->returnByPos(0).Play(*p.HandOfCards, *p.ListOfOrders, d);
-  }
+  //for (int i = 0; i < 5; i++) {
+  //  p.HandOfCards->returnByPos(0).Play(*p.HandOfCards, *p.ListOfOrders, d);
+  //}
 
   std::cout << "---------------------------\n" << std::endl;
 
@@ -70,9 +70,9 @@ void CardsDeckTest() {
 
   std::cout << "My hand now is: " << h << std::endl;
 
-  for (int i = 0; i < 5; i++) {
-    h.returnByPos(0).Play(h, list, d2);
-  }
+  //for (int i = 0; i < 5; i++) {
+  //  h.returnByPos(0).Play(h, list, d2);
+  //}
 
   delete WorldMap;
   WorldMap = nullptr;

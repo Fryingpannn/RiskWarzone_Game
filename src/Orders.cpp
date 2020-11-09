@@ -14,9 +14,11 @@
 /////////////////////////////////////////////
 
 #include "Orders.h"
+
+#include <random>
+
 #include "Map.h"
 #include "Player.h"
-#include <random>
 
 /*---------------------------------- OrderList class
  * ----------------------------------*/
@@ -39,7 +41,6 @@ bool OrderList::addToList(Order* order) {
   std::cout << "-> New order added!" << std::endl;
   return true;
 }
-
 // remove from list
 int OrderList::remove(int position) {
   auto it = this->list.begin() + position;
@@ -53,66 +54,62 @@ int OrderList::remove(int position) {
 // returns: nullptr if list is empty, otherwise returns a pointer to a copy
 //          of the next priority element (needs to be explicitly deleted)
 Order* OrderList::peek() {
-    //if list is empty, return null
-    if (list.empty())
-        return nullptr;
+  // if list is empty, return null
+  if (list.empty()) return nullptr;
 
-    //return 1st Deploy if available
-    for (auto it = list.begin(); it != list.end(); ++it) {
-        if ((*it)->priority == 1)
-            return (*it)->clone();
-    }
-    //return 1st Airlift if available
-    for (auto it = list.begin(); it != list.end(); ++it) {
-        if ((*it)->priority == 2) 
-            return (*it)->clone();
-        }
-        //return 1st Blockade if available
-        for (auto it = list.begin(); it != list.end(); ++it) {
-            if ((*it)->priority == 3)
-                return (*it)->clone();
-        }
-        //return in FIFO order if no priority orders available
-        return (*list.begin())->clone();
+  // return 1st Deploy if available
+  for (auto it = list.begin(); it != list.end(); ++it) {
+    if ((*it)->priority == 1) return (*it)->clone();
+  }
+  // return 1st Airlift if available
+  for (auto it = list.begin(); it != list.end(); ++it) {
+    if ((*it)->priority == 2) return (*it)->clone();
+  }
+  // return 1st Blockade if available
+  for (auto it = list.begin(); it != list.end(); ++it) {
+    if ((*it)->priority == 3) return (*it)->clone();
+  }
+  // return in FIFO order if no priority orders available
+  return (*list.begin())->clone();
 }
 
-// pops top priority element from the list; Deploy -> Airlift -> Blockade -> Others
+// pops top priority element from the list; Deploy -> Airlift -> Blockade ->
+// Others
 //
 // returns: nullptr if list is empty (be careful when dereferencing!),
 //          otherwise returns a pointer (needs to be explicitly deleted)
 Order* OrderList::pop() {
-    //if list is empty, return null
-    if (list.empty())
-        return nullptr;
+  // if list is empty, return null
+  if (list.empty()) return nullptr;
 
-    //return Deploy if available
-    for (auto it = list.begin(); it != list.end(); ++it) {
-        if ((*it)->priority == 1) {
-            Order* popped = *it;
-            list.erase(it);
-            return popped;
-        }
+  // return Deploy if available
+  for (auto it = list.begin(); it != list.end(); ++it) {
+    if ((*it)->priority == 1) {
+      Order* popped = *it;
+      list.erase(it);
+      return popped;
     }
-    //return Airlift if available
-    for (auto it = list.begin(); it != list.end(); ++it) {
-        if ((*it)->priority == 2) {
-            Order* popped = *it;
-            list.erase(it);
-            return popped;
-        }
+  }
+  // return Airlift if available
+  for (auto it = list.begin(); it != list.end(); ++it) {
+    if ((*it)->priority == 2) {
+      Order* popped = *it;
+      list.erase(it);
+      return popped;
     }
-    //return Blockade if available
-    for (auto it = list.begin(); it != list.end(); ++it) {
-        if ((*it)->priority == 3) {
-            Order* popped = *it;
-            list.erase(it);
-            return popped;
-        }
+  }
+  // return Blockade if available
+  for (auto it = list.begin(); it != list.end(); ++it) {
+    if ((*it)->priority == 3) {
+      Order* popped = *it;
+      list.erase(it);
+      return popped;
     }
-    //return in FIFO order if no priority orders available
-    Order* popped = *list.begin();
-    list.erase(list.begin());
-    return popped;
+  }
+  // return in FIFO order if no priority orders available
+  Order* popped = *list.begin();
+  list.erase(list.begin());
+  return popped;
 }
 
 // move (swap) orders around in the list
@@ -144,7 +141,7 @@ std::ostream& operator<<(std::ostream& out, const OrderList& o) {
     for (int i = 0; i < o.list.size(); ++i)
       out << "\t[" << i << "]. " << o.list[i]->getName() << std::endl;
   } else
-  out << "Order list is empty.\n";
+    out << "Order list is empty.\n";
   out << std::endl;
   return out;
 }
@@ -165,37 +162,38 @@ OrderList::~OrderList() {
 // default constructor
 Order::Order() {}
 
-// copy constructor; the pointers need to be shallow copies in order to track the changes being
-// made in the rest of the game.
+// copy constructor; the pointers need to be shallow copies in order to track
+// the changes being made in the rest of the game.
 Order::Order(const Order& copy, const int& priority) : priority(priority) {
-    name = copy.name;
-    armyNb = copy.armyNb;
-    playerID = copy.playerID;
-    src = copy.src;
-    target = copy.target;
-    adj = copy.adj;
-    map = copy.map;
-    enemy = copy.enemy;
-    current = copy.current;
-    deck = copy.deck;
+  name = copy.name;
+  armyNb = copy.armyNb;
+  playerID = copy.playerID;
+  src = copy.src;
+  target = copy.target;
+  adj = copy.adj;
+  map = copy.map;
+  enemy = copy.enemy;
+  current = copy.current;
+  deck = copy.deck;
 }
 
 // param constructor to set the name variable of Order from subclasses
-Order::Order(const std::string& name, const int& priority) : name(name), priority(priority) { }
+Order::Order(const std::string& name, const int& priority)
+    : name(name), priority(priority) {}
 
-// assignment operator; the pointers need to be shallow copies in order to track the changes being
-// made in the rest of the game.
+// assignment operator; the pointers need to be shallow copies in order to track
+// the changes being made in the rest of the game.
 Order& Order::operator=(const Order& o) {
-    name = o.name;
-    armyNb = o.armyNb;
-    playerID = o.playerID;
-    src = o.src;
-    target = o.target;
-    adj = o.adj;
-    map = o.map;
-    enemy = o.enemy;
-    current = o.current;
-    deck = o.deck;
+  name = o.name;
+  armyNb = o.armyNb;
+  playerID = o.playerID;
+  src = o.src;
+  target = o.target;
+  adj = o.adj;
+  map = o.map;
+  enemy = o.enemy;
+  current = o.current;
+  deck = o.deck;
   return *this;
 }
 
@@ -207,7 +205,7 @@ std::ostream& operator<<(std::ostream& out, Order& o) { return o.doprint(out); }
 std::string Order::getName() { return this->name; }
 void Order::setName(const std::string& name) { this->name = name; }
 
-//getter for armyNb
+// getter for armyNb
 int Order::getArmyNb() { return armyNb; }
 
 // getter/setter for executed status
@@ -221,20 +219,22 @@ Order::~Order() { std::cout << "Cleaning up..." << std::endl; }
  * ----------------------------------*/
 
 // default constructor
-Deploy::Deploy() : Order("DEPLOY", 1) { }
+Deploy::Deploy() : Order("DEPLOY", 1) {}
 
 // deploy copy constructor
-Deploy::Deploy(const Deploy& deploy) : Order(deploy, 1) { }
+Deploy::Deploy(const Deploy& deploy) : Order(deploy, 1) {}
 
-/* -constructor to deploy armies to target territory (note: territory passed is a pointer).
- * -current is the player who issued this order
- * -the armyNb is only returned if remove() is used on the order.
+/* -constructor to deploy armies to target territory (note: territory passed is
+ * a pointer). -current is the player who issued this order -the armyNb is only
+ * returned if remove() is used on the order.
  */
-Deploy::Deploy(const std::string& playerID, const int& armyNb, Territory* target, Player* const current) : Order("DEPLOY", 1) {
-    this->armyNb = armyNb;
-    this->target = target;
-    this->playerID = playerID;
-    this->current = current;
+Deploy::Deploy(const std::string& playerID, const int& armyNb,
+               Territory* target, Player* const current)
+    : Order("DEPLOY", 1) {
+  this->armyNb = armyNb;
+  this->target = target;
+  this->playerID = playerID;
+  this->current = current;
 }
 
 // clone function for Deploy
@@ -243,28 +243,28 @@ Deploy* Deploy::clone() { return new Deploy(*this); }
 // validates deploy; returns true if target territory belongs to player
 bool Deploy::validate() {
   std::cout << " Validating order..." << std::endl;
-  if (target == nullptr || target->OwnedBy.compare(playerID) != 0 || armyNb <= 0)
-      return false;
+  if (target == nullptr || target->OwnedBy.compare(playerID) != 0 ||
+      armyNb <= 0)
+    return false;
   else
-      return true;
+    return true;
 }
 
 // executes deploy if valid
 // the army count in reinforcement pool must be deducted in Player class
 void Deploy::execute() {
-    //add the armies to target territory if it belongs to the player
-    if (validate()) {
-        target->Armies += armyNb;
-        current->ReinforcementPool -= armyNb;
-        std::cout << "[Valid] 1 Deploy order executed." << std::endl;
-    }
-    else
-        std::cout << "[Invalid] 1 Deploy order not executed." << std::endl;
-  }
+  // add the armies to target territory if it belongs to the player
+  if (validate()) {
+    target->Armies += armyNb;
+    current->ReinforcementPool -= armyNb;
+    std::cout << "[Valid] 1 Deploy order executed." << std::endl;
+  } else
+    std::cout << "[Invalid] 1 Deploy order not executed." << std::endl;
+}
 
 // assignment operator
 Deploy& Deploy::operator=(const Deploy& o) {
-    Order::operator=(o);
+  Order::operator=(o);
   setName("- Deploy armies -");
   return *this;
 }
@@ -290,15 +290,15 @@ Deploy::~Deploy() { std::cout << "Destroying deploy order." << std::endl; }
 Advance::Advance() : Order("ADVANCE", 0) {}
 
 // copy constructor
-Advance::Advance(const Advance& adv) : Order(adv, 0) { }
+Advance::Advance(const Advance& adv) : Order(adv, 0) {}
 
 /* constructor to advance armies from source territory to target territory.
-*  - armyNb is only returned if remove() is used on the order.
-*  - if an enemy territory is successfully conquered, its OwnedBy will be updated, but it then 
-*     needs to be added to the player's list.
-* 
-* parameters:
-*   playerID: current player's PID
+ *  - armyNb is only returned if remove() is used on the order.
+ *  - if an enemy territory is successfully conquered, its OwnedBy will be
+ * updated, but it then needs to be added to the player's list.
+ *
+ * parameters:
+ *   playerID: current player's PID
  *  armyNb  : number of armies to advance
  *  src     : starting point
  *  target  : the target territory to advance to
@@ -307,14 +307,16 @@ Advance::Advance(const Advance& adv) : Order(adv, 0) { }
  *  deck    : pointer to deck of the game, used to give a card to player
  */
 Advance::Advance(const std::string& playerID, const int& armyNb, Territory* src,
-    Territory* target, Map* map, Player* const current, Deck* const deck) : Order("ADVANCE", 0) {
-    this->playerID = playerID;
-    this->armyNb = armyNb;
-    this->src = src;
-    this->target = target;
-    this->map = map;
-    this->current = current;
-    this->deck = deck;
+                 Territory* target, Map* map, Player* const current,
+                 Deck* const deck)
+    : Order("ADVANCE", 0) {
+  this->playerID = playerID;
+  this->armyNb = armyNb;
+  this->src = src;
+  this->target = target;
+  this->map = map;
+  this->current = current;
+  this->deck = deck;
 }
 
 // clone function for Advance
@@ -323,97 +325,109 @@ Advance* Advance::clone() { return new Advance(*this); }
 // validates the Advance order
 bool Advance::validate() {
   std::cout << " Validating order..." << std::endl;
-  //return false if src doesn't belong to player
-  if (src == nullptr || armyNb <= 0 || armyNb > src->Armies 
-      || src->OwnedBy.compare(playerID) != 0 || target->TerritoryID == src->TerritoryID)
-      return false;
+  // return false if src doesn't belong to player
+  if (src == nullptr || armyNb <= 0 || armyNb > src->Armies ||
+      src->OwnedBy.compare(playerID) != 0 ||
+      target->TerritoryID == src->TerritoryID)
+    return false;
 
-  //return false if target territory's owner and current owner are on diplomatic status (negotiation)
-  if (!current->set.empty() && current->set.find(target->OwnedBy) != current->set.end()) {
-      std::cout << " --> Diplomacy status has prevented an attack between " <<
-          playerID << " and " << target->OwnedBy << "." << std::endl;
-      return false;
+  // return false if target territory's owner and current owner are on
+  // diplomatic status (negotiation)
+  if (!current->set.empty() &&
+      current->set.find(target->OwnedBy) != current->set.end()) {
+    std::cout << " --> Diplomacy status has prevented an attack between "
+              << playerID << " and " << target->OwnedBy << "." << std::endl;
+    return false;
   }
 
-  //adj: list of territories adjacent to source
+  // adj: list of territories adjacent to source
   adj = map->ReturnListOfAdjacentCountriesByID(src->TerritoryID);
 
-  //checks if target is an adjacent territory of source
+  // checks if target is an adjacent territory of source
   for (int i = 0; i < adj.size(); i++) {
-      if (adj[i]->TerritoryID == target->TerritoryID) {
-          return true;
-      }
+    if (adj[i]->TerritoryID == target->TerritoryID) {
+      return true;
+    }
   }
-  //returns false if src and target aren't adjacent territories
+  // returns false if src and target aren't adjacent territories
   return false;
 }
 
 // executes the Advance order
 void Advance::execute() {
   if (validate()) {
-     //if target territory is also owned by user or has 0 armies, simply move armies there
+    // if target territory is also owned by user or has 0 armies, simply move
+    // armies there
     if (target->OwnedBy.compare(playerID) == 0 || target->Armies == 0) {
-        target->Armies += armyNb;
-        // subtract sent armies from original
-        src->Armies -= armyNb;
-        target->OwnedBy = playerID;
-        std::cout << "[Valid] 1 Advance order executed. Armies moved to new territory." << std::endl;
+      target->Armies += armyNb;
+      // subtract sent armies from original
+      src->Armies -= armyNb;
+      target->OwnedBy = playerID;
+      std::cout
+          << "[Valid] 1 Advance order executed. Armies moved to new territory."
+          << std::endl;
     }
-    //if target territory not owned by user, attack initiated
+    // if target territory not owned by user, attack initiated
     else {
-        int armySent = armyNb; //used if attacker won to subtract from src
-        std::default_random_engine generator;
-        std::uniform_int_distribution<int> distribution(1, 100);
-        std::cout << " --> Initiating attack!" << std::endl;
+      int armySent = armyNb;  // used if attacker won to subtract from src
+      std::default_random_engine generator;
+      std::uniform_int_distribution<int> distribution(1, 100);
+      std::cout << " --> Initiating attack!" << std::endl;
 
-        //initiating attack; loops through number of armies for each territory.
-        //each army has a probability to kill off the other, the first
-        //territory that reaches zero armies left loses.
-        int result1{}, result2{};
-        while (target->Armies > 0 && armyNb > 0) {
-            int targetArmies = target->Armies;
-            //each attacking army has 60% chance of killing
-            for (int i = 0; i < armyNb; i++) {
-                result1 = distribution(generator);
-                if (result1 <= 60)
-                    target->Armies -= 1;
-            }
-            //each defending army has 70% chance of killing
-            for (int i = 0; i < targetArmies; i++) {
-                result2 = distribution(generator);
-                if (result2 <= 70)
-                    armyNb -= 1;
-            }
+      // initiating attack; loops through number of armies for each territory.
+      // each army has a probability to kill off the other, the first
+      // territory that reaches zero armies left loses.
+      int result1{}, result2{};
+      while (target->Armies > 0 && armyNb > 0) {
+        int targetArmies = target->Armies;
+        // each attacking army has 60% chance of killing
+        for (int i = 0; i < armyNb; i++) {
+          result1 = distribution(generator);
+          if (result1 <= 60) target->Armies -= 1;
         }
-        //after attacked finished; possible results from the attack
-        if (target->Armies <= 0 && armyNb <= 0) {
-            //if both lost all their armies during the attack
-            target->Armies = 0;
-            src->Armies -= armySent;
-            target->OwnedBy = "neutral";
-            std::cout << "[Valid] 1 Advance order executed. Both territories lost their armies. Target"
-                << " territory became neutral." << std::endl;
+        // each defending army has 70% chance of killing
+        for (int i = 0; i < targetArmies; i++) {
+          result2 = distribution(generator);
+          if (result2 <= 70) armyNb -= 1;
         }
-        else if (target->Armies <= 0) {
-            //if attacker won
-            std::cout << " --> " << armyNb << " army/armies from " << playerID << " were sacrificed in battle." << std::endl;
-            std::cout << " --> " << target->OwnedBy << "'s army/armies have been eliminated. F has been pressed to pay respects." << std::endl;
-            std::cout << " --> ";
-            target->Armies = armyNb;
-            target->OwnedBy = playerID;
-            src->Armies -= armySent;
-            //give new card to player's hand if not given yet this turn
-            if (current->cardNotGiven) {
-                current->HandOfCards->add(*deck->draw(*current->HandOfCards).getType());
-                current->cardNotGiven = false;
-            }
-            std::cout << "[Valid] 1 Advance order executed. Target territory captured by " << playerID << "." << std::endl;
+      }
+      // after attacked finished; possible results from the attack
+      if (target->Armies <= 0 && armyNb <= 0) {
+        // if both lost all their armies during the attack
+        target->Armies = 0;
+        src->Armies -= armySent;
+        target->OwnedBy = "neutral";
+        std::cout << "[Valid] 1 Advance order executed. Both territories lost "
+                     "their armies. Target"
+                  << " territory became neutral." << std::endl;
+      } else if (target->Armies <= 0) {
+        // if attacker won
+        std::cout << " --> " << armyNb << " army/armies from " << playerID
+                  << " were sacrificed in battle." << std::endl;
+        std::cout << " --> " << target->OwnedBy
+                  << "'s army/armies have been eliminated. F has been pressed "
+                     "to pay respects."
+                  << std::endl;
+        std::cout << " --> ";
+        target->Armies = armyNb;
+        target->OwnedBy = playerID;
+        src->Armies -= armySent;
+        // give new card to player's hand if not given yet this turn
+        if (current->cardNotGiven) {
+          current->HandOfCards->add(
+              *deck->draw(*current->HandOfCards).getType());
+          current->cardNotGiven = false;
         }
-        else if (armyNb <= 0) {
-            //if defender won
-            src->Armies -= armySent;
-            std::cout << "[Valid] 1 Advance order executed. Failed to capture target territory." << std::endl;
-        }
+        std::cout
+            << "[Valid] 1 Advance order executed. Target territory captured by "
+            << playerID << "." << std::endl;
+      } else if (armyNb <= 0) {
+        // if defender won
+        src->Armies -= armySent;
+        std::cout << "[Valid] 1 Advance order executed. Failed to capture "
+                     "target territory."
+                  << std::endl;
+      }
     }
     setExecuted(true);
   } else {
@@ -425,7 +439,7 @@ void Advance::execute() {
 
 // assignment operator function
 Advance& Advance::operator=(const Advance& adv) {
-    Order::operator=(adv);
+  Order::operator=(adv);
   setName("- Advance armies -");
   return *this;
 }
@@ -452,7 +466,7 @@ Advance::~Advance() { std::cout << "Destroying advance order." << std::endl; }
  * ------------------------------------*/
 
 // default constructor
-Bomb::Bomb() : Order("BOMB", 0) {};
+Bomb::Bomb() : Order("BOMB", 0){};
 
 // copy constructor
 Bomb::Bomb(const Bomb& bomb) : Order(bomb, 0) {}
@@ -460,10 +474,12 @@ Bomb::Bomb(const Bomb& bomb) : Order(bomb, 0) {}
 // constructor to bomb half the armies in target territory.
 // playerID and current correspond to the player who issued this order
 // the player object is used to prevent attack is diplomacy status is present
-Bomb::Bomb(const std::string& playerID, Territory* target, Player* const current) : Order("BOMB", 0) {
-    this->playerID = playerID;
-    this->target = target;
-    this->current = current;
+Bomb::Bomb(const std::string& playerID, Territory* target,
+           Player* const current)
+    : Order("BOMB", 0) {
+  this->playerID = playerID;
+  this->target = target;
+  this->current = current;
 }
 
 // clone function
@@ -472,31 +488,33 @@ Bomb* Bomb::clone() { return new Bomb(*this); }
 // validates order
 bool Bomb::validate() {
   std::cout << " Validating order..." << std::endl;
-  //don't bomb if target territory belongs to current player or if diplomacy status exists with target player.
-  if (target == nullptr || target->OwnedBy.compare(playerID) == 0 || !current->set.empty() &&
-      current->set.find(target->OwnedBy) != current->set.end())
-      return false;
+  // don't bomb if target territory belongs to current player or if diplomacy
+  // status exists with target player.
+  if (target == nullptr || target->OwnedBy.compare(playerID) == 0 ||
+      !current->set.empty() &&
+          current->set.find(target->OwnedBy) != current->set.end())
+    return false;
   else
-      return true;
+    return true;
 }
 
 // executes Bomb order if valid; target territory's armies are halved
 void Bomb::execute() {
   if (validate()) {
-      target->Armies /= 2;
-      std::cout << "[Valid] 1 Bomb order executed. Enemy armies have been halved." << std::endl;
+    target->Armies /= 2;
+    std::cout << "[Valid] 1 Bomb order executed. Enemy armies have been halved."
+              << std::endl;
     setExecuted(true);
   } else {
     // order failed
-    std::cout << " [Invalid] 1 Bomb order not executed."
-              << std::endl;
+    std::cout << " [Invalid] 1 Bomb order not executed." << std::endl;
     setExecuted(false);
   }
 }
 
 // assignment operator
 Bomb& Bomb::operator=(const Bomb& o) {
-    Order::operator=(o);
+  Order::operator=(o);
   setName("- Bomb target country -");
   return *this;
 }
@@ -529,11 +547,14 @@ Blockade::Blockade(const Blockade& blockade) : Order(blockade, 3) {
 }
 
 // constructor; double friendly territory and transform it to neutral
-// - playerID is the player who issued this order. Can only be played with the blockade card.
-// - after execution, the territory need to be removed from the player's list as it's now neutral.
-Blockade::Blockade(const std::string& playerID, Territory* src) : Order("BLOCKADE", 3) {
-    this->playerID = playerID;
-    this->src = src;
+// - playerID is the player who issued this order. Can only be played with the
+// blockade card.
+// - after execution, the territory need to be removed from the player's list as
+// it's now neutral.
+Blockade::Blockade(const std::string& playerID, Territory* src)
+    : Order("BLOCKADE", 3) {
+  this->playerID = playerID;
+  this->src = src;
 }
 
 // clone function
@@ -543,9 +564,9 @@ Blockade* Blockade::clone() { return new Blockade(*this); }
 bool Blockade::validate() {
   std::cout << " Validating order..." << std::endl;
   if (src == nullptr || src->OwnedBy.compare(playerID) != 0)
-      return false;
+    return false;
   else
-      return true;
+    return true;
 }
 
 // executes Blockade order if valid
@@ -555,8 +576,7 @@ void Blockade::execute() {
     src->OwnedBy = "neutral";
     std::cout << "[Valid] 1 Blockade order executed." << std::endl;
     setExecuted(true);
-  } 
-  else {
+  } else {
     // order failed
     std::cout << "[Blockade] Cannot blockade target territory. Blockade order "
                  "not executed."
@@ -567,7 +587,7 @@ void Blockade::execute() {
 
 // assignment operator
 Blockade& Blockade::operator=(const Blockade& o) {
-    Order::operator=(o);
+  Order::operator=(o);
   setName("- Blockade target country -");
   return *this;
 }
@@ -599,14 +619,14 @@ Airlift::Airlift() : Order("AIRLIFT", 2){};
 // copy constructor
 Airlift::Airlift(const Airlift& airlift) : Order(airlift, 2) {}
 
-/* constructor; airlifts armies from source territory to target territory. different from advance in that
-*               the territories do not have to be adjacent.
-*  - armyNb is only returned if remove() is used on the order.
-*  - if an enemy territory is successfully conquered, its OwnedBy will be updated, but it then
-*     needs to be added to the player's list.
-*
-* parameters:
-*   playerID: current player's PID
+/* constructor; airlifts armies from source territory to target territory.
+ * different from advance in that the territories do not have to be adjacent.
+ *  - armyNb is only returned if remove() is used on the order.
+ *  - if an enemy territory is successfully conquered, its OwnedBy will be
+ * updated, but it then needs to be added to the player's list.
+ *
+ * parameters:
+ *   playerID: current player's PID
  *  armyNb  : number of armies to advance
  *  src     : starting point
  *  target  : the target territory to advance to
@@ -614,14 +634,15 @@ Airlift::Airlift(const Airlift& airlift) : Order(airlift, 2) {}
  *  current : pointer to player who issued this order
  *  deck    : pointer to deck of the game, used to give a card to player
  */
-Airlift::Airlift(const std::string& playerID, const int& armyNb, Territory* src, Territory* target, 
-    Player* const current, Deck* const deck) : Order("AIRLIFT", 2) {
-    this->playerID = playerID;
-    this->armyNb = armyNb;
-    this->src = src;
-    this->target = target;
-    this->current = current;
-    this->deck = deck;
+Airlift::Airlift(const std::string& playerID, const int& armyNb, Territory* src,
+                 Territory* target, Player* const current, Deck* const deck)
+    : Order("AIRLIFT", 2) {
+  this->playerID = playerID;
+  this->armyNb = armyNb;
+  this->src = src;
+  this->target = target;
+  this->current = current;
+  this->deck = deck;
 }
 
 // clone function
@@ -632,15 +653,17 @@ bool Airlift::validate() {
   std::cout << " Validating order..." << std::endl;
   if (src == nullptr || target == nullptr || armyNb <= 0 ||
       armyNb > src->Armies || src->OwnedBy.compare(playerID) != 0) {
-      std::cout << "OK";
-      return false;
+    std::cout << "OK";
+    return false;
   }
 
-  //return false if target territory's owner and current owner are on diplomatic status (negotiation)
-  if (!current->set.empty() && current->set.find(target->OwnedBy) != current->set.end()) {
-      std::cout << " --> Diplomacy status has prevented an attack between " <<
-          playerID << " and " << target->OwnedBy << "." << std::endl;
-      return false;
+  // return false if target territory's owner and current owner are on
+  // diplomatic status (negotiation)
+  if (!current->set.empty() &&
+      current->set.find(target->OwnedBy) != current->set.end()) {
+    std::cout << " --> Diplomacy status has prevented an attack between "
+              << playerID << " and " << target->OwnedBy << "." << std::endl;
+    return false;
   }
 
   return true;
@@ -648,83 +671,91 @@ bool Airlift::validate() {
 
 // executes Airlift order if valid
 void Airlift::execute() {
-    if (validate()) {
-        //if target territory is also owned by user or has 0 armies, simply move armies there
-        if (target->OwnedBy.compare(playerID) == 0 || target->Armies == 0) {
-            target->Armies += armyNb;
-            // subtract sent armies from original
-            src->Armies -= armyNb;
-            target->OwnedBy = playerID;
-            std::cout << "[Valid] 1 Airlift order executed. Armies have been flown to new territory." << std::endl;
-        }
-        //if target territory not owned by user, attack initiated
-        else {
-            int armySent = armyNb; //used if attacker won to subtract from src
-            std::default_random_engine generator;
-            std::uniform_int_distribution<int> distribution(1, 100);
-            std::cout << " --> Initiating attack!" << std::endl;
-
-            //initiating attack; loops through number of armies for each territory.
-            //each army has a probability to kill off the other, the first
-            //territory that reaches zero armies left loses.
-            int result1{}, result2{};
-            while (target->Armies > 0 && armyNb > 0) {
-                int targetArmies = target->Armies;
-                //each attacking army has 60% chance of killing
-                for (int i = 0; i < armyNb; i++) {
-                    result1 = distribution(generator);
-                    if (result1 <= 60)
-                        target->Armies -= 1;
-                }
-                //each defending army has 70% chance of killing
-                for (int i = 0; i < targetArmies; i++) {
-                    result2 = distribution(generator);
-                    if (result2 <= 70)
-                        armyNb -= 1;
-                }
-            }
-            //after attacked finished; possible results from the attack
-            if (target->Armies <= 0 && armyNb <= 0) {
-                //if both lost all their armies during the attack
-                target->Armies = 0;
-                src->Armies -= armySent;
-                target->OwnedBy = "neutral";
-                std::cout << "[Valid] 1 Airlift order executed. Both territories lost their armies. Target"
-                    << " territory became neutral." << std::endl;
-            }
-            else if (target->Armies <= 0) {
-                //if attacker won
-                std::cout << " --> " << armyNb << " army/armies from " << playerID << " were sacrificed in battle." << std::endl;
-                std::cout << " --> " << target->OwnedBy << "'s army/armies have been eliminated. Press F to pay respects." << std::endl;
-                std::cout << " --> ";
-                target->Armies = armyNb;
-                target->OwnedBy = playerID;
-                src->Armies -= armySent;
-                //give new card to player's hand if not given yet this turn
-                if (current->cardNotGiven) {
-                    current->HandOfCards->add(*deck->draw(*current->HandOfCards).getType());
-                    current->cardNotGiven = false;
-                }
-                std::cout << "[Valid] 1 Airlift order executed. Target territory captured by " << playerID << "." << std::endl;
-            }
-            else if (armyNb <= 0) {
-                //if defender won
-                src->Armies -= armySent;
-                std::cout << "[Valid] 1 Airlift order executed. Failed to capture target territory." << std::endl;
-            }
-        }
-        setExecuted(true);
+  if (validate()) {
+    // if target territory is also owned by user or has 0 armies, simply move
+    // armies there
+    if (target->OwnedBy.compare(playerID) == 0 || target->Armies == 0) {
+      target->Armies += armyNb;
+      // subtract sent armies from original
+      src->Armies -= armyNb;
+      target->OwnedBy = playerID;
+      std::cout << "[Valid] 1 Airlift order executed. Armies have been flown "
+                   "to new territory."
+                << std::endl;
     }
+    // if target territory not owned by user, attack initiated
     else {
-        // order failed
-        std::cout << "[Invalid] 1 Airlift order not executed." << std::endl;
-        setExecuted(false);
+      int armySent = armyNb;  // used if attacker won to subtract from src
+      std::default_random_engine generator;
+      std::uniform_int_distribution<int> distribution(1, 100);
+      std::cout << " --> Initiating attack!" << std::endl;
+
+      // initiating attack; loops through number of armies for each territory.
+      // each army has a probability to kill off the other, the first
+      // territory that reaches zero armies left loses.
+      int result1{}, result2{};
+      while (target->Armies > 0 && armyNb > 0) {
+        int targetArmies = target->Armies;
+        // each attacking army has 60% chance of killing
+        for (int i = 0; i < armyNb; i++) {
+          result1 = distribution(generator);
+          if (result1 <= 60) target->Armies -= 1;
+        }
+        // each defending army has 70% chance of killing
+        for (int i = 0; i < targetArmies; i++) {
+          result2 = distribution(generator);
+          if (result2 <= 70) armyNb -= 1;
+        }
+      }
+      // after attacked finished; possible results from the attack
+      if (target->Armies <= 0 && armyNb <= 0) {
+        // if both lost all their armies during the attack
+        target->Armies = 0;
+        src->Armies -= armySent;
+        target->OwnedBy = "neutral";
+        std::cout << "[Valid] 1 Airlift order executed. Both territories lost "
+                     "their armies. Target"
+                  << " territory became neutral." << std::endl;
+      } else if (target->Armies <= 0) {
+        // if attacker won
+        std::cout << " --> " << armyNb << " army/armies from " << playerID
+                  << " were sacrificed in battle." << std::endl;
+        std::cout
+            << " --> " << target->OwnedBy
+            << "'s army/armies have been eliminated. Press F to pay respects."
+            << std::endl;
+        std::cout << " --> ";
+        target->Armies = armyNb;
+        target->OwnedBy = playerID;
+        src->Armies -= armySent;
+        // give new card to player's hand if not given yet this turn
+        if (current->cardNotGiven) {
+          current->HandOfCards->add(
+              *deck->draw(*current->HandOfCards).getType());
+          current->cardNotGiven = false;
+        }
+        std::cout
+            << "[Valid] 1 Airlift order executed. Target territory captured by "
+            << playerID << "." << std::endl;
+      } else if (armyNb <= 0) {
+        // if defender won
+        src->Armies -= armySent;
+        std::cout << "[Valid] 1 Airlift order executed. Failed to capture "
+                     "target territory."
+                  << std::endl;
+      }
     }
+    setExecuted(true);
+  } else {
+    // order failed
+    std::cout << "[Invalid] 1 Airlift order not executed." << std::endl;
+    setExecuted(false);
+  }
 }
 
 // assignment operator
 Airlift& Airlift::operator=(const Airlift& o) {
-    Order::operator=(o);
+  Order::operator=(o);
   setName("- Airlift to target country -");
   return *this;
 }
@@ -755,14 +786,15 @@ Negotiate::Negotiate() : Order("NEGOTIATE", 0) {}
 Negotiate::Negotiate(const Negotiate& n) : Order(n, 0) {}
 
 /* constructor; prevent further attacks between two players for the turn.
-*  Negotiation can only be created with diplomacy card.
+ *  Negotiation can only be created with diplomacy card.
  * - current:  the current player who created this order
  * - player:   the enemy player to negotiate with
  */
-Negotiate::Negotiate(Player* const current, Player* const enemy) : Order("NEGOTIATE", 0) {
-    this->playerID = current->PID;
-    this->current = current;
-    this->enemy = enemy;
+Negotiate::Negotiate(Player* const current, Player* const enemy)
+    : Order("NEGOTIATE", 0) {
+  this->playerID = current->PID;
+  this->current = current;
+  this->enemy = enemy;
 }
 
 // clone function
@@ -772,31 +804,30 @@ Negotiate* Negotiate::clone() { return new Negotiate(*this); }
 bool Negotiate::validate() {
   std::cout << " Validating order...";
   if (enemy == nullptr || enemy->PID.compare(playerID) == 0)
-      return false;
+    return false;
   else
-      return true;
+    return true;
 }
 
 // executes Negotiate order if valid
 void Negotiate::execute() {
   if (validate()) {
-    //insert the current player ID into diplomacy set of enemy player
+    // insert the current player ID into diplomacy set of enemy player
     enemy->set.insert(playerID);
-    //insert the enemy ID into diplomacy set of current player
+    // insert the enemy ID into diplomacy set of current player
     current->set.insert(enemy->PID);
     std::cout << "[Valid] 1 Negotiate order executed." << std::endl;
     setExecuted(true);
   } else {
-    std::cout
-        << "[Invalid] 1 Negotiate/Diplomacy order not executed."
-        << std::endl;
+    std::cout << "[Invalid] 1 Negotiate/Diplomacy order not executed."
+              << std::endl;
     setExecuted(false);
   }
 }
 
 // assignment operator function
 Negotiate& Negotiate::operator=(const Negotiate& n) {
-    Order::operator=(n);
+  Order::operator=(n);
   setName("- Negotiate with target player -");
   return *this;
 }

@@ -21,6 +21,7 @@
 
 #include "Orders.h"
 
+class Player;
 class Card;
 class Hand;
 class Deck;
@@ -48,7 +49,7 @@ class Card {
 
   // functions
   CardType* getType();
-  void Play(Hand  &h, OrderList &list, Deck& d);
+  void Play(Player & p, Hand& h, Deck& d);
 
   // operator overloading
   friend std::ostream& operator<<(std::ostream& out, const Card& card);
@@ -66,10 +67,11 @@ class Hand {
   ~Hand();
 
   // functions
-  void add(CardType const &type);
+  void add(CardType const& type);
   void remove(int index);
   int find(Card c);
   Card returnByPos(int pos);
+  int size();
 
   // operator overloading
   friend std::ostream& operator<<(std::ostream& out, const Hand& h);

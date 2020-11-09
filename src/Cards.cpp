@@ -17,6 +17,8 @@
 
 #include <stdlib.h>
 
+#include "Player.h"
+
 // Card class implementation
 
 // Constructors
@@ -69,7 +71,7 @@ CardType* Card::getType() { return (this->type); }
  * @param d The object Deck that the card will be return to.
  * @return void
  */
-void Card::Play(Hand &h, OrderList &list, Deck& d) {
+void Card::Play(Player& p, Hand& h, Deck& d) {
   int index = h.find(*this);
   if (index > -1) {
     CardType* type = (getType());
@@ -81,19 +83,19 @@ void Card::Play(Hand &h, OrderList &list, Deck& d) {
 
     switch (*getType()) {
       case CardType::BOMB:
-        list.addToList(new Bomb());
+        p.createBomb();
         break;
       case CardType::AIRLIFT:
-        list.addToList(new Airlift());
+        p.createAirlift();
         break;
       case CardType::BLOCKADE:
-        list.addToList(new Blockade());
+        p.createBlockade();
         break;
       case CardType::DIPLOMACY:
-        list.addToList(new Negotiate());
+        p.createNegotiate();
         break;
       case CardType::REINFORCEMENT:
-        list.addToList(new Deploy());
+        p.createDeploy();
         break;
     }
 
@@ -112,8 +114,8 @@ void Card::Play(Hand &h, OrderList &list, Deck& d) {
 Card& Card::operator=(const Card& c) {
   // check if two pointers dont point to the same address (not self assignment);
   if (this != &c) {
-     delete this->type;  
-     this->type = new CardType(*c.type);
+    delete this->type;
+    this->type = new CardType(*c.type);
   }
   return *this;
 }
@@ -192,7 +194,7 @@ Hand::~Hand() {
  * @param type A CardType
  * @return void
  */
-void Hand::add(CardType const &type) {
+void Hand::add(CardType const& type) {
   if (this->hand.size() < 6) {
     hand.emplace_back(new Card(type));
   } else {
@@ -212,7 +214,7 @@ void Hand::remove(int index) {
   }
 
   auto it = this->hand.end() - 1;
-  delete* it;
+  delete *it;
   this->hand.erase(it);
 }
 
@@ -248,6 +250,9 @@ Card Hand::returnByPos(int pos) {
     return *this->hand.at(pos);
   }
 }
+
+int Hand::size() { return hand.size(); }
+
 // Operator overloading
 
 /**
@@ -316,13 +321,13 @@ Deck::Deck(int deckSize) {
  */
 Deck::Deck(const Deck& d) {
   while (!deck.empty()) {
-		Card* p = deck.front();
-		deck.pop();
+    Card* p = deck.front();
+    deck.pop();
 
-		// memory should be freed here
-		delete p;
-		p = nullptr;
-	}
+    // memory should be freed here
+    delete p;
+    p = nullptr;
+  }
 
   size = new int(*d.size);
   std::queue<Card*> q = (d.deck);
@@ -338,13 +343,13 @@ Deck::Deck(const Deck& d) {
  */
 Deck::~Deck() {
   while (!deck.empty()) {
-		Card* p = deck.front();
-		deck.pop();
+    Card* p = deck.front();
+    deck.pop();
 
-		// memory should be freed here
-		delete p;
-		p = nullptr;
-	}
+    // memory should be freed here
+    delete p;
+    p = nullptr;
+  }
   delete size;
   size = nullptr;
 }
@@ -366,17 +371,17 @@ void Deck::add(CardType const type) { deck.push(new Card(type)); }
  * @param h A Hand object
  * @return A Card object
  */
-Card Deck::draw(Hand &h) {
+Card Deck::draw(Hand& h) {
   // draw the card on top of the deck and put it in the hand
   Card chosen = *this->deck.front();
   CardType* t = chosen.getType();
   std::cout << "drawing a card of type " << chosen << std::endl;
   // memory should be freed here
   Card* p = deck.front();
-	deck.pop();	
-	delete p;
-	p = nullptr;
-  
+  deck.pop();
+  delete p;
+  p = nullptr;
+
   h.add(*t);
   return chosen;
 }
@@ -399,13 +404,13 @@ Deck& Deck::operator=(const Deck& d) {
   if (this != &d) {
     // empty the current queue
     while (!deck.empty()) {
-			Card* p = deck.front();
-			deck.pop();
+      Card* p = deck.front();
+      deck.pop();
 
-			// memory should be freed here
-			delete p;
-			p = nullptr;
-		}
+      // memory should be freed here
+      delete p;
+      p = nullptr;
+    }
 
     *size = *d.size;
     std::queue<Card*> q = (d.deck);
