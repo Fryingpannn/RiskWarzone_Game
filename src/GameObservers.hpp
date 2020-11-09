@@ -20,6 +20,7 @@
 #include <algorithm>
 #include <iostream>
 #include <vector>
+#include <list>
 
 enum class State_enum {
     DEFAULT_NO_STATE = 0,
@@ -40,65 +41,56 @@ struct State
 
 class Observer
 {
+protected:
+    Observer();
 public:
-    virtual void update(State_enum new_state) = 0;
-    virtual ~Observer();
+    virtual void Update() = 0;
+    ~Observer();
 };
 
 class Subject
 {
 private:
-    State_enum state = State_enum::DEFAULT_NO_STATE;
+    State_enum current_state = State_enum::DEFAULT_NO_STATE;
     // int state = 0;
 
 protected:
-    std::vector<Observer *> obs;
+    std::list<Observer *> *_observers;
 
 public:
-    void attach(Observer *o);
+    void Attach(Observer *o);
 
-    void detach(Observer *o);
+    void Detach(Observer *o);
 
-    void notify(State_enum new_state);
+    void Notify();
+    Subject();
     ~Subject();
+
+    void setState(State_enum new_state);
+    State_enum getState();
 };
 
-// class ConcreteSubject : public Subject
-// {
-//     int state = 0;
 
-// public:
-//     ConcreteSubject(int i) : state(i){};
-
-//     void setState(int i);
-
-//     int getState() { return state; };
-
-//     void notify();
-
-//     virtual ~ConcreteSubject();
-// };
-
-class PhaseObserver : Observer
+class PhaseObserver : public Observer
 {
-    Subject *phase_subject;
+    Subject *_phase_subject;
 
 public:
     PhaseObserver(Subject *passed_phase_subject);
 
-    void update(State_enum new_state);
+    void Update();
 
     ~PhaseObserver();
 };
 
 class GameStatisticsObserver : Observer
 {
-    Subject *game_observer_subject;
+    Subject *_game_observer_subject;
 
 public:
     GameStatisticsObserver(Subject *passed_game_observer_subject);
 
-    void update(State_enum new_state);
+    void Update();
 
     ~GameStatisticsObserver();
 };

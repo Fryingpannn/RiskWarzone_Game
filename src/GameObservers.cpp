@@ -17,101 +17,92 @@
 #include <algorithm>
 #include <iostream>
 #include <vector>
+#include <list>
+#include "Player.h"
+
 #include "GameObservers.hpp"
 
-Observer::~Observer() {
+/////////////////////////////////////////////
+// Observer Class
+/////////////////////////////////////////////
+
+Observer::Observer()
+{
+    // std::cout << "Observer constructor" << std::endl;
+}
+
+Observer::~Observer()
+{
     std::cout << "Observer destructor" << std::endl;
 }
 
-void Subject::attach(Observer *o) { obs.push_back(o); }
-
-void Subject::detach(Observer *o)
+/////////////////////////////////////////////
+// Subject Class
+/////////////////////////////////////////////
+Subject::Subject()
 {
-    obs.erase(std::remove(obs.begin(), obs.end(), o), obs.end());
+    _observers = new std::list<Observer *>;
+}
+void Subject::Attach(Observer *o)
+{
+    _observers->push_back(o);
 }
 
-void Subject::notify(State_enum new_state)
+void Subject::Detach(Observer *o)
 {
-    // Copy the current observer list to a clone to avoid one being deleted mid-operation
-    // std::vector<Observer *> obs_clone;
-    // for (auto obs_item : obs)
-    //     obs_clone.push_back(new Observer(*obs_item));
+    _observers->remove(o);
+}
 
-    // Update all the observers
-    for (auto o : obs)
+void Subject::Notify()
+{
+    std::list<Observer *>::iterator i = _observers->begin();
+    for (; i != _observers->end(); ++i)
     {
-        o->update(new_state);
+        (*i)->Update();
     }
-
-    // Delete the clone
-    // for (auto o : obs_clone)
-    //     delete o;
-    // obs_clone.clear();
 }
 
 Subject::~Subject()
 {
     std::cout << "Deleting Observer Subject" << std::endl;
+    delete _observers;
 }
 
+void Subject::setState(State_enum new_state)
+{
+    current_state = new_state;
+};
+State_enum Subject::getState()
+{
+    State_enum returnState = current_state;
+    return returnState;
+};
 
-
-// class ConcreteSubject : public Subject
-// {
-//     int state = 0;
-
-// public:
-//     ConcreteSubject(int i) : state(i){};
-
-//     void setState(int i) { state = i; };
-
-//     int getState() { return state; };
-
-//     void notify()
-//     {
-//         // Copy the current observer list to a clone to avoid one being deleted mid-operation
-//         std::vector<Observer *> obs_clone;
-//         for (auto obs_item : obs)
-//             obs_clone.push_back(new Observer(*obs_item));
-
-//         // Update all the observers
-//         for (auto o : obs_clone)
-//         {
-//             o->update();
-//         }
-
-//         // Delete the clone
-//         for (auto o : obs_clone)
-//             delete o;
-//         obs_clone.clear();
-//     }
-
-//     virtual ~ConcreteSubject() {
-//         std::cout << "Deleting ConcreteSubject" << std::endl;
-//     }
-// };
+/////////////////////////////////////////////
+// PhaseObserver Class
+/////////////////////////////////////////////
 
 PhaseObserver::PhaseObserver(Subject *passed_phase_subject)
 {
-    phase_subject = passed_phase_subject;
+    _phase_subject = passed_phase_subject;
+    _phase_subject->Attach(this);
 }
 
-void PhaseObserver::update(State_enum new_state)
+void PhaseObserver::Update()
 {
-    
-    std::cout << "Game Statistics Observer Updating" << std::endl;
-    switch (new_state)
+    // std::cout << "Game Statistics Observer Updating" << std::endl;
+    switch (_phase_subject->getState())
     {
-    case State_enum::SETUP_PHASE :
+    case State_enum::SETUP_PHASE:
         std::cout << "[Phase Observer] Setup Phase " << std::endl;
         break;
-    case State_enum::REINFORCEMENT_PHASE :
+    case State_enum::REINFORCEMENT_PHASE:
         std::cout << "[Phase Observer] Reinforcement Phase " << std::endl;
         break;
-    case State_enum::ISSUE_ORDERS_PHASE :
+    case State_enum::ISSUE_ORDERS_PHASE:
         std::cout << "[Phase Observer] Issue Orders Phase " << std::endl;
         break;
-    case State_enum::EXECUTE_ORDERS_PHASE :
+    case State_enum::EXECUTE_ORDERS_PHASE:
         std::cout << "[Phase Observer] Execute Orders Phase " << std::endl;
         break;
     default:
@@ -122,34 +113,41 @@ void PhaseObserver::update(State_enum new_state)
 PhaseObserver::~PhaseObserver()
 {
     std::cout << "Deleting PhaseObserver" << std::endl;
+    _phase_subject->Detach(this);
 }
+
+/////////////////////////////////////////////
+// Game Statistics Observer Class
+/////////////////////////////////////////////
 
 GameStatisticsObserver::GameStatisticsObserver(Subject *passed_game_observer_subject)
 {
-    game_observer_subject = passed_game_observer_subject;
+    _game_observer_subject = passed_game_observer_subject;
+    _game_observer_subject->Attach(this);
 }
 
-void GameStatisticsObserver::update(State_enum new_state)
+void GameStatisticsObserver::Update()
 {
-    std::cout << "Phase Observer Updating" << std::endl;
+    // std::cout << "Phase Observer Updating" << std::endl;
 
-    switch (new_state)
-    {
-    case State_enum::TERRITORY_CONQUERED :
-        std::cout << "[Game Statistics Observer] Territory Conquered" << std::endl;
-        break;
-    case State_enum::PLAYER_ELIMINATED :
-        std::cout << "[Game Statistics Observer] Player Eliminated" << std::endl;
-        break;
-    case State_enum::PLAYER_OWNS_ALL_TERRITORIES :
-        std::cout << "[Game Statistics Observer] Player Owns All Territories. Game Won." << std::endl;
-        break;    
-    default:
-        break;
-    }
+    // switch (new_state)
+    // {
+    // case State_enum::TERRITORY_CONQUERED:
+    //     std::cout << "[Game Statistics Observer] Territory Conquered" << std::endl;
+    //     break;
+    // case State_enum::PLAYER_ELIMINATED:
+    //     std::cout << "[Game Statistics Observer] Player Eliminated" << std::endl;
+    //     break;
+    // case State_enum::PLAYER_OWNS_ALL_TERRITORIES:
+    //     std::cout << "[Game Statistics Observer] Player Owns All Territories. Game Won." << std::endl;
+    //     break;
+    // default:
+    //     break;
+    // }
 }
 
 GameStatisticsObserver::~GameStatisticsObserver()
 {
     std::cout << "Deleting GameStatisticsObserver." << std::endl;
+    _game_observer_subject->Detach(this);
 }

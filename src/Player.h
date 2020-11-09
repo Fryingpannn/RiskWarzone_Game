@@ -21,6 +21,7 @@
 #include "Cards.h"
 #include "Orders.h"
 #include "Map.h"
+#include "GameObservers.hpp"
 
 #ifndef H_MAP
 #define H_MAP
@@ -31,7 +32,7 @@ class Map;
  * A class for the object Player which managers territories, cards and orders
  * owned by a player.
  */
-class Player {
+class Player : public Subject {
  public:
   std::vector<Territory *> Territories;
   Hand *HandOfCards;
@@ -57,4 +58,5 @@ class Player {
   void issueOrder(Map &map, Deck &deckOfCards);
   friend std::ostream &operator<<(std::ostream &out, const Player &p);
   ~Player();
+  
 };
