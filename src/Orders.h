@@ -82,7 +82,7 @@ public:
 	const int priority = 0;
 	//constructors
 	Order();
-	Order(const Order& copy);
+	Order(const Order& copy, const int& priority);
 	//constructor to set name data member, used by subclass constructors
 	Order(const std::string& name, const int& priority);
 	//clone function for polymorphic classes used by OrderList's copy constructor
@@ -114,7 +114,7 @@ public:
 	Deploy();
 	Deploy(const Deploy&);
 	//playerID is the player who issued this order
-	Deploy(const std::string& playerID, const int& armyNb, Territory* target);
+	Deploy(const std::string& playerID, const int& armyNb, Territory* target, Player* const current);
 	//clone function for polymorphic classes
 	Deploy* clone() override;
 	//order functions

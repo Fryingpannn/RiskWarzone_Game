@@ -166,7 +166,7 @@ Order::Order() {}
 
 // copy constructor; the pointers need to be shallow copies in order to track the changes being
 // made in the rest of the game.
-Order::Order(const Order& copy) {
+Order::Order(const Order& copy, const int& priority) : priority(priority) {
     name = copy.name;
     armyNb = copy.armyNb;
     playerID = copy.playerID;
@@ -180,7 +180,7 @@ Order::Order(const Order& copy) {
 }
 
 // param constructor to set the name variable of Order from subclasses
-Order::Order(const std::string& name, const int& priority) : priority(priority) { setName(name); }
+Order::Order(const std::string& name, const int& priority) : name(name), priority(priority) { }
 
 // assignment operator; the pointers need to be shallow copies in order to track the changes being
 // made in the rest of the game.
@@ -220,22 +220,20 @@ Order::~Order() { std::cout << "Cleaning up..." << std::endl; }
  * ----------------------------------*/
 
 // default constructor
-Deploy::Deploy() : Order("- Deploy armies -", 1) { };
+Deploy::Deploy() : Order("DEPLOY", 1) { }
 
 // deploy copy constructor
-Deploy::Deploy(const Deploy& deploy) : Order(deploy) {
-  setName("- Deploy armies -");
-}
+Deploy::Deploy(const Deploy& deploy) : Order(deploy, 1) { }
 
 /* -constructor to deploy armies to target territory (note: territory passed is a pointer).
- * -playerID is the player who issued this order
- * -armyNb needs to be deducted from player's own reinf. pool
+ * -current is the player who issued this order
  * -the armyNb is only returned if remove() is used on the order.
  */
-Deploy::Deploy(const std::string& playerID, const int& armyNb, Territory* target) {
+Deploy::Deploy(const std::string& playerID, const int& armyNb, Territory* target, Player* const current) : Order("DEPLOY", 1) {
     this->armyNb = armyNb;
     this->target = target;
     this->playerID = playerID;
+    this->current = current;
 }
 
 // clone function for Deploy
@@ -256,6 +254,7 @@ void Deploy::execute() {
     //add the armies to target territory if it belongs to the player
     if (validate()) {
         target->Armies += armyNb;
+        current->ReinforcementPool -= armyNb;
         std::cout << "[Valid] 1 Deploy order executed." << std::endl;
     }
     else
@@ -287,12 +286,10 @@ Deploy::~Deploy() { std::cout << "Destroying deploy order." << std::endl; }
  * ----------------------------------*/
 
 // default constructor
-Advance::Advance() : Order("- Advance armies -", 0) {}
+Advance::Advance() : Order("ADVANCE", 0) {}
 
 // copy constructor
-Advance::Advance(const Advance& adv) : Order(adv) {
-  setName("- Advance armies -");
-}
+Advance::Advance(const Advance& adv) : Order(adv, 0) { }
 
 /* constructor to advance armies from source territory to target territory.
 *  - armyNb is only returned if remove() is used on the order.
@@ -309,7 +306,7 @@ Advance::Advance(const Advance& adv) : Order(adv) {
  *  deck    : pointer to deck of the game, used to give a card to player
  */
 Advance::Advance(const std::string& playerID, const int& armyNb, Territory* src,
-    Territory* target, Map* map, Player* const current, Deck* const deck) {
+    Territory* target, Map* map, Player* const current, Deck* const deck) : Order("ADVANCE", 0) {
     this->playerID = playerID;
     this->armyNb = armyNb;
     this->src = src;
@@ -454,17 +451,15 @@ Advance::~Advance() { std::cout << "Destroying advance order." << std::endl; }
  * ------------------------------------*/
 
 // default constructor
-Bomb::Bomb() : Order("- Bomb target country -", 0) {};
+Bomb::Bomb() : Order("BOMB", 0) {};
 
 // copy constructor
-Bomb::Bomb(const Bomb& bomb) : Order(bomb) {
-  setName("- Bomb target country -");
-}
+Bomb::Bomb(const Bomb& bomb) : Order(bomb, 0) {}
 
 // constructor to bomb half the armies in target territory.
 // playerID and current correspond to the player who issued this order
 // the player object is used to prevent attack is diplomacy status is present
-Bomb::Bomb(const std::string& playerID, Territory* target, Player* const current) {
+Bomb::Bomb(const std::string& playerID, Territory* target, Player* const current) : Order("BOMB", 0) {
     this->playerID = playerID;
     this->target = target;
     this->current = current;
@@ -525,17 +520,17 @@ Bomb::~Bomb() { std::cout << "Destroying bomb order." << std::endl; }
  * ------------------------------------*/
 
 // default constructor
-Blockade::Blockade() : Order("- Blockade target country -", 3){};
+Blockade::Blockade() : Order("BLOCKADE", 3){};
 
 // copy constructor
-Blockade::Blockade(const Blockade& blockade) : Order(blockade) {
+Blockade::Blockade(const Blockade& blockade) : Order(blockade, 3) {
   setName("- Blockade target country -");
 }
 
 // constructor; double friendly territory and transform it to neutral
 // - playerID is the player who issued this order. Can only be played with the blockade card.
 // - after execution, the territory need to be removed from the player's list as it's now neutral.
-Blockade::Blockade(const std::string& playerID, Territory* src) {
+Blockade::Blockade(const std::string& playerID, Territory* src) : Order("BLOCKADE", 3) {
     this->playerID = playerID;
     this->src = src;
 }
@@ -598,12 +593,10 @@ Blockade::~Blockade() {
  * ------------------------------------*/
 
 // default constructor
-Airlift::Airlift() : Order("- Airlift to target country -", 2){};
+Airlift::Airlift() : Order("AIRLIFT", 2){};
 
 // copy constructor
-Airlift::Airlift(const Airlift& airlift) : Order(airlift) {
-  setName("- Airlift to target country -");
-}
+Airlift::Airlift(const Airlift& airlift) : Order(airlift, 2) {}
 
 /* constructor; airlifts armies from source territory to target territory. different from advance in that
 *               the territories do not have to be adjacent.
@@ -620,7 +613,8 @@ Airlift::Airlift(const Airlift& airlift) : Order(airlift) {
  *  current : pointer to player who issued this order
  *  deck    : pointer to deck of the game, used to give a card to player
  */
-Airlift::Airlift(const std::string& playerID, const int& armyNb, Territory* src, Territory* target, Player* const current, Deck* const deck) {
+Airlift::Airlift(const std::string& playerID, const int& armyNb, Territory* src, Territory* target, 
+    Player* const current, Deck* const deck) : Order("AIRLIFT", 2) {
     this->playerID = playerID;
     this->armyNb = armyNb;
     this->src = src;
@@ -754,19 +748,17 @@ Airlift::~Airlift() { std::cout << "Destroying airlift order." << std::endl; }
  * ------------------------------------*/
 
 // default constructor
-Negotiate::Negotiate() : Order("- Negotiate with target player -", 0) {}
+Negotiate::Negotiate() : Order("NEGOTIATE", 0) {}
 
 // copy constructor
-Negotiate::Negotiate(const Negotiate& n) : Order(n) {
-  setName("- Negotiate with target player -");
-}
+Negotiate::Negotiate(const Negotiate& n) : Order(n, 0) {}
 
 /* constructor; prevent further attacks between two players for the turn.
 *  Negotiation can only be created with diplomacy card.
  * - current:  the current player who created this order
  * - player:   the enemy player to negotiate with
  */
-Negotiate::Negotiate(Player* const current, Player* const enemy) {
+Negotiate::Negotiate(Player* const current, Player* const enemy) : Order("NEGOTIATE", 0) {
     this->playerID = current->PID;
     this->current = current;
     this->enemy = enemy;
