@@ -15,6 +15,7 @@
 
 #include "Orders.h"
 #include "Map.h"
+#include "Player.h"
 #include <random>
 
 /*---------------------------------- OrderList class

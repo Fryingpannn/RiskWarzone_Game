@@ -22,6 +22,7 @@
 
 #include "OrdersDriver.h"
 #include "Orders.h"
+#include "Player.h"
 #include "Map.h"
 #include "Cards.h"
 

@@ -16,6 +16,7 @@
 #include "MapDriver.h"
 #include "Map.h"
 #include <stdlib.h>
+#include <iostream>
 
 void mapDriver()
 {
