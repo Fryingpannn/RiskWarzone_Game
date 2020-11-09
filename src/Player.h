@@ -24,11 +24,11 @@
 #include "Map.h"
 #include "GameObservers.hpp"
 
-#ifndef H_MAP
-#define H_MAP
+
 struct Territory;
 class Map;
-#endif
+class Deck;
+
 /**
  * A class for the object Player which managers territories, cards and orders
  * owned by a player.
@@ -69,6 +69,13 @@ class Player : public Subject {
   void advanceAttack();
   void advanceTransfer();
   void playCard();
+
+  // Wrapper functions for orders from cards
+  void createBomb();
+  void createAirlift();
+  void createBlockade();
+  void createNegotiate();
+  void createDeploy();
 
   friend std::ostream &operator<<(std::ostream &out, const Player &p);
   ~Player();

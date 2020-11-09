@@ -42,7 +42,7 @@ Player::Player(std::vector<Territory *> territories, Hand handOfCards,
                OrderList listOfOrders, std::string pid) {
   std::cout << "Regular Player constructor" << std::endl;
 
-  this->PID = pid; //<=========== HERE
+  this->PID = pid;  //<=========== HERE
   // Declare those territories as belonging to this player
   for (auto &i : territories) {
     i->OwnedBy = this->PID;
@@ -197,9 +197,9 @@ void Player::issueOrder() {
     std::string input{"x"};
 
     while (!validInput) {
-      std::cout << "Would you like to transfer [t] armies or attack [a] a "
-                   "neighboring enemy?\n";
+      std::cout << "Pick [t] to transfer armies or [a] to attack: ";
       std::cin >> input;
+      std::cout << "\n";
       if (std::cin.fail()) {
         std::cin.clear();
         std::string discard;
@@ -239,15 +239,17 @@ void Player::reinforce() {
   auto toDefendMap = this->toDefend();
   // Print territories that can be defended
   for (auto &t : toDefendMap) {
-    std::cout << "[" << t.first << "]: " << t.second->Name << std::endl;
+    std::cout << "[" << t.first << "]: " << t.second->Name
+              << " - Armies: " << t.second->Armies << std::endl;
   }
 
   // Ask player to chose where to deploy armies
   int indexToReinforce{-1};
   bool validInput{false};
   while (!validInput) {
-    std::cout << "Pick the index of the territory you wish to reinforce\n";
+    std::cout << "Pick the index of the territory you wish to reinforce: ";
     std::cin >> indexToReinforce;
+    std::cout << "\n";
     if (std::cin.fail()) {
       std::cin.clear();
       std::string discard;
@@ -268,11 +270,12 @@ void Player::reinforce() {
   validInput = false;
   int armies{0};
   while (!validInput) {
-    std::cout << "You have " << ReinforcementPool
-              << " armies left to deploy.\n";
     std::cout << "Pick the number of armies to reinforce "
-              << toDefendMap.at(indexToReinforce)->Name << " with.\n";
+              << toDefendMap.at(indexToReinforce)->Name << " with.\n"
+              << "You have " << ReinforcementPool
+              << " armies left to deploy.\nNumber of armies: ";
     std::cin >> armies;
+    std::cout << "\n";
     if (std::cin.fail()) {
       std::cin.clear();
       std::string discard;
@@ -289,8 +292,7 @@ void Player::reinforce() {
   }
 
   // Perform the deploy order
-  // TODO change logic to deploy on list of territories from to defend
-  auto *order = new Deploy();
+  auto *order = new Deploy(this->PID, armies, toDefendMap.at(indexToReinforce));
   this->ListOfOrders->addToList(order);
   this->ReinforcementPool -= armies;
 
@@ -312,8 +314,10 @@ void Player::advanceAttack() {
   int indexToAttack{-1};
   bool validInput{false};
   while (!validInput) {
-    std::cout << "Pick the index of the territory you wish to attack\n";
+    std::cout << "Pick the index of the territory you wish to attack:";
     std::cin >> indexToAttack;
+    std::cout << "\n";
+
     if (std::cin.fail()) {
       std::cin.clear();
       std::string discard;
@@ -350,8 +354,10 @@ void Player::advanceAttack() {
   int indexToAttackWith{-1};
   validInput = false;
   while (!validInput) {
-    std::cout << "Pick the index of the territory you wish to attack with\n";
+    std::cout << "Pick the index of the territory you wish to attack with: ";
     std::cin >> indexToAttackWith;
+    std::cout << "\n";
+
     if (std::cin.fail()) {
       std::cin.clear();
       std::string discard;
@@ -369,8 +375,34 @@ void Player::advanceAttack() {
     }
   }
 
-  // TODO finalize order
-  auto *order = new Advance();
+  int nbArmies{-1};
+  validInput = false;
+  while (!validInput) {
+    std::cout
+        << "How many armies do you wish to attack with? You can choose up to "
+        << territoriesThatCanAttack.at(indexToAttackWith)->Armies
+        << "\nNumber of armies: ";
+    std::cin >> nbArmies;
+    std::cout << "\n";
+
+    if (std::cin.fail()) {
+      std::cin.clear();
+      std::string discard;
+      getline(std::cin, discard);
+      std::cout << "Enter an INTEGER value\n";
+    } else {
+      if (nbArmies < 0 ||
+          nbArmies > territoriesThatCanAttack.at(indexToAttackWith)->Armies) {
+        std::cout << nbArmies << " is not an acceptable input. Try again.";
+      } else {
+        validInput = true;
+      }
+    }
+  }
+
+  auto *order = new Advance(
+      this->PID, nbArmies, territoriesThatCanAttack.at(indexToAttackWith),
+      toAttackMap.at(indexToAttack), this->MainMap, this, this->DeckOfCards);
   this->ListOfOrders->addToList(order);
 }
 
@@ -389,8 +421,10 @@ void Player::advanceTransfer() {
   bool validInput{false};
   while (!validInput) {
     std::cout << "Pick the index of the territory you wish to transfer "
-                 "armies to\n";
+                 "armies to: ";
     std::cin >> indexToTransferTo;
+    std::cout << "\n";
+
     if (std::cin.fail()) {
       std::cin.clear();
       std::string discard;
@@ -427,8 +461,10 @@ void Player::advanceTransfer() {
   int indexToTransferFrom{-1};
   validInput = false;
   while (!validInput) {
-    std::cout << "Pick the index of the territory you wish to attack with\n";
+    std::cout << "Pick the index of the territory you wish to attack with: ";
     std::cin >> indexToTransferFrom;
+    std::cout << "\n";
+
     if (std::cin.fail()) {
       std::cin.clear();
       std::string discard;
@@ -446,8 +482,36 @@ void Player::advanceTransfer() {
     }
   }
 
-  // todo logic of reinforcing new territory
-  auto *order = new Advance();
+  int nbArmies{-1};
+  validInput = false;
+  while (!validInput) {
+    std::cout
+        << "How many armies do you wish to transfer? You can choose up to "
+        << territoriesThatCanGiveArmies.at(indexToTransferFrom)->Armies
+        << "\nNumber of armies: ";
+    std::cin >> nbArmies;
+    std::cout << "\n";
+
+    if (std::cin.fail()) {
+      std::cin.clear();
+      std::string discard;
+      getline(std::cin, discard);
+      std::cout << "Enter an INTEGER value\n";
+    } else {
+      if (nbArmies < 0 ||
+          nbArmies >
+              territoriesThatCanGiveArmies.at(indexToTransferFrom)->Armies) {
+        std::cout << nbArmies << " is not an acceptable input. Try again.";
+      } else {
+        validInput = true;
+      }
+    }
+  }
+
+  auto *order = new Advance(
+      this->PID, nbArmies, territoriesThatCanGiveArmies.at(indexToTransferFrom),
+      toDefendMap.at(indexToTransferTo), this->MainMap, this,
+      this->DeckOfCards);
   this->ListOfOrders->addToList(order);
 }
 
@@ -455,34 +519,48 @@ void Player::advanceTransfer() {
  * Helper function for issuing orders that plays a card.
  */
 void Player::playCard() {
-  // Display the cards in a player's hand.
-  std::cout << "These are the card in your hand:\n";
-  std::cout << *this->HandOfCards << std::endl;
-  std::cout << "Pick the card you wish to play starting from position, where 0 "
-               "is leftmost card.\n";
+  if (this->HandOfCards->size() == 0) {
+    std::cout << "You have no cards in your hand.\n";
+  } else {
+    // Display the cards in a player's hand.
+    std::cout << "These are the card in your hand:\n";
+    std::cout << *this->HandOfCards << std::endl;
 
-  // Ask the player to chose a card to play.
-  bool validInput{false};
-  int input{-1};
-  while (!validInput) {
-    std::cin >> input;
-    if (std::cin.fail()) {
-      std::cin.clear();
-      std::string discard;
-      getline(std::cin, discard);
-      std::cout << "Enter an INTEGER value\n";
-    } else {
-      if (input < 0 || input > this->HandOfCards->size()) {
-        std::cout << "The input " << input << " is not valid. Try again.\n";
+    // Ask the player to chose a card to play.
+    bool validInput{false};
+    int input{-1};
+    while (!validInput) {
+      std::cout
+          << "Pick the card you wish to play starting from position, where 0 "
+             "is leftmost card.\nCard picked: ";
+      std::cin >> input;
+      std::cout << "\n";
+
+      if (std::cin.fail()) {
+        std::cin.clear();
+        std::string discard;
+        getline(std::cin, discard);
+        std::cout << "Enter an INTEGER value\n";
       } else {
-        validInput = true;
+        if (input < 0 || input > this->HandOfCards->size()) {
+          std::cout << "The input " << input << " is not valid. Try again.\n";
+        } else {
+          validInput = true;
+        }
       }
     }
+    auto cardToPlay = this->HandOfCards->returnByPos(input);
+    // Method inside cards class creates the order and adds it to the list
+    cardToPlay.Play(*this, *this->HandOfCards,
+                    *this->DeckOfCards);
   }
-  auto cardToPlay = this->HandOfCards->returnByPos(input);
-  // Method inside cards class creates the order and adds it to the list
-  cardToPlay.Play(*this->HandOfCards, *this->ListOfOrders, *this->DeckOfCards);
 }
+
+void Player::createBomb() {}
+void Player::createAirlift() {}
+void Player::createBlockade() {}
+void Player::createNegotiate() {}
+void Player::createDeploy() {}
 
 /**
  * Destructor of the player object.
@@ -500,4 +578,8 @@ Player::~Player() {
   delete this->ListOfOrders;
   this->HandOfCards = nullptr;
   this->ListOfOrders = nullptr;
+  delete this->MainMap;
+  this->MainMap = nullptr;
+  delete this->DeckOfCards;
+  this->DeckOfCards = nullptr;
 }

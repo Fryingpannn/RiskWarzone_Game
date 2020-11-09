@@ -13,6 +13,12 @@ GameEngine::~GameEngine() {
   for (Player* player : ListOfPlayers) delete player;
 }
 
+/**
+ * Initializes the game with a given map and number of players.
+ * Each player starts with an empty hand of cards. The territories are evenly
+ * distributed among the players. Once this is done, the main game loop runs
+ * until a winner is declared.
+ */
 void GameEngine::Init() {
   // The variable for players input
   int NumberOfPlayers;
@@ -26,7 +32,12 @@ void GameEngine::Init() {
   // the variable for observer input
   std::string InputObserver;
   bool InputObserverNotSucceed = true;
+
+ 
+  /// DEBUG code creates 3 players automatically
+  /// set to false to create your own players!!!
   bool debugMainLoop{true};
+
   if (!debugMainLoop) {
     // the main menu for player to setup how many players and the map they want
     // to use :O
@@ -71,16 +82,17 @@ void GameEngine::Init() {
     }
   } else {
     /// DEBUG CODE TO DELETE
+    /// creates 3 players and chooses map
     NumberOfPlayers = 3;
     MapFileName = "europe.map";
     auto* player1 = new Player();
     player1->PID = "Sandra";
     ListOfPlayers.push_back(player1);
     auto* player2 = new Player();
-    player2->PID = "Ian";
+    player2->PID = "Dog";
     ListOfPlayers.push_back(player2);
     auto* player3 = new Player();
-    player3->PID = "John";
+    player3->PID = "Kuro";
     ListOfPlayers.push_back(player3);
     /// DEBUG CODE TO DELETE
   }
@@ -93,9 +105,13 @@ void GameEngine::Init() {
   while (InputMapNotSucceed) {
     std::cout << "Now tell me the name of the map you want to load? (must be "
                  "in the ./maps/ directory)\n ";
+
+
+    ///  DEBUG CODE choses map previously
     if (!debugMainLoop) {
       std::cin >> MapFileName;
     }
+
     trim(MapFileName);
     MainFile = new MapFile(MapFolderBasePath + MapFileName);
     Result<void> ReadMapFileResult = MainFile->readMapFile();
@@ -140,10 +156,12 @@ void GameEngine::Init() {
   while (InputObserverNotSucceed) {
     std::cout << std::boolalpha;
     std::cout << "1. Phase Observer: " << phaseObserverToggle << std::endl;
-    std::cout << "2. Game Statistics Observer: " << gameStatsObserverToggle << std::endl;
+    std::cout << "2. Game Statistics Observer: " << gameStatsObserverToggle
+              << std::endl;
     std::cout << "Enter your selection ('q' to quit and save your selection): ";
-    std::cin >> InputObserver;
 
+    InputObserver = '1';
+    std::cin >> InputObserver;
 
     if (InputObserver == "1") {
       phaseObserverToggle = !phaseObserverToggle;
@@ -158,13 +176,12 @@ void GameEngine::Init() {
 
   // TODO Create a list of observers to delete at the end of this function
   // std::list<Observer *> observerList;
-  for(auto *player : ListOfPlayers) {
-    if (phaseObserverToggle)
-      PhaseObserver *newPhaseObserver = new PhaseObserver(player);
+  for (auto* player : ListOfPlayers) {
+    if (phaseObserverToggle) auto* newPhaseObserver = new PhaseObserver(player);
     if (gameStatsObserverToggle)
-      GameStatisticsObserver *newGameStatsObserver = new GameStatisticsObserver(player);
+      auto* newGameStatsObserver = new GameStatisticsObserver(player);
   }
-  
+
   // Init deck from main map
   this->DeckOfCards = new Deck(MainMap->NumOfCountries());
 
@@ -189,7 +206,93 @@ void GameEngine::Init() {
 }
 
 /**
- * Main game play loop constituting of reinforcement, issuer order and execution
+ * The startup phase initializes the order the players will play in.
+ * It also randomly assigns all territories evenly to each player.
+ * Each player receives an initial amounts of reinforcements.
+ */
+void GameEngine::startupPhase() {
+  srand(time(NULL));
+  // Shuffle the list of players
+  std::random_shuffle(ListOfPlayers.begin(), ListOfPlayers.end());
+
+  // create a list of numbers from 0 to the number of countries in the map
+  std::vector<int> randomizedIDs;
+
+  for (int i = 0; i < MainMap->NumOfCountries(); i++) {
+    randomizedIDs.emplace_back(i);
+  }
+
+  // randomize the list of numbers
+  unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
+  std::shuffle(std::begin(randomizedIDs), std::end(randomizedIDs),
+               std::default_random_engine(seed));
+
+  // now iterate through the randomized list, assign countries to players in
+  // robin round fashion The randomized list plays the role of territory
+  // indexes. each territory has a unique ID (index), so it is assigned once and
+  // only once.
+  int rr = 0;
+  for (int i = 0; i < MainMap->NumOfCountries(); i++) {
+    ListOfPlayers.at(rr)->Territories.emplace_back(
+        MainMap->ReturnListOfCountries().at(randomizedIDs.at(i)));
+    MainMap->ReturnListOfCountries().at(randomizedIDs.at(i))->OwnedBy =
+        ListOfPlayers.at(rr)->PID;
+
+    ListOfPlayers.at(rr)->setState(State_enum::SETUP_PHASE);
+    ListOfPlayers.at(rr)->Notify();
+
+    rr += 1;
+    if (rr == ListOfPlayers.size()) {
+      rr = 0;
+    }
+  }
+
+  // give armies to the players based on the number of players in the game
+  switch (ListOfPlayers.size()) {
+    case 2:
+      for (int i = 0; i < 2; i++) {
+        ListOfPlayers.at(i)->ReinforcementPool = 40;
+      }
+      break;
+    case 3:
+      for (int i = 0; i < 3; i++) {
+        ListOfPlayers.at(i)->ReinforcementPool = 35;
+      }
+      break;
+    case 4:
+      for (int i = 0; i < 4; i++) {
+        ListOfPlayers.at(i)->ReinforcementPool = 30;
+      }
+      break;
+    case 5:
+      for (int i = 0; i < 5; i++) {
+        ListOfPlayers.at(i)->ReinforcementPool = 25;
+      }
+      break;
+  }
+
+  std::cout << "PLAYERS' INFORMATION:" << std::endl;
+  std::cout << "----------------------------------------------------"
+            << std::endl;
+
+  for (auto& i : ListOfPlayers) {
+    std::cout << *i;
+    std::cout << std::endl;
+  }
+
+  std::cout << "TERRITORIES' INFORMATION:" << std::endl;
+  std::cout << "----------------------------------------------------"
+            << std::endl;
+
+  for (auto& i : MainMap->ReturnListOfCountries()) {
+    std::cout << *i;
+    std::cout << "\tOwned By: " << i->OwnedBy << std::endl;
+    std::cout << std::endl;
+  }
+}
+
+/**
+ * Main game play loop constituting of reinforcement, issue order and execution
  * phases. Decides who the winner is.
  */
 void GameEngine::mainGameLoop() {
@@ -242,12 +345,11 @@ void GameEngine::reinforcementPhase() {
 
     player->setState(State_enum::REINFORCEMENT_PHASE);
     player->Notify();
-
   }
 }
 
 /**
- * Players issue orders and place them in the order list
+ * Players issue orders and place them in their own order list.
  */
 void GameEngine::issueOrdersPhase() {
   std::cout << "--------------------------\n"
@@ -270,7 +372,6 @@ void GameEngine::issueOrdersPhase() {
         // If a player no longer has any order left to make
         ordersLeft--;
       } else {
-        
         player->setState(State_enum::ISSUE_ORDERS_PHASE);
         player->Notify();
         std::cout << "Performing order ->";
@@ -283,119 +384,45 @@ void GameEngine::issueOrdersPhase() {
 }
 
 /**
- * Executes orders of players from the orders list
+ * Executes orders of players from their orders list.
  */
 void GameEngine::executeOrdersPhase() {
-  // execute the top order on the list of each player in RR fashion
-  // todo call execute method implemented in part 4
-  // till no more orders left
-  int ordersLeft = ListOfPlayers.size();
-  while (ordersLeft > 0) {
-    for (auto& player : ListOfPlayers) {
-      // TODO add logic
+  std::cout << "--------------------------\n"
+            << "BEGIN ORDER EXECUTION PHASE\n";
 
+  // Execute only deploy orders first
+  auto ordersLeft = ListOfPlayers.size();
+  while (ordersLeft > 0) {
+    ordersLeft = ListOfPlayers.size();
+    for (auto& player : ListOfPlayers) {
       player->setState(State_enum::EXECUTE_ORDERS_PHASE);
       player->Notify();
-    }
-  }
-}
 
-void GameEngine::startupPhase() {
-  srand(time(NULL));
-  // Shuffle the list of players
-  std::random_shuffle(ListOfPlayers.begin(), ListOfPlayers.end());
-
-  // create a list of numbers from 0 to the number of countries in the map
-  std::vector<int> randomizedIDs;
-
-  for (int i = 0; i < MainMap->NumOfCountries(); i++) {
-    randomizedIDs.emplace_back(i);
-  }
-
-  // randomize the list of numbers
-  unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
-  std::shuffle(std::begin(randomizedIDs), std::end(randomizedIDs),
-               std::default_random_engine(seed));
-
-  // now iterate through the randomized list, assign countries to players in
-  // robin round fashion The randomized list plays the role of territory
-  // indexes. each territory has a unique ID (index), so it is assigned once
-  // and only once.
-  int rr = 0;
-  for (int i = 0; i < MainMap->NumOfCountries(); i++) {
-    ListOfPlayers.at(rr)->Territories.emplace_back(
-        MainMap->ReturnListOfCountries().at(randomizedIDs.at(i)));
-    MainMap->ReturnListOfCountries().at(randomizedIDs.at(i))->OwnedBy =
-        ListOfPlayers.at(rr)->PID;
-    rr += 1;
-    if (rr == ListOfPlayers.size()) {
-      rr = 0;
+      // TODO how to properly check for deploy orders
+      if (player->ListOfOrders->peek()->getName() == "DEPLOY") {
+        player->ListOfOrders->pop()->execute();
+      } else {
+        ordersLeft--;
+      }
     }
   }
 
-    //randomize the list of numbers
-    unsigned seed = std::chrono::system_clock::now()
-        .time_since_epoch()
-        .count();
-    std::shuffle(std::begin(randomizedIDs), std::end(randomizedIDs), std::default_random_engine(seed));
+  // Execute other orders by priority
+  ordersLeft = ListOfPlayers.size();
+  while (ordersLeft > 0) {
+    ordersLeft = ListOfPlayers.size();
+    for (auto& player : ListOfPlayers) {
+      player->setState(State_enum::EXECUTE_ORDERS_PHASE);
+      player->Notify();
 
-    //now iterate through the randomized list, assign countries to players in robin round fashion 
-    //The randomized list plays the role of territory indexes. each territory has a unique ID (index), so it is assigned once and only once.
-    int rr = 0;
-    for (int i = 0; i < MainMap->NumOfCountries(); i++) {
-
-        ListOfPlayers.at(rr)->Territories.emplace_back(MainMap->ReturnListOfCountries().at(randomizedIDs.at(i)));
-        MainMap->ReturnListOfCountries().at(randomizedIDs.at(i))->OwnedBy = ListOfPlayers.at(rr)->PID;
-
-        ListOfPlayers.at(rr)->setState(State_enum::SETUP_PHASE);
-        ListOfPlayers.at(rr)->Notify();
-
-        rr += 1;
-        if (rr == ListOfPlayers.size()) {
-            rr = 0;
-        }
+      if (!player->ListOfOrders->empty()) {
+        player->ListOfOrders->pop()->execute();
+      } else {
+        ordersLeft--;
+      }
     }
-    
-    //give armies to the players based on the number of players in the game
-    switch (ListOfPlayers.size()) {
-    case 2:
-      for (int i = 0; i < 2; i++) {
-        ListOfPlayers.at(i)->ReinforcementPool = 40;
-      }
-      break;
-    case 3:
-      for (int i = 0; i < 3; i++) {
-        ListOfPlayers.at(i)->ReinforcementPool = 35;
-      }
-      break;
-    case 4:
-      for (int i = 0; i < 4; i++) {
-        ListOfPlayers.at(i)->ReinforcementPool = 30;
-      }
-      break;
-    case 5:
-      for (int i = 0; i < 5; i++) {
-        ListOfPlayers.at(i)->ReinforcementPool = 25;
-      }
-      break;
   }
 
-  std::cout << "PLAYERS' INFORMATION:" << std::endl;
-  std::cout << "----------------------------------------------------"
-            << std::endl;
-
-  for (auto& i : ListOfPlayers) {
-    std::cout << *i;
-    std::cout << std::endl;
-  }
-
-  std::cout << "TERRITORIES' INFORMATION:" << std::endl;
-  std::cout << "----------------------------------------------------"
-            << std::endl;
-
-  for (auto& i : MainMap->ReturnListOfCountries()) {
-    std::cout << *i;
-    std::cout << "\tOwned By: " << i->OwnedBy << std::endl;
-    std::cout << std::endl;
-  }
+  std::cout << "END OF ORDER EXECUTION PHASE\n"
+            << "--------------------------\n";
 }
