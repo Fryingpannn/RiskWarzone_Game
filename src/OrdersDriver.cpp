@@ -80,7 +80,7 @@ void ordersDriver() {
 	std::cout << std::endl << "----- Valid Deploy -----" << std::endl << std::endl;
 	std::cout << "- Singapore's owner & army count: " << Singapore->OwnedBy << ", " << Singapore->Armies << std::endl;
 	std::cout << " Matthew: [Deploy] Deploying 6 armies to Singapore." << std::endl;
-	Order* deploy1 = new Deploy("Matthew", 6, Singapore);
+	Order* deploy1 = new Deploy("Matthew", 6, Singapore, matthew);
 	deploy1->execute();
 	std::cout << "- Singapore's owner & army count: " << Singapore->OwnedBy << ", " << Singapore->Armies << std::endl;
 
@@ -88,7 +88,7 @@ void ordersDriver() {
 	std::cout << std::endl << "----- Invalid Deploy (Wrong territory) -----" << std::endl << std::endl;
 	std::cout << "- Malaysia's owner & army count: " << Malaysia->OwnedBy << ", " << Malaysia->Armies << std::endl;
 	std::cout << " Matthew: [Deploy] Deploying 5 armies to Malaysia." << std::endl;
-	Order* deploy2 = new Deploy("Matthew", 5, Malaysia);
+	Order* deploy2 = new Deploy("Matthew", 5, Malaysia, matthew);
 	deploy2->execute();
 	std::cout << "- Malaysia's owner & army count: " << Malaysia->OwnedBy << ", " << Malaysia->Armies << std::endl;
 
