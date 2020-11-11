@@ -371,6 +371,11 @@ void Map::SetMapName(std::string mapName) {
   MapName = new std::string(mapName);
 }
 
+// getter for the map name
+std::string Map::GetMapName() {
+  return *MapName;
+}
+
 // validate the map by checking many stuff
 bool Map::Validate() {
   std::cout << "\n\n\nVALIDATING\n\n\n" << std::endl;

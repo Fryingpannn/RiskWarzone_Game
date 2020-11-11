@@ -17,6 +17,7 @@
 #include <string>
 #include <vector>
 
+#include "GameObservers.hpp"
 
 
 //this macro will only print when in debug mode :3
@@ -40,7 +41,7 @@ class Player;
 
 // country only need name, a unique ID and a continent
 // is a struct and not a class, so do what you need to do :)
-struct Territory {
+struct Territory : public Subject {
  public:
   std::string Name;
   int TerritoryID;
@@ -119,6 +120,7 @@ class Map {
   void Display();
   void Display(std::string continent);
   void SetMapName(std::string mapName);
+  std::string GetMapName();
 
   bool Validate();
   void DFS(int x, bool **visited);
