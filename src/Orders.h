@@ -104,6 +104,9 @@ public:
 	//print function called by insertion stream operator to allow polymorphic printing
 	virtual std::ostream& doprint(std::ostream& out) = 0;
 	virtual ~Order();
+
+  // Getter for the target territory
+  Territory* getTarget();
 };
 
 //Deploy order used to deploy armies onto player territory -------------

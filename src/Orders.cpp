@@ -212,6 +212,9 @@ int Order::getArmyNb() { return armyNb; }
 void Order::setExecuted(const bool& status) { this->executed = status; }
 bool Order::getExecuted() { return this->executed; }
 
+// Getter for target
+Territory* Order::getTarget() { return this->target; }
+
 // virtual destructor
 Order::~Order() { std::cout << "Cleaning up..." << std::endl; }
 
