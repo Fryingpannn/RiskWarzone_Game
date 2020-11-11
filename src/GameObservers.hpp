@@ -22,37 +22,45 @@
 #include <vector>
 #include <list>
 
-enum class State_enum {
+enum class State_enum
+{
     DEFAULT_NO_STATE = 0,
-    SETUP_PHASE = 1,
-    REINFORCEMENT_PHASE = 2,
-    ISSUE_ORDERS_PHASE = 3,
-    EXECUTE_ORDERS_PHASE = 4,
-    TERRITORY_CONQUERED = 5,
-    PLAYER_ELIMINATED = 6,
-    PLAYER_OWNS_ALL_TERRITORIES = 7
+    SETUP_PHASE_RECEIVE_TERRITORY = 1,
+    SETUP_PHASE_RECEIVE_REINFORCEMENTS = 2,
+    REINFORCEMENT_PHASE = 3,
+    ISSUE_ORDERS_PHASE = 4,
+    EXECUTE_ORDERS_PHASE = 5,
+    TERRITORY_CONQUERED = 6,
+    PLAYER_ELIMINATED = 7,
+    PLAYER_OWNS_ALL_TERRITORIES = 8
 };
 
 struct State
-{   
+{
     // TODO Determine what needs to be here
-    State_enum current_state;
+    State_enum current_state = State_enum::DEFAULT_NO_STATE;
+    int newReinforcements = 0;
+    bool execute_order_success = false;
+    std::string executed_order_name;
+    std::string player_name;
 };
 
 class Observer
 {
 protected:
     Observer();
+
 public:
     virtual void Update() = 0;
-    ~Observer();
+    virtual ~Observer();
 };
 
 class Subject
 {
 private:
-    State_enum current_state = State_enum::DEFAULT_NO_STATE;
+    // State_enum current_state = State_enum::DEFAULT_NO_STATE;
     // int state = 0;
+    State current_state;
 
 protected:
     std::list<Observer *> *_observers;
@@ -64,12 +72,12 @@ public:
 
     void Notify();
     Subject();
-    ~Subject();
+    virtual ~Subject();
 
-    void setState(State_enum new_state);
-    State_enum getState();
+    void setState(State new_state);
+    State_enum getStateEnum();
+    State getState();
 };
-
 
 class PhaseObserver : public Observer
 {
@@ -80,10 +88,10 @@ public:
 
     void Update();
 
-    ~PhaseObserver();
+    virtual ~PhaseObserver();
 };
 
-class GameStatisticsObserver : Observer
+class GameStatisticsObserver : public Observer
 {
     Subject *_game_observer_subject;
 
@@ -92,5 +100,5 @@ public:
 
     void Update();
 
-    ~GameStatisticsObserver();
+    virtual ~GameStatisticsObserver();
 };

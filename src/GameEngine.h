@@ -22,7 +22,7 @@
 
 // Look at how all the members are public, other programmers can access to the
 // component they want easily :)
-class GameEngine : Subject {
+class GameEngine : public Subject {
  public:
   // members of the GameEngine
   MapFile* MainFile;
@@ -33,6 +33,8 @@ class GameEngine : Subject {
   std::vector<Player*> ListOfPlayers;
 
   bool ObserverOn;
+  bool phaseObserverToggle;
+	bool gameStatsObserverToggle;
 
   // Constructor
   GameEngine();
@@ -48,4 +50,6 @@ class GameEngine : Subject {
   void reinforcementPhase();
   void issueOrdersPhase();
   void executeOrdersPhase();
+
+  void displayStatistics();
 };
