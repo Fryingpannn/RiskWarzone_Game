@@ -252,14 +252,19 @@ bool Deploy::validate() {
 
 // executes deploy if valid
 // the army count in reinforcement pool must be deducted in Player class
-void Deploy::execute() {
+bool Deploy::execute() {
+  bool success_result = false;
   // add the armies to target territory if it belongs to the player
   if (validate()) {
     target->Armies += armyNb;
     current->ReinforcementPool -= armyNb;
     std::cout << "[Valid] 1 Deploy order executed." << std::endl;
-  } else
+    success_result = true;
+  } else {
     std::cout << "[Invalid] 1 Deploy order not executed." << std::endl;
+    success_result = false;
+  }
+  return success_result;
 }
 
 // assignment operator
@@ -354,7 +359,8 @@ bool Advance::validate() {
 }
 
 // executes the Advance order
-void Advance::execute() {
+bool Advance::execute() {
+  bool success_result = false;
   if (validate()) {
     // if target territory is also owned by user or has 0 armies, simply move
     // armies there
@@ -400,6 +406,7 @@ void Advance::execute() {
         std::cout << "[Valid] 1 Advance order executed. Both territories lost "
                      "their armies. Target"
                   << " territory became neutral." << std::endl;
+        success_result = false;
       } else if (target->Armies <= 0) {
         // if attacker won
         std::cout << " --> " << armyNb << " army/armies from " << playerID
@@ -421,12 +428,14 @@ void Advance::execute() {
         std::cout
             << "[Valid] 1 Advance order executed. Target territory captured by "
             << playerID << "." << std::endl;
+        success_result = true;
       } else if (armyNb <= 0) {
         // if defender won
         src->Armies -= armySent;
         std::cout << "[Valid] 1 Advance order executed. Failed to capture "
                      "target territory."
                   << std::endl;
+        success_result = false;
       }
     }
     setExecuted(true);
@@ -434,7 +443,9 @@ void Advance::execute() {
     // order failed
     std::cout << "[Invalid] 1 Advance order not executed." << std::endl;
     setExecuted(false);
+    success_result = false;
   }
+  return success_result;
 }
 
 // assignment operator function
@@ -499,17 +510,21 @@ bool Bomb::validate() {
 }
 
 // executes Bomb order if valid; target territory's armies are halved
-void Bomb::execute() {
+bool Bomb::execute() {
+  bool success_result = false;
   if (validate()) {
     target->Armies /= 2;
     std::cout << "[Valid] 1 Bomb order executed. Enemy armies have been halved."
               << std::endl;
     setExecuted(true);
+    success_result = true;
   } else {
     // order failed
     std::cout << " [Invalid] 1 Bomb order not executed." << std::endl;
     setExecuted(false);
+    success_result = false;
   }
+  return success_result;
 }
 
 // assignment operator
@@ -570,19 +585,23 @@ bool Blockade::validate() {
 }
 
 // executes Blockade order if valid
-void Blockade::execute() {
+bool Blockade::execute() {
+  bool success_result = false;
   if (validate()) {
     src->Armies *= 2;
     src->OwnedBy = "neutral";
     std::cout << "[Valid] 1 Blockade order executed." << std::endl;
     setExecuted(true);
+    success_result = true;
   } else {
     // order failed
     std::cout << "[Blockade] Cannot blockade target territory. Blockade order "
                  "not executed."
               << std::endl;
     setExecuted(false);
+    success_result = false;
   }
+  return success_result;
 }
 
 // assignment operator
@@ -670,7 +689,8 @@ bool Airlift::validate() {
 }
 
 // executes Airlift order if valid
-void Airlift::execute() {
+bool Airlift::execute() {
+  bool success_result = false;
   if (validate()) {
     // if target territory is also owned by user or has 0 armies, simply move
     // armies there
@@ -716,6 +736,8 @@ void Airlift::execute() {
         std::cout << "[Valid] 1 Airlift order executed. Both territories lost "
                      "their armies. Target"
                   << " territory became neutral." << std::endl;
+
+        success_result = false;
       } else if (target->Armies <= 0) {
         // if attacker won
         std::cout << " --> " << armyNb << " army/armies from " << playerID
@@ -737,12 +759,14 @@ void Airlift::execute() {
         std::cout
             << "[Valid] 1 Airlift order executed. Target territory captured by "
             << playerID << "." << std::endl;
+        success_result = true;
       } else if (armyNb <= 0) {
         // if defender won
         src->Armies -= armySent;
         std::cout << "[Valid] 1 Airlift order executed. Failed to capture "
                      "target territory."
                   << std::endl;
+        success_result = false;
       }
     }
     setExecuted(true);
@@ -750,7 +774,9 @@ void Airlift::execute() {
     // order failed
     std::cout << "[Invalid] 1 Airlift order not executed." << std::endl;
     setExecuted(false);
+    success_result = false;
   }
+  return success_result;
 }
 
 // assignment operator
@@ -810,7 +836,8 @@ bool Negotiate::validate() {
 }
 
 // executes Negotiate order if valid
-void Negotiate::execute() {
+bool Negotiate::execute() {
+  bool success_result = false;
   if (validate()) {
     // insert the current player ID into diplomacy set of enemy player
     enemy->set.insert(playerID);
@@ -818,11 +845,14 @@ void Negotiate::execute() {
     current->set.insert(enemy->PID);
     std::cout << "[Valid] 1 Negotiate order executed." << std::endl;
     setExecuted(true);
+    success_result = true;
   } else {
     std::cout << "[Invalid] 1 Negotiate/Diplomacy order not executed."
               << std::endl;
     setExecuted(false);
+    success_result = false;
   }
+  return success_result;
 }
 
 // assignment operator function

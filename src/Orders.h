@@ -88,7 +88,7 @@ public:
 	//clone function for polymorphic classes used by OrderList's copy constructor
 	virtual Order* clone() = 0;
 	//executes an order if it's valid
-	virtual void execute() = 0;
+	virtual bool execute() = 0;
 	virtual bool validate() = 0;
 	//setter/getter to set/get the execution status of the order
 	void setExecuted(const bool& status);
@@ -119,7 +119,7 @@ public:
 	Deploy* clone() override;
 	//order functions
 	bool validate() override;
-	void execute() override;
+	bool execute() override;
 	//get obj priority counter
 	//assignment & stream functions
 	Deploy& operator =(const Deploy& o);
@@ -142,7 +142,7 @@ class Advance : public Order {
   Advance* clone() override;
   // order functions
   bool validate();
-  void execute() override;
+  bool execute() override;
   // assignment & stream functions
   Advance& operator=(const Advance& adv);
   std::ostream& doprint(std::ostream& out) override;
@@ -162,7 +162,7 @@ class Bomb : public Order {
   Bomb* clone() override;
   // order functions
   bool validate() override;
-  void execute() override;
+  bool execute() override;
   // assignment & stream functions
   Bomb& operator=(const Bomb& o);
   std::ostream& doprint(std::ostream& out) override;
@@ -182,7 +182,7 @@ class Blockade : public Order {
   Blockade* clone() override;
   // order functions
   bool validate() override;
-  void execute() override;
+  bool execute() override;
   // assignment & stream functions
   Blockade& operator=(const Blockade& o);
   std::ostream& doprint(std::ostream& out) override;
@@ -202,7 +202,7 @@ class Airlift : public Order {
   Airlift* clone() override;
   // order functions
   bool validate() override;
-  void execute() override;
+  bool execute() override;
   // assignment & stream functions
   Airlift& operator=(const Airlift& o);
   std::ostream& doprint(std::ostream& out) override;
@@ -223,7 +223,7 @@ class Negotiate : public Order {
   Negotiate* clone() override;
   // order functions
   bool validate() override;
-  void execute() override;
+  bool execute() override;
   // assignment and stream functions
   Negotiate& operator=(const Negotiate&);
   std::ostream& doprint(std::ostream& out) override;
