@@ -95,7 +95,7 @@ void Card::Play(Player& p, Hand& h, Deck& d) {
         p.createNegotiate();
         break;
       case CardType::REINFORCEMENT:
-        p.createDeploy();
+        p.createReinforcement();
         break;
     }
 

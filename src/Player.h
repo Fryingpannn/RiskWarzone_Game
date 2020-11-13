@@ -80,6 +80,7 @@ class Player : public Subject {
   void createAirlift();
   void createBlockade();
   void createNegotiate();
+  void createReinforcement();
 
   friend std::ostream &operator<<(std::ostream &out, const Player &p);
   ~Player();

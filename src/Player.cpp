@@ -738,6 +738,13 @@ void Player::createNegotiate() {
   this->ListOfOrders->addToList(order);
 }
 
+void Player::createReinforcement() {
+
+    this->ReinforcementPool += 5;
+    std::cout << "Gave 5 army units to " << this->PID << std::endl;
+
+}
+
 /**
  * Destructor of the player object.
  */
