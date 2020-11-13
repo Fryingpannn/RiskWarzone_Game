@@ -391,6 +391,19 @@ void GameEngine::startupPhase()
 		std::cout << "\tOwned By: " << i->OwnedBy << std::endl;
 		std::cout << std::endl;
 	}
+
+	//to show that there are no duplicates, we compare the number of territories owned by all the 
+	//players to number of territories in the map
+	int sumOfPlayerOwnedTerritories = 0;
+	for (int i = 0; i < ListOfPlayers.size(); i++) {
+
+		sumOfPlayerOwnedTerritories += ListOfPlayers.at(i)->Territories.size();
+	}
+
+	std::cout << "\tPlayers own " << sumOfPlayerOwnedTerritories << " territories altogether" <<std::endl;
+	std::cout << "\tThere are " << MainMap->NumOfCountries() << " territories in the map in total." << std::endl;
+
+
 }
 
 /**
