@@ -232,3 +232,20 @@ class Negotiate : public Order {
   std::ostream& doprint(std::ostream& out) override;
   ~Negotiate();
 };
+
+// Reinforcement order comes from playing the reiforcement card
+//just adds 5 army unit to the player's reinforcement pool
+class Reinforcement : public Order {
+public:
+	// constructors
+	Reinforcement();
+	Reinforcement(Player* const current);
+	Reinforcement* clone() override;
+	// order functions
+	bool validate() override;
+	bool execute() override;
+	// assignment and stream functions
+	Reinforcement& operator=(const Reinforcement&);
+	std::ostream& doprint(std::ostream& out) override;
+	~Reinforcement();
+};
