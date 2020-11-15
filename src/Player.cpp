@@ -740,8 +740,7 @@ void Player::createNegotiate() {
 
 void Player::createReinforcement() {
 
-    this->ReinforcementPool += 5;
-    std::cout << "Gave 5 army units to " << this->PID << std::endl;
+    this->ListOfOrders->addToList(new Reinforcement(this));
 
 }
 
