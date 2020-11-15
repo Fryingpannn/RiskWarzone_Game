@@ -27,33 +27,59 @@
 // Observer Class
 /////////////////////////////////////////////
 
+/**
+ * @brief Construct a new Observer:: Observer object
+ * 
+ */
 Observer::Observer()
 {
-	// std::cout << "Observer constructor" << std::endl;
 }
 
+/**
+ * @brief Destroy the Observer:: Observer object
+ * 
+ */
 Observer::~Observer()
 {
-	std::cout << "Observer destructor" << std::endl;
 }
 
 /////////////////////////////////////////////
 // Subject Class
 /////////////////////////////////////////////
+
+/**
+ * @brief Construct a new Subject:: Subject object
+ * 
+ */
 Subject::Subject()
 {
 	_observers = new std::list<Observer *>;
 }
+
+/**
+ * @brief Attach the observer to the subject
+ * 
+ * @param o 
+ */
 void Subject::Attach(Observer *o)
 {
 	_observers->push_back(o);
 }
 
+/**
+ * @brief Detatch the observer from the subject
+ * 
+ * @param o 
+ */
 void Subject::Detach(Observer *o)
 {
 	_observers->remove(o);
 }
 
+/**
+ * @brief Notify observers of a change in state
+ * 
+ */
 void Subject::Notify()
 {
 	std::list<Observer *>::iterator i = _observers->begin();
@@ -63,22 +89,42 @@ void Subject::Notify()
 	}
 }
 
+/**
+ * @brief Destroy the Subject:: Subject object
+ * 
+ */
 Subject::~Subject()
 {
 	std::cout << "Deleting Observer Subject" << std::endl;
 	delete _observers;
 }
 
+/**
+ * @brief Set the new state of subject
+ * 
+ * @param new_state 
+ */
 void Subject::setState(State new_state)
 {
 	current_state = new_state;
 }
+
+/**
+ * @brief Returns current_state
+ * 
+ * @return State_enum 
+ */
 State_enum Subject::getStateEnum()
 {
 	State_enum returnState = current_state.current_state;
 	return returnState;
 }
 
+/**
+ * @brief Get the current state
+ * 
+ * @return State 
+ */
 State Subject::getState()
 {
 	return current_state;
@@ -88,12 +134,22 @@ State Subject::getState()
 // PhaseObserver Class
 /////////////////////////////////////////////
 
+
+/**
+ * @brief Construct a new Phase Observer:: Phase Observer object
+ * 
+ * @param passed_phase_subject 
+ */
 PhaseObserver::PhaseObserver(Subject *passed_phase_subject)
 {
 	_phase_subject = passed_phase_subject;
 	_phase_subject->Attach(this);
 }
 
+/**
+ * @brief Process the updated new state
+ * 
+ */
 void PhaseObserver::Update()
 {
 	Player *player_subject = dynamic_cast<Player *>(_phase_subject);
@@ -150,9 +206,12 @@ void PhaseObserver::Update()
 	}
 }
 
+/**
+ * @brief Destroy the Phase Observer:: Phase Observer object
+ * 
+ */
 PhaseObserver::~PhaseObserver()
 {
-	std::cout << "Deleting PhaseObserver" << std::endl;
 	_phase_subject->Detach(this);
 }
 
@@ -160,12 +219,21 @@ PhaseObserver::~PhaseObserver()
 // Game Statistics Observer Class
 /////////////////////////////////////////////
 
+/**
+ * @brief Construct a new Game Statistics Observer:: Game Statistics Observer object
+ * 
+ * @param passed_game_observer_subject 
+ */
 GameStatisticsObserver::GameStatisticsObserver(Subject *passed_game_observer_subject)
 {
 	_game_observer_subject = passed_game_observer_subject;
 	_game_observer_subject->Attach(this);
 }
 
+/**
+ * @brief Process the updated new state
+ * 
+ */
 void GameStatisticsObserver::Update()
 {
 	GameEngine *game_engine_subject = dynamic_cast<GameEngine *>(_game_observer_subject);
@@ -214,8 +282,11 @@ void GameStatisticsObserver::Update()
 	}
 }
 
+/**
+ * @brief Destroy the Game Statistics Observer:: Game Statistics Observer object
+ * 
+ */
 GameStatisticsObserver::~GameStatisticsObserver()
 {
-	std::cout << "Deleting GameStatisticsObserver." << std::endl;
 	_game_observer_subject->Detach(this);
 }
