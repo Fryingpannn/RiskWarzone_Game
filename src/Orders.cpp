@@ -930,3 +930,57 @@ std::ostream& Negotiate::doprint(std::ostream& out) {
 Negotiate::~Negotiate() {
     std::cout << "Destroying negotiate order." << std::endl;
 }
+
+/*------------------------------------ Reinforcement class
+ * ------------------------------------*/
+
+ // default constructor
+Reinforcement::Reinforcement() : Order("REINFORCEMENT", 0) {}
+
+/* constructor; gives 5 army units to the player.
+ *  Reinforcement can only be created with reinforcement card.
+ * - current:  the current player who created this order
+ */
+Reinforcement::Reinforcement(Player* const current)
+    : Order("REINFORCEMENT", 0) {
+    this->playerID = current->PID;
+    this->current = current;
+}
+
+// clone function
+Reinforcement* Reinforcement::clone() { return new Reinforcement(*this); }
+
+// validates order; left empty because there isn't anything to validate
+bool Reinforcement::validate() { return true; }
+
+// executes Reinforcement order
+bool Reinforcement::execute() {
+
+    current->ReinforcementPool += 5;
+    std::cout << "Gave 5 army units to " << current->PID << std::endl;
+    return true;
+}
+
+// assignment operator function
+Reinforcement& Reinforcement::operator=(const Reinforcement& n) {
+    Order::operator=(n);
+    setName("- Reinforcement -");
+    return *this;
+}
+
+// function called by insertion stream operator to print order
+std::ostream& Reinforcement::doprint(std::ostream& out) {
+    out << "Give 5 army units to the player";
+
+    // if order has been executed, also print out effect of order
+    if (getExecuted())
+        out << " [Reinforcement] Reinforcement successful. 5 army units given to the player"
+        << std::endl;
+
+    return out;
+}
+
+// virtual destructor
+Reinforcement::~Reinforcement() {
+    std::cout << "Destroying Reinforcement order." << std::endl;
+}
