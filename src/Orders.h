@@ -17,8 +17,8 @@
 
 #include <iostream>
 #include <string>
-#include <vector>
 #include <unordered_set>
+#include <vector>
 
 class Map;
 class Hand;
@@ -28,36 +28,36 @@ struct Territory;
 
 class Order;
 
-//list of orders used by each player
-class OrderList
-{
-private:
-	//list of orders
-	std::vector<Order*> list;
-public:
-	//constructors
-	OrderList();
-	OrderList(const OrderList& copy);
-	//adds an order to the list
-	bool addToList(Order* order);
-	//removes an order from the list
-	//returns: the armyNb of the order to refill reinforcement pool of player
-	int remove(int position);
-	//removes and returns the top priority element from list
-	Order* pop();
-	//returns a copy of the next top priority element from list
-	Order* peek();
-	//moves/swaps an order from an index with another in the list
-	bool move(int firstIndex, int secondIndex);
-	//returns size/emptyness of current list
-	int size() { return list.size(); }
-	bool empty() { return list.empty(); }
-	//assignment operator
-	OrderList& operator=(const OrderList& o);
-	//insertion stream operator
-	friend std::ostream& operator <<(std::ostream& out, const OrderList &orders);
-	//destructor
-	~OrderList();
+// list of orders used by each player
+class OrderList {
+ private:
+  // list of orders
+  std::vector<Order*> list;
+
+ public:
+  // constructors
+  OrderList();
+  OrderList(const OrderList& copy);
+  // adds an order to the list
+  bool addToList(Order* order);
+  // removes an order from the list
+  // returns: the armyNb of the order to refill reinforcement pool of player
+  int remove(int position);
+  // removes and returns the top priority element from list
+  Order* pop();
+  // returns a copy of the next top priority element from list
+  Order* peek();
+  // moves/swaps an order from an index with another in the list
+  bool move(int firstIndex, int secondIndex);
+  // returns size/emptyness of current list
+  int size() { return list.size(); }
+  bool empty() { return list.empty(); }
+  // assignment operator
+  OrderList& operator=(const OrderList& o);
+  // insertion stream operator
+  friend std::ostream& operator<<(std::ostream& out, const OrderList& orders);
+  // destructor
+  ~OrderList();
 };
 
 //order abstract base class. used to store the different subclasses in the OrderList vector
@@ -88,7 +88,7 @@ public:
 	//clone function for polymorphic classes used by OrderList's copy constructor
 	virtual Order* clone() = 0;
 	//executes an order if it's valid
-	virtual void execute() = 0;
+	virtual bool execute() = 0;
 	virtual bool validate() = 0;
 	//setter/getter to set/get the execution status of the order
 	void setExecuted(const bool& status);
@@ -104,6 +104,9 @@ public:
 	//print function called by insertion stream operator to allow polymorphic printing
 	virtual std::ostream& doprint(std::ostream& out) = 0;
 	virtual ~Order();
+
+  // Getter for the target territory
+  Territory* getTarget();
 };
 
 //Deploy order used to deploy armies onto player territory -------------
@@ -119,7 +122,7 @@ public:
 	Deploy* clone() override;
 	//order functions
 	bool validate() override;
-	void execute() override;
+	bool execute() override;
 	//get obj priority counter
 	//assignment & stream functions
 	Deploy& operator =(const Deploy& o);
@@ -127,103 +130,105 @@ public:
 	~Deploy();
 };
 
-//Advance order used to advance armies into friendly or enemy territory -------------
-class Advance : public Order
-{
-public:
-	//constructors
-	Advance();
-	Advance(const Advance&);
-	//if executed and conquered enemy territory, need to add that to the player's list
-	Advance(const std::string& playerID, const int& armyNb, Territory* src, 
-		Territory* target, Map* map, Player* const current, Deck* const deck);
-	//clone function
-	Advance* clone() override;
-	//order functions
-	bool validate();
-	void execute() override;
-	//assignment & stream functions
-	Advance& operator =(const Advance& adv);
-	std::ostream& doprint(std::ostream& out) override;
-	~Advance();
+// Advance order used to advance armies into friendly or enemy territory
+// -------------
+class Advance : public Order {
+ public:
+  // constructors
+  Advance();
+  Advance(const Advance&);
+  // if executed and conquered enemy territory, need to add that to the player's
+  // list
+  Advance(const std::string& playerID, const int& armyNb, Territory* src,
+          Territory* target, Map* map, Player* const current, Deck* const deck);
+  // clone function
+  Advance* clone() override;
+  // order functions
+  bool validate();
+  bool execute() override;
+  // assignment & stream functions
+  Advance& operator=(const Advance& adv);
+  std::ostream& doprint(std::ostream& out) override;
+  ~Advance();
 };
 
-//Bomb order used to bomb target country making them lose half their army units -------------
+// Bomb order used to bomb target country making them lose half their army units
+// -------------
 //- can only be created by playing bomb card
-class Bomb : public Order
-{
-public:
-	//constructors
-	Bomb();
-	Bomb(const Bomb&);
-	Bomb(const std::string& playerID, Territory* target, Player* const current);
-	//clone function for polymorphic classes
-	Bomb* clone() override;
-	//order functions
-	bool validate() override;
-	void execute() override;
-	//assignment & stream functions
-	Bomb& operator =(const Bomb& o);
-	std::ostream& doprint(std::ostream& out) override;
-	~Bomb();
+class Bomb : public Order {
+ public:
+  // constructors
+  Bomb();
+  Bomb(const Bomb&);
+  Bomb(const std::string& playerID, Territory* target, Player* const current);
+  // clone function for polymorphic classes
+  Bomb* clone() override;
+  // order functions
+  bool validate() override;
+  bool execute() override;
+  // assignment & stream functions
+  Bomb& operator=(const Bomb& o);
+  std::ostream& doprint(std::ostream& out) override;
+  ~Bomb();
 };
 
-//Blockade order used to triple a territory's army units and make it become neutral -------------
-class Blockade : public Order
-{
-public:
-	//constructors
-	Blockade();
-	Blockade(const Blockade&);
-	//if executed, need to remove neutral territory from player list
-	Blockade(const std::string& playerID, Territory* src);
-	//clone function for polymorphic classes
-	Blockade* clone() override;
-	//order functions
-	bool validate() override;
-	void execute() override;
-	//assignment & stream functions
-	Blockade& operator =(const Blockade& o);
-	std::ostream& doprint(std::ostream& out) override;
-	~Blockade();
+// Blockade order used to triple a territory's army units and make it become
+// neutral -------------
+class Blockade : public Order {
+ public:
+  // constructors
+  Blockade();
+  Blockade(const Blockade&);
+  // if executed, need to remove neutral territory from player list
+  Blockade(const std::string& playerID, Territory* src);
+  // clone function for polymorphic classes
+  Blockade* clone() override;
+  // order functions
+  bool validate() override;
+  bool execute() override;
+  // assignment & stream functions
+  Blockade& operator=(const Blockade& o);
+  std::ostream& doprint(std::ostream& out) override;
+  ~Blockade();
 };
 
-//Airlift order used to move any number of units from one territory to any other -------------
-class Airlift : public Order
-{
-public:
-	//constructors
-	Airlift();
-	Airlift(const Airlift&);
-	Airlift(const std::string& playerID, const int& armyNb, Territory* src, Territory* target,
-		Player* const current, Deck* const deck);
-	//clone function for polymorphic classes
-	Airlift* clone() override;
-	//order functions
-	bool validate() override;
-	void execute() override;
-	//assignment & stream functions
-	Airlift& operator =(const Airlift& o);
-	std::ostream& doprint(std::ostream& out) override;
-	~Airlift();
+// Airlift order used to move any number of units from one territory to any
+// other -------------
+class Airlift : public Order {
+ public:
+  // constructors
+  Airlift();
+  Airlift(const Airlift&);
+  Airlift(const std::string& playerID, const int& armyNb, Territory* src,
+          Territory* target, Player* const current, Deck* const deck);
+  // clone function for polymorphic classes
+  Airlift* clone() override;
+  // order functions
+  bool validate() override;
+  bool execute() override;
+  // assignment & stream functions
+  Airlift& operator=(const Airlift& o);
+  std::ostream& doprint(std::ostream& out) override;
+  ~Airlift();
 };
 
-//Negotiate order used to prevent attacks between current and another player until end of turn -------------
-//Enables 'diplomatic status' between two players.
+// Negotiate order used to prevent attacks between current and another player
+// until end of turn ------------- Enables 'diplomatic status' between two
+// players.
 class Negotiate : public Order {
-public:
-	//default constructors
-	Negotiate();
-	Negotiate(const Negotiate&);
-	//the set contains players with whom playerID cannot attack this turn
-	Negotiate(Player* const current, Player* const enemy);
-	//clone function for polymorphic class
-	Negotiate* clone() override;
-	//order functions
-	bool validate() override;
-	void execute() override;
-	//assignment and stream functions
-	Negotiate& operator =(const Negotiate&);
-	std::ostream& doprint(std::ostream& out) override;
-	~Negotiate();
+ public:
+  // default constructors
+  Negotiate();
+  Negotiate(const Negotiate&);
+  // the set contains players with whom playerID cannot attack this turn
+  Negotiate(Player* const current, Player* const enemy);
+  // clone function for polymorphic class
+  Negotiate* clone() override;
+  // order functions
+  bool validate() override;
+  bool execute() override;
+  // assignment and stream functions
+  Negotiate& operator=(const Negotiate&);
+  std::ostream& doprint(std::ostream& out) override;
+  ~Negotiate();
 };

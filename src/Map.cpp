@@ -14,7 +14,7 @@
 /////////////////////////////////////////////
 
 #include "Map.h"
-
+#include "Player.h"
 #include <algorithm>
 #include <iostream>
 
@@ -33,6 +33,16 @@ Territory::Territory(std::string name, int territoryID, std::string continent,
   this->Continent = continent;
   this->XCoordinate = x;
   this->YCoordinate = y;
+}
+
+Territory::Territory(std::string name, int territoryID, std::string continent, float x, float y, Player* playerOwned)
+{
+    this->Name = name;
+    this->TerritoryID = territoryID;
+    this->Continent = continent;
+    this->XCoordinate = x;
+    this->YCoordinate = y;
+    this->PlayerOwned = playerOwned;
 }
 
 bool Territory::operator==(Territory& Territory) const {
@@ -251,6 +261,7 @@ bool Map::IfPlayerOwnContinent(std::string PlayerName, std::string ContinentName
             if (ListOfCountries[i]->at(0)->OwnedBy != PlayerName)
             {
                 Log("This country " << ListOfCountries[i]->at(0)->Name << "Owned by" << ListOfCountries[i]->at(0)->OwnedBy << std::endl);
+
                 return false;
             }
             else 
@@ -358,6 +369,11 @@ void Map::Display(std::string continent) {
 // not really necessary
 void Map::SetMapName(std::string mapName) {
   MapName = new std::string(mapName);
+}
+
+// getter for the map name
+std::string Map::GetMapName() {
+  return *MapName;
 }
 
 // validate the map by checking many stuff

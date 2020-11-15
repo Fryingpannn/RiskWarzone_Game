@@ -7,22 +7,22 @@
 #include "GameObservers.hpp"
 
 #ifdef _DEBUG
-#define Log(x) std::cout << x << std::endl;
+//#define Log(x) std::cout << x << std::endl;
 #define Timer(i)
-#define _CRTDBG_MAP_ALLOC
-#include <crtdbg.h>
-#include <stdlib.h>
-#define FindMemoryLeak() \
-  _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+//#define _CRTDBG_MAP_ALLOC
+//#include <crtdbg.h>
+//#include <stdlib.h>
+//#define FindMemoryLeak() \
+//  _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 #else
 #define Timer(i) std::this_thread::sleep_for(std::chrono::milliseconds(i));
-#define FindMemoryLeak() ;
-#define Log(x)
+//#define FindMemoryLeak() ;
+//#define Log(x)
 #endif
 
 // Look at how all the members are public, other programmers can access to the
 // component they want easily :)
-class GameEngine : Subject {
+class GameEngine : public Subject {
  public:
   // members of the GameEngine
   MapFile* MainFile;
@@ -33,6 +33,8 @@ class GameEngine : Subject {
   std::vector<Player*> ListOfPlayers;
 
   bool ObserverOn;
+  bool phaseObserverToggle;
+	bool gameStatsObserverToggle;
 
   // Constructor
   GameEngine();
@@ -48,4 +50,6 @@ class GameEngine : Subject {
   void reinforcementPhase();
   void issueOrdersPhase();
   void executeOrdersPhase();
+
+  void displayStatistics();
 };

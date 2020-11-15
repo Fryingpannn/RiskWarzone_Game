@@ -15,6 +15,7 @@
 
 #include "Orders.h"
 #include "Map.h"
+#include "Player.h"
 #include <random>
 
 /*---------------------------------- OrderList class
@@ -250,7 +251,7 @@ bool Deploy::validate() {
 
 // executes deploy if valid
 // the army count in reinforcement pool must be deducted in Player class
-void Deploy::execute() {
+bool Deploy::execute() {
     //add the armies to target territory if it belongs to the player
     if (validate()) {
         target->Armies += armyNb;
@@ -348,7 +349,7 @@ bool Advance::validate() {
 }
 
 // executes the Advance order
-void Advance::execute() {
+bool Advance::execute() {
   if (validate()) {
      //if target territory is also owned by user or has 0 armies, simply move armies there
     if (target->OwnedBy.compare(playerID) == 0 || target->Armies == 0) {
@@ -480,7 +481,7 @@ bool Bomb::validate() {
 }
 
 // executes Bomb order if valid; target territory's armies are halved
-void Bomb::execute() {
+bool Bomb::execute() {
   if (validate()) {
       target->Armies /= 2;
       std::cout << "[Valid] 1 Bomb order executed. Enemy armies have been halved." << std::endl;
@@ -548,7 +549,7 @@ bool Blockade::validate() {
 }
 
 // executes Blockade order if valid
-void Blockade::execute() {
+bool Blockade::execute() {
   if (validate()) {
     src->Armies *= 2;
     src->OwnedBy = "neutral";
@@ -646,7 +647,7 @@ bool Airlift::validate() {
 }
 
 // executes Airlift order if valid
-void Airlift::execute() {
+bool Airlift::execute() {
     if (validate()) {
         //if target territory is also owned by user or has 0 armies, simply move armies there
         if (target->OwnedBy.compare(playerID) == 0 || target->Armies == 0) {
@@ -777,7 +778,7 @@ bool Negotiate::validate() {
 }
 
 // executes Negotiate order if valid
-void Negotiate::execute() {
+bool Negotiate::execute() {
   if (validate()) {
     //insert the current player ID into diplomacy set of enemy player
     enemy->set.insert(playerID);
