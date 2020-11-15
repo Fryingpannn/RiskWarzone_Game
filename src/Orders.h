@@ -96,6 +96,7 @@ public:
 	//setter/getter for order name
 	void setName(const std::string& name);
 	std::string getName();
+	Territory* getTarget();
 	int getArmyNb();
 	//assignment operator
 	Order& operator =(const Order& o);
@@ -104,9 +105,6 @@ public:
 	//print function called by insertion stream operator to allow polymorphic printing
 	virtual std::ostream& doprint(std::ostream& out) = 0;
 	virtual ~Order();
-
-  // Getter for the target territory
-  Territory* getTarget();
 };
 
 //Deploy order used to deploy armies onto player territory -------------
@@ -131,7 +129,6 @@ public:
 };
 
 // Advance order used to advance armies into friendly or enemy territory
-// -------------
 class Advance : public Order {
  public:
   // constructors
@@ -153,7 +150,6 @@ class Advance : public Order {
 };
 
 // Bomb order used to bomb target country making them lose half their army units
-// -------------
 //- can only be created by playing bomb card
 class Bomb : public Order {
  public:
@@ -172,8 +168,7 @@ class Bomb : public Order {
   ~Bomb();
 };
 
-// Blockade order used to triple a territory's army units and make it become
-// neutral -------------
+// Blockade order used to triple a territory's army units and make it become neutral 
 class Blockade : public Order {
  public:
   // constructors
@@ -192,8 +187,7 @@ class Blockade : public Order {
   ~Blockade();
 };
 
-// Airlift order used to move any number of units from one territory to any
-// other -------------
+// Airlift order used to move any number of units from one territory to any other
 class Airlift : public Order {
  public:
   // constructors
@@ -231,21 +225,4 @@ class Negotiate : public Order {
   Negotiate& operator=(const Negotiate&);
   std::ostream& doprint(std::ostream& out) override;
   ~Negotiate();
-};
-
-// Reinforcement order comes from playing the reiforcement card
-//just adds 5 army unit to the player's reinforcement pool
-class Reinforcement : public Order {
-public:
-	// constructors
-	Reinforcement();
-	Reinforcement(Player* const current);
-	Reinforcement* clone() override;
-	// order functions
-	bool validate() override;
-	bool execute() override;
-	// assignment and stream functions
-	Reinforcement& operator=(const Reinforcement&);
-	std::ostream& doprint(std::ostream& out) override;
-	~Reinforcement();
 };

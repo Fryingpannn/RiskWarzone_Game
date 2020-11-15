@@ -39,6 +39,7 @@ void ordersDriver() {
 	//creating territories to test orders with
 	auto* Malaysia = new Territory{ "Malaysia", 0, "ASEAN", 0, 0 };
 	Malaysia->OwnedBy = "neutral";
+	Player* neutral;
 	auto* Indonesia = new Territory{ "Indonesia", 1, "ASEAN", 0, 0 };
 	Indonesia->OwnedBy = "Sandra";
 	Indonesia->Armies = 2;
@@ -67,10 +68,16 @@ void ordersDriver() {
 	OrderList orders{};
 	std::vector<Territory*> playerOwned{};
 	std::vector<Territory*> playerOwned2{};
+	std::vector<Territory*> playerOwned3{};
+	std::vector<Territory*> playerOwned4{};
 	playerOwned.push_back(Singapore); //matthew owns only singapore
 	playerOwned2.push_back(Philippines); //zahra owns only philippines
+	playerOwned3.push_back(Indonesia); //sandra owns indonesia
+	playerOwned4.push_back(China); //stef owns china
 	Player* matthew = new Player(playerOwned, hand, orders, "Matthew");
 	Player* zahra = new Player(playerOwned2, hand, orders, "Zahra");
+	Player* sandra = new Player(playerOwned3, hand, orders, "Sandra");
+	Player* stef = new Player(playerOwned4, hand, orders, "Stef");
 
 	/* The territories are linked as such: Singapore->Malaysia->Indonesia->Philippines->China */
 
@@ -94,7 +101,7 @@ void ordersDriver() {
 	std::cout << "- Malaysia's owner & army count: " << Malaysia->OwnedBy << ", " << Malaysia->Armies << std::endl;
 
 	//testing valid advance order with no attack
-	std::cout << std::endl << "----- Valid Advance (No Attack) -----" << std::endl << std::endl;
+	std::cout << std::endl << "----- Valid Advance (Attacking 0 armies territory) -----" << std::endl << std::endl;
 	std::cout << "- Singapore's owner & army count: " << Singapore->OwnedBy << ", " << Singapore->Armies << std::endl;
 	std::cout << "- Malaysia's owner & army count: " << Malaysia->OwnedBy << ", " << Malaysia->Armies << std::endl;
 	std::cout << " Matthew: [Advance] Advancing 4 armies from Singapore to Malaysia." << std::endl;
@@ -162,10 +169,18 @@ void ordersDriver() {
 	//testing valid blockade order
 	std::cout << std::endl << "----- Valid Blockade -----" << std::endl << std::endl;
 	std::cout << "- Malaysia's owner & army count: " << Malaysia->OwnedBy << ", " << Malaysia->Armies << std::endl;
+	std::cout << "- Territories owned by Matthew before blockade: " << std::endl; Malaysia->PlayerOwned = matthew;
+	for (int i = 0; i < matthew->Territories.size(); ++i) {
+		std::cout << "  " << i+1 << ". " << matthew->Territories[i]->Name << std::endl;
+	}
 	std::cout << " Matthew: [Blockade] Setting blockade in Malaysia." << std::endl;
 	Order* blockade1 = new Blockade("Matthew", Malaysia);
 	blockade1->execute();
 	std::cout << "- Malaysia's owner & army count: " << Malaysia->OwnedBy << ", " << Malaysia->Armies << std::endl;
+	std::cout << "- Territories owned by Matthew after blockade: " << std::endl;
+	for (int i = 0; i < matthew->Territories.size(); ++i) {
+		std::cout << "  " << i + 1 << ". " << matthew->Territories[i]->Name << std::endl;
+	}
 
 	//testing valid negotiate order
 	std::cout << std::endl << "----- Valid Negotiate -----" << std::endl << std::endl;
@@ -197,8 +212,7 @@ void ordersDriver() {
 	std::cout << std::endl;
 	delete deploy1, delete deploy2, delete advance1, delete advance2, delete advance3; delete airlift1, delete airlift2,
 	delete airlift3, delete airlift4, delete bomb1, delete bomb2, delete blockade1, delete negotiate1;
-	delete Malaysia, delete Indonesia, delete China;
-	delete deck, delete matthew, delete zahra, delete WorldMap;
+	delete deck, delete zahra, delete stef, delete sandra, delete WorldMap;
 
 	/*------------------------------------------------------------------------------------------------------*/
 
