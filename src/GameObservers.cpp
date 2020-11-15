@@ -29,31 +29,49 @@
 
 Observer::Observer()
 {
-	// std::cout << "Observer constructor" << std::endl;
 }
 
 Observer::~Observer()
 {
-	std::cout << "Observer destructor" << std::endl;
 }
 
 /////////////////////////////////////////////
 // Subject Class
 /////////////////////////////////////////////
+
+/**
+ * @brief Construct a new Subject:: Subject object
+ * 
+ */
 Subject::Subject()
 {
 	_observers = new std::list<Observer *>;
 }
+
+/**
+ * @brief Attach the observer to the subject
+ * 
+ * @param o 
+ */
 void Subject::Attach(Observer *o)
 {
 	_observers->push_back(o);
 }
 
+/**
+ * @brief Detatch the observer from the subject
+ * 
+ * @param o 
+ */
 void Subject::Detach(Observer *o)
 {
 	_observers->remove(o);
 }
 
+/**
+ * @brief Notify observers of a change in state
+ * 
+ */
 void Subject::Notify()
 {
 	std::list<Observer *>::iterator i = _observers->begin();
@@ -63,6 +81,10 @@ void Subject::Notify()
 	}
 }
 
+/**
+ * @brief Destroy the Subject:: Subject object
+ * 
+ */
 Subject::~Subject()
 {
 	std::cout << "Deleting Observer Subject" << std::endl;
@@ -152,7 +174,6 @@ void PhaseObserver::Update()
 
 PhaseObserver::~PhaseObserver()
 {
-	std::cout << "Deleting PhaseObserver" << std::endl;
 	_phase_subject->Detach(this);
 }
 
@@ -216,6 +237,5 @@ void GameStatisticsObserver::Update()
 
 GameStatisticsObserver::~GameStatisticsObserver()
 {
-	std::cout << "Deleting GameStatisticsObserver." << std::endl;
 	_game_observer_subject->Detach(this);
 }
