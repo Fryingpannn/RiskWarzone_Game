@@ -614,6 +614,8 @@ bool Blockade::execute() {
     if (validate()) {
         src->Armies *= 2;
         //remove territory from player's list
+        if (src == nullptr || src->PlayerOwned == nullptr)
+            std::cout << "Error: source territory or player owned attribute of territory is null." << std::endl;
         for (auto it = src->PlayerOwned->Territories.begin(); it != src->PlayerOwned->Territories.end(); ++it) {
             if ((*it)->TerritoryID == src->TerritoryID) {
                 src->PlayerOwned->Territories.erase(it);
@@ -639,7 +641,7 @@ bool Blockade::execute() {
 // assignment operator
 Blockade& Blockade::operator=(const Blockade& o) {
     Order::operator=(o);
-    setName("- Blockade target country -");
+    setName("BLOCKADE");
     return *this;
 }
 
@@ -832,7 +834,7 @@ bool Airlift::execute() {
 // assignment operator
 Airlift& Airlift::operator=(const Airlift& o) {
     Order::operator=(o);
-    setName("- Airlift to target country -");
+    setName("AIRLIFT");
     return *this;
 }
 
@@ -909,7 +911,7 @@ bool Negotiate::execute() {
 // assignment operator function
 Negotiate& Negotiate::operator=(const Negotiate& n) {
     Order::operator=(n);
-    setName("- Negotiate with target player -");
+    setName("NEGOTIATE");
     return *this;
 }
 
@@ -964,7 +966,7 @@ bool Reinforcement::execute() {
 // assignment operator function
 Reinforcement& Reinforcement::operator=(const Reinforcement& n) {
     Order::operator=(n);
-    setName("- Reinforcement -");
+    setName("REINFORCEMENT");
     return *this;
 }
 
