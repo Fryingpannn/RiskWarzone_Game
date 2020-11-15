@@ -260,7 +260,6 @@ bool Deploy::execute() {
   // add the armies to target territory if it belongs to the player
   if (validate()) {
     target->Armies += armyNb;
-    current->ReinforcementPool -= armyNb;
     std::cout << "[Valid] 1 Deploy order executed." << std::endl;
     success_result = true;
   } else {
