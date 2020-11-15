@@ -563,7 +563,11 @@ void GameEngine::executeOrdersPhase() {
       }
     }
   }
-
+  //reset negotiated player list and card given status
+  for (auto* player : ListOfPlayers) {
+      player->set.clear();
+      player->cardNotGiven = true;
+  }
   std::cout << "END OF ORDER EXECUTION PHASE\n"
             << "--------------------------\n";
 }
