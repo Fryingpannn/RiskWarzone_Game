@@ -14,9 +14,11 @@
 /////////////////////////////////////////////
 
 #include "Map.h"
-#include "Player.h"
+
 #include <algorithm>
 #include <iostream>
+
+#include "Player.h"
 
 Territory::Territory() {
   this->Name = "default";
@@ -35,14 +37,14 @@ Territory::Territory(std::string name, int territoryID, std::string continent,
   this->YCoordinate = y;
 }
 
-Territory::Territory(std::string name, int territoryID, std::string continent, float x, float y, Player* playerOwned)
-{
-    this->Name = name;
-    this->TerritoryID = territoryID;
-    this->Continent = continent;
-    this->XCoordinate = x;
-    this->YCoordinate = y;
-    this->PlayerOwned = playerOwned;
+Territory::Territory(std::string name, int territoryID, std::string continent,
+                     float x, float y, Player* playerOwned) {
+  this->Name = name;
+  this->TerritoryID = territoryID;
+  this->Continent = continent;
+  this->XCoordinate = x;
+  this->YCoordinate = y;
+  this->PlayerOwned = playerOwned;
 }
 
 bool Territory::operator==(Territory& Territory) const {
@@ -66,40 +68,37 @@ Territory& Territory::operator=(const Territory& t) {
   return *this;
 }
 
-
 std::ostream& operator<<(std::ostream& out, const Territory& t) {
   out << "\tName: " << t.Name << "\n";
   out << "\tID: " << t.TerritoryID << "\n";
   out << "\tContinent: " << t.Continent << "\n";
- 
+
   return out;
 }
 
-std::ostream& operator<<(std::ostream& out, const Map& map)
-{
-    std::cout << "\n\nMap Name: " << map.MapName << std::endl;
+std::ostream& operator<<(std::ostream& out, const Map& map) {
+  std::cout << "\n\nMap Name: " << map.MapName << std::endl;
 
-    for (int i = 0; i < *map.NumberOfCountries; i++) {
-        int j = 0;
+  for (int i = 0; i < *map.NumberOfCountries; i++) {
+    int j = 0;
 
-        for (Territory* country : *(map.ListOfCountries[i])) {
-            if (j == 0) {
-                std::cout << "Territory: " << i << std::endl;
-                std::cout << "Name: " << country->Name << std::endl;
-                std::cout << "Adjacent Countries " << std::endl;
-                j++;
-            }
-            else {
-                std::cout << "-> ";
-                std::cout << "Country ID: " << country->TerritoryID << " ";
-                std::cout << country->Name << "\n";
-                j++;
-            }
-        }
-        j = 0;
-        std::cout << std::endl;
+    for (Territory* country : *(map.ListOfCountries[i])) {
+      if (j == 0) {
+        std::cout << "Territory: " << i << std::endl;
+        std::cout << "Name: " << country->Name << std::endl;
+        std::cout << "Adjacent Countries " << std::endl;
+        j++;
+      } else {
+        std::cout << "-> ";
+        std::cout << "Country ID: " << country->TerritoryID << " ";
+        std::cout << country->Name << "\n";
+        j++;
+      }
     }
-    return out;
+    j = 0;
+    std::cout << std::endl;
+  }
+  return out;
 }
 
 Map::Map() {
@@ -114,7 +113,6 @@ Map::Map() {
 
 // size defining the size of the map, name defining the map of the name
 Map::Map(int size, std::string name) {
-  
   NumberOfCountries = new int(size);
 
   ListOfCountries = new std::vector<Territory*>*[1000];
@@ -124,10 +122,9 @@ Map::Map(int size, std::string name) {
   MapName = new std::string(name);
 }
 
-//other constructors that other programmers could work with :)
+// other constructors that other programmers could work with :)
 Map::Map(std::vector<struct ::Territory*>** listOfCountries,
          std::string mapName, int size, Map& continent) {
-
   NumberOfCountries = new int(size);
   ListOfCountries = listOfCountries;
   MapName = new std::string(mapName);
@@ -140,8 +137,8 @@ Map::Map(std::vector<struct ::Territory*>** listOfCountries,
   MapName = new std::string(mapName);
 }
 
-//copy constructor
-//iterate each of the countries and create a copy of it
+// copy constructor
+// iterate each of the countries and create a copy of it
 Map::Map(Map& Copy) {
   MapName = new std::string(*Copy.MapName);
   ListOfCountries = new std::vector<Territory*>*[1000];
@@ -152,8 +149,8 @@ Map::Map(Map& Copy) {
   if (!(**Copy.ListOfCountries).empty()) {
     for (int i = 0; i < *Copy.NumberOfCountries; i++) {
       for (Territory* country : *Copy.ListOfCountries[i]) {
-          //calling copy constructor of each Territory
-          ListOfCountries[i]->push_back(country);
+        // calling copy constructor of each Territory
+        ListOfCountries[i]->push_back(country);
       }
     }
   }
@@ -163,7 +160,7 @@ Map::Map(Map& Copy) {
 }
 
 Map::~Map() {
-    for (int i = 0; i < 1000; i++) {
+  for (int i = 0; i < 1000; i++) {
     Log("Deleting! : " << i);
     ListOfCountries[i]->clear();
     delete ListOfCountries[i];
@@ -172,8 +169,6 @@ Map::~Map() {
 
   delete NumberOfCountries;
   delete MapName;
-
-
 }
 
 void Map::AddEdges(Territory& country1, Territory& country2) {
@@ -182,7 +177,7 @@ void Map::AddEdges(Territory& country1, Territory& country2) {
   // When the Array still doesn't have the country yet, it will automatically
   // add a new country
   if (this->ListOfCountries[country1.TerritoryID]->size() == 0) {
-    Log("Added" <<country1.Name);
+    Log("Added" << country1.Name);
     this->ListOfCountries[country1.TerritoryID]->push_back(&country1);
   }
 
@@ -203,8 +198,9 @@ void Map::AddEdges(Territory& country1, Territory& country2) {
   this->ListOfCountries[country1.TerritoryID]->push_back(&country2);
 }
 
-//iterate through the array and return the country at first index which is unique according to the ID
-//same method will be same for every other method that return countries by ID or player name etc
+// iterate through the array and return the country at first index which is
+// unique according to the ID same method will be same for every other method
+// that return countries by ID or player name etc
 std::vector<struct ::Territory*> Map::ReturnListOfCountries() {
   std::vector<Territory*> Temp;
   for (int i = 0; i < *NumberOfCountries; i++) {
@@ -215,85 +211,84 @@ std::vector<struct ::Territory*> Map::ReturnListOfCountries() {
   return Temp;
 }
 
-std::vector<struct::Territory*> Map::ReturnListOfAdjacentCountriesByID(int ID)
-{
-    std::vector<Territory*> ReturnList;
-    for (Territory* Temp: *ListOfCountries[ID]) {
-        ReturnList.push_back(Temp);
-        Log(Temp->Name << std::endl);
-    }
-    return ReturnList;
+std::vector<struct ::Territory*> Map::ReturnListOfAdjacentCountriesByID(
+    int ID) {
+  std::vector<Territory*> ReturnList;
+  for (Territory* Temp : *ListOfCountries[ID]) {
+    ReturnList.push_back(Temp);
+    // Log(Temp->Name << std::endl);
+  }
+  return ReturnList;
 }
 
-std::vector<struct::Territory*> Map::ReturnListOfCountriesOwnedByPlayer(std::string PlayerName)
-{
-    std::vector<Territory*> Temp;
-    for (int i = 0; i < *NumberOfCountries; i++) {
-        if (ListOfCountries[i]->at(0)->OwnedBy == PlayerName) {
-            Temp.push_back(ListOfCountries[i]->at(0));
-            Log("This country "<< ListOfCountries[i]->at(0)->Name <<"Owned by player "<< PlayerName<< std::endl);
-        }
+std::vector<struct ::Territory*> Map::ReturnListOfCountriesOwnedByPlayer(
+    std::string PlayerName) {
+  std::vector<Territory*> Temp;
+  for (int i = 0; i < *NumberOfCountries; i++) {
+    if (ListOfCountries[i]->at(0)->OwnedBy == PlayerName) {
+      Temp.push_back(ListOfCountries[i]->at(0));
+      // Log("This country "<< ListOfCountries[i]->at(0)->Name <<"Owned by
+      // player "<< PlayerName<< std::endl);
     }
-    return Temp;
+  }
+  return Temp;
 }
 
-std::vector<struct::Territory*> Map::ReturnListOfCountriesByContinent(std::string ContinentName)
-{
-    std::vector<Territory*> Temp;
-    for (int i = 0; i < *NumberOfCountries; i++) {
-        if (ListOfCountries[i]->at(0)->Continent == ContinentName) {
-            Temp.push_back(ListOfCountries[i]->at(0));
-            Log("This country " << ListOfCountries[i]->at(0)->Name << "Is in continent" << ContinentName << std::endl);
-        }
+std::vector<struct ::Territory*> Map::ReturnListOfCountriesByContinent(
+    std::string ContinentName) {
+  std::vector<Territory*> Temp;
+  for (int i = 0; i < *NumberOfCountries; i++) {
+    if (ListOfCountries[i]->at(0)->Continent == ContinentName) {
+      Temp.push_back(ListOfCountries[i]->at(0));
+      // Log("This country " << ListOfCountries[i]->at(0)->Name << "Is in
+      // continent" << ContinentName << std::endl);
     }
-    return Temp;
+  }
+  return Temp;
 }
 
-//method to check whether the player own continent
-//there's one possibility to break the code, if the parameter ContinentName didn't match any of the continent name in the map it will return true
-//Although it shouldn't even be any way for it to happen but yeah
-bool Map::IfPlayerOwnContinent(std::string PlayerName, std::string ContinentName)
-{
-    for (int i = 0; i < *NumberOfCountries; i++) {
-        //If the continent is found then it will check
-        if (ListOfCountries[i]->at(0)->Continent == ContinentName) {
-            Log("This country " << ListOfCountries[i]->at(0)->Name << "Is in continent" << ContinentName << std::endl);
-            if (ListOfCountries[i]->at(0)->OwnedBy != PlayerName)
-            {
-                Log("This country " << ListOfCountries[i]->at(0)->Name << "Owned by" << ListOfCountries[i]->at(0)->OwnedBy << std::endl);
+// method to check whether the player own continent
+// there's one possibility to break the code, if the parameter ContinentName
+// didn't match any of the continent name in the map it will return true Although
+// it shouldn't even be any way for it to happen but yeah
+bool Map::IfPlayerOwnContinent(std::string PlayerName,
+                               std::string ContinentName) {
+  for (int i = 0; i < *NumberOfCountries; i++) {
+    // If the continent is found then it will check
+    if (ListOfCountries[i]->at(0)->Continent == ContinentName) {
+      Log("This country " << ListOfCountries[i]->at(0)->Name
+                          << "Is in continent" << ContinentName << std::endl);
+      if (ListOfCountries[i]->at(0)->OwnedBy != PlayerName) {
+        Log("This country " << ListOfCountries[i]->at(0)->Name << "Owned by"
+                            << ListOfCountries[i]->at(0)->OwnedBy << std::endl);
 
-                return false;
-            }
-            else 
-            {
-                Log("This country " << ListOfCountries[i]->at(0)->Name << "Owned by" << ContinentName << std::endl);
+        return false;
+      } else {
+        Log("This country " << ListOfCountries[i]->at(0)->Name << "Owned by"
+                            << ContinentName << std::endl);
+      }
+    }
+  }
+  return true;
+}
+// show list of adjacent of countries by ID
+// aka where player can attack from this territory
+void Map::ShowListOfAdjacentCountriesByID(int ID) {
+  std::cout << "Country adjacent by country with ID: " << ID << std::endl;
 
-            }
-        }
-    }
-    return true;
+  for (Territory* Temp : *ListOfCountries[ID]) {
+    std::cout << Temp->Name << std::endl;
+  }
 }
-//show list of adjacent of countries by ID
-//aka where player can attack from this territory
-void Map::ShowListOfAdjacentCountriesByID(int ID)
-{
-    std::cout << "Country adjacent by country with ID: " << ID<<std::endl;
-    
-    for (Territory* Temp : *ListOfCountries[ID]) {
-        
-        std::cout<<Temp->Name << std::endl;
+// method to display the countries owned by player
+void Map::ShowListOfAdjacentCountriesOwnedByPlayer(std::string PlayerName) {
+  std::cout << PlayerName << " owns : " << std::endl;
+  for (int i = 0; i < *NumberOfCountries; i++) {
+    if (ListOfCountries[i]->at(0)->OwnedBy == PlayerName) {
+      std::cout << "Territory ID" << ListOfCountries[i]->at(0)->TerritoryID
+                << ": " << ListOfCountries[i]->at(0)->Name << std::endl;
     }
-}
-//method to display the countries owned by player
-void Map::ShowListOfAdjacentCountriesOwnedByPlayer(std::string PlayerName)
-{
-    std::cout << PlayerName << " owns : " << std::endl;
-    for (int i = 0; i < *NumberOfCountries; i++) {
-        if (ListOfCountries[i]->at(0)->OwnedBy == PlayerName) {
-            std::cout <<"Territory ID" <<ListOfCountries[i]->at(0)->TerritoryID<<": "<< ListOfCountries[i]->at(0)->Name << std::endl;
-        }
-    }
-    
+  }
 }
 
 int Map::NumOfCountries() { return *this->NumberOfCountries; }
@@ -372,9 +367,7 @@ void Map::SetMapName(std::string mapName) {
 }
 
 // getter for the map name
-std::string Map::GetMapName() {
-  return *MapName;
-}
+std::string Map::GetMapName() { return *MapName; }
 
 // validate the map by checking many stuff
 bool Map::Validate() {
@@ -483,7 +476,8 @@ bool Map::Validate() {
     return false;
 }
 
-//DFS to check whether the graph is connected, visit through the objects and it will knows
+// DFS to check whether the graph is connected, visit through the objects and it
+// will knows
 void Map::DFS(int x, bool** visited) {
   *visited[x] = true;
   Log("visited: " << x << " " << *visited[x] << "\n");
@@ -505,28 +499,26 @@ void Map::DFS(int x, bool** visited) {
   }
 }
 
-Map& Map::operator=(const Map* map)
-{
-    Log("Using Assignment Operator");
-    MapName = new std::string(*(map->MapName));
-    ListOfCountries = new std::vector<Territory*> * [1000];
+Map& Map::operator=(const Map* map) {
+  Log("Using Assignment Operator");
+  MapName = new std::string(*(map->MapName));
+  ListOfCountries = new std::vector<Territory*>*[1000];
 
-    for (int i = 0; i < 1000; i++)
-        ListOfCountries[i] = new std::vector<struct ::Territory*>;
+  for (int i = 0; i < 1000; i++)
+    ListOfCountries[i] = new std::vector<struct ::Territory*>;
 
-    if (!(**(map->ListOfCountries)).empty()) {
-        for (int i = 0; i < *(map->NumberOfCountries); i++) {
-            for (Territory* country : *(map->ListOfCountries[i])) {
-                //calling copy constructor of each Territory
-                ListOfCountries[i]->push_back(country);
-            }
-        }
+  if (!(**(map->ListOfCountries)).empty()) {
+    for (int i = 0; i < *(map->NumberOfCountries); i++) {
+      for (Territory* country : *(map->ListOfCountries[i])) {
+        // calling copy constructor of each Territory
+        ListOfCountries[i]->push_back(country);
+      }
     }
-    Log("Copied successful\n");
+  }
+  Log("Copied successful\n");
 
-    NumberOfCountries = new int(*(map->NumberOfCountries));
-    // TODO: insert return statement here
+  NumberOfCountries = new int(*(map->NumberOfCountries));
+  // TODO: insert return statement here
 
-    return *this;
+  return *this;
 }
-

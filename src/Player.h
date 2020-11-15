@@ -28,7 +28,6 @@ struct Territory;
 class Map;
 class Deck;
 
-
 /**
  * A class for the object Player which managers territories, cards and orders
  * owned by a player.
@@ -62,11 +61,12 @@ class Player : public Subject {
   Player &operator=(const Player &p);
 
   // Helper function for game engine
-  void bindGameElements(std::vector<Player *> &Players, Map *mapIn, Deck *deckIn);
+  void bindGameElements(std::vector<Player *> &Players, Map *mapIn,
+                        Deck *deckIn);
   void initIssueOrder();
 
-  std::map<int, Territory *> toDefend();
-  std::map<int, Territory *> toAttack();
+  std::vector<Territory *> toDefend();
+  std::vector<Territory *> toAttack();
   void issueOrder();
 
   // Helper functions of issue order
