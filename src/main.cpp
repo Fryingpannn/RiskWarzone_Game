@@ -29,7 +29,7 @@
 
 void displayA1DemoMenu();
 void displayA2DemoMenu();
-void displayAssginmentMenu();
+void displayAssignmentMenu();
 void a1DemoHandler();
 void a2DemoHandler();
 void doA2MainGame();
@@ -81,7 +81,7 @@ void displayA1DemoMenu()
 void displayA2DemoMenu()
 {
   std::cout << "1. Run main game" << std::endl;
-  std::cout << "2. Part 4 Demo" << std::endl;
+  std::cout << "2. Part 4: Orders Driver Demo" << std::endl;
 }
 
 void displayAssignmentMenu()
