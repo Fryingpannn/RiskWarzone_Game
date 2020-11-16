@@ -47,8 +47,8 @@ int main()
     std::cout << "1. Assignment 1 Demos" << std::endl;
     std::cout << "2. Assignment 2 Demos" << std::endl;
     std::cout << "Please enter your choice 1-2 (q to quit): ";
-    std::cin >> choice;
-
+    //std::cin >> choice;
+    choice = '2';
     switch (choice)
     {
     case '1':
@@ -102,7 +102,7 @@ void a1DemoHandler()
   {
     displayA1DemoMenu();
     std::cout << "Please enter your choice 1-5 (q to quit): ";
-    std::cin >> choice;
+   std::cin >> choice;
 
     switch (choice)
     {
@@ -144,8 +144,8 @@ void a2DemoHandler()
   {
     displayA2DemoMenu();
     std::cout << "Please enter your choice 1-2 (q to quit): ";
-    std::cin >> choice;
-
+    //std::cin >> choice;
+    choice = '1';
     switch (choice)
     {
     case '1':

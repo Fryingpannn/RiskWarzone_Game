@@ -172,7 +172,13 @@ std::vector<Territory *> Player::toAttack() {
     // that the player owns
     auto computeAdjacentResult =
         this->MainMap->ReturnListOfAdjacentCountriesByID(elem->TerritoryID);
+    std::cout << "adjacent of " << elem->Name<< "\n";
 
+    for (auto &t :computeAdjacentResult) {
+      std::cout << "\t\t" << t->Name << " [Owned by " << t->OwnedBy
+                << " PlayerOwned" << t->PlayerOwned->PID << "]"
+                << " Armies " << t->Armies << "\n";     
+    }
     // Keep only territories that a player does not already own.
     for (auto &t : computeAdjacentResult) {
       auto it = std::find(ownedTerritories.begin(), ownedTerritories.end(), t);
@@ -187,6 +193,7 @@ std::vector<Territory *> Player::toAttack() {
   for (auto &t : toAttackMap) {
     toAttack.push_back(t.second);
   }
+
 
   return toAttack;
 }
