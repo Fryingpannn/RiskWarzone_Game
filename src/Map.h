@@ -111,7 +111,7 @@ class Map {
 
   void AddContinent(ContinentData *new_continent);
 
-  std::vector<struct::ContinentData*> Map::getListOfContinents();
+  std::vector<struct::ContinentData*> getListOfContinents();
 
   std::vector<struct ::Territory *> ReturnListOfCountries();
 
