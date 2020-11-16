@@ -239,7 +239,9 @@ Deploy::Deploy(const std::string& playerID, const int& armyNb,
     this->target = target;
     this->playerID = playerID;
     this->current = current;
-    current->ReinforcementPool -= armyNb;
+    if (current->ReinforcementPool < armyNb)
+        this->armyNb = 0;
+    current->ReinforcementPool -= this->armyNb;
 }
 
 // clone function for Deploy
@@ -275,7 +277,7 @@ bool Deploy::execute() {
 // assignment operator
 Deploy& Deploy::operator=(const Deploy& o) {
     Order::operator=(o);
-    setName("- Deploy armies -");
+    setName("DEPLOY");
     return *this;
 }
 
@@ -325,6 +327,10 @@ Advance::Advance(const std::string& playerID, const int& armyNb, Territory* src,
     this->map = map;
     this->current = current;
     this->deck = deck;
+    // subtract sent armies from original
+    if (src->Armies < armyNb)
+        this->armyNb = 0;
+    src->Armies -= this->armyNb;
 }
 
 // clone function for Advance
@@ -334,7 +340,7 @@ Advance* Advance::clone() { return new Advance(*this); }
 bool Advance::validate() {
     std::cout << " Validating order..." << std::endl;
     // return false if src doesn't belong to player
-    if (src == nullptr || armyNb <= 0 || armyNb > src->Armies ||
+    if (src == nullptr || armyNb <= 0 ||
         src->OwnedBy.compare(playerID) != 0 ||
         target->TerritoryID == src->TerritoryID)
         return false;
@@ -369,9 +375,6 @@ bool Advance::execute() {
         // armies there
         if (target->OwnedBy.compare(playerID) == 0) {
             target->Armies += armyNb;
-            // subtract sent armies from original
-            src->Armies -= armyNb;
-            target->OwnedBy = playerID;
             std::cout
                 << "[Valid] 1 Advance order executed. Armies moved to new territory."
                 << std::endl;
@@ -403,42 +406,22 @@ bool Advance::execute() {
 
             /* after attacked finished; possible results from the attack below */
 
-            // IF BOTH TERRITORY LOST ALL ARMIES --
+            // IF BOTH LOST ALL ARMIES --
             if (target->Armies <= 0 && armyNb <= 0) {
                 target->Armies = 0;
-                src->Armies -= armySent;
-                target->OwnedBy = "neutral";
-                std::cout << "[Valid] 1 Advance order executed. Both territories lost "
-                    "their armies. Target"
-                    << " territory became neutral." << std::endl;
-                //delete territory neutral from player's list
-                for (auto it = current->Territories.begin(); it != current->Territories.end(); ++it) {
-                    if ((*it)->OwnedBy == "neutral") {
-                        current->Territories.erase(it);
-                        break;
-                    }
-                }
-                //delete territory neutral from target's list
-                for (auto it = target->PlayerOwned->Territories.begin(); it != target->PlayerOwned->Territories.end(); ++it) {
-                    if ((*it)->OwnedBy == "neutral") {
-                        current->Territories.erase(it);
-                        break;
-                    }
-                }
+                std::cout << "[Valid] 1 Advance order executed. Attack failed: " << playerID << " lost their sent armies." << std::endl;
                 success_result = false;
             }
             // IF ATTACKER WON --
             else if (target->Armies <= 0) {
+                target->Armies = armyNb;
                 std::cout << " --> " << armyNb << " army/armies from " << playerID
-                    << " were sacrificed in battle." << std::endl;
+                    << " survived the battle." << std::endl;
                 std::cout << " --> " << target->OwnedBy
                     << "'s army/armies have been eliminated. F has been pressed "
                     "to pay respects."
                     << std::endl;
                 std::cout << " --> ";
-                target->Armies = armyNb;
-                target->OwnedBy = playerID;
-                src->Armies -= armySent;
                 // give new card to player's hand if not given yet this turn
                 if (current->cardNotGiven) {
                     current->HandOfCards->add(
@@ -448,13 +431,23 @@ bool Advance::execute() {
                 std::cout
                     << "[Valid] 1 Advance order executed. Target territory captured by "
                     << playerID << "." << std::endl;
-                //add new territory to player's list
+                //add new territory to player's list and remove from old
                 current->Territories.push_back(target);
+                if (target->OwnedBy == "" || target->PlayerOwned == nullptr)
+                    std::cout << " -> Target territory is not initialized to any player name or player object." << std::endl;
+                if (target->OwnedBy != "neutral")
+                    for (auto it = target->PlayerOwned->Territories.begin(); it != target->PlayerOwned->Territories.end(); ++it) {
+                        if ((*it)->TerritoryID == target->TerritoryID) {
+                            target->PlayerOwned->Territories.erase(it);
+                            break;
+                        }
+                    }
+                target->OwnedBy = playerID;
+                target->PlayerOwned = current;
                 success_result = true;
             }
             // IF DEFENDER WON --
             else if (armyNb <= 0) {
-                src->Armies -= armySent;
                 std::cout << "[Valid] 1 Advance order executed. Failed to capture "
                     "target territory."
                     << std::endl;
@@ -475,7 +468,7 @@ bool Advance::execute() {
 // assignment operator function
 Advance& Advance::operator=(const Advance& adv) {
     Order::operator=(adv);
-    setName("- Advance armies -");
+    setName("ADVANCE");
     return *this;
 }
 
@@ -554,7 +547,7 @@ bool Bomb::execute() {
 // assignment operator
 Bomb& Bomb::operator=(const Bomb& o) {
     Order::operator=(o);
-    setName("- Bomb target country -");
+    setName("BOMB");
     return *this;
 }
 
@@ -581,9 +574,7 @@ Bomb::~Bomb() { std::cout << "Destroying bomb order." << std::endl; }
 Blockade::Blockade() : Order("BLOCKADE", 3) {};
 
 // copy constructor
-Blockade::Blockade(const Blockade& blockade) : Order(blockade, 3) {
-    setName("- Blockade target country -");
-}
+Blockade::Blockade(const Blockade& blockade) : Order(blockade, 3) {}
 
 // constructor; double friendly territory and transform it to neutral
 // - playerID is the player who issued this order. Can only be played with the
@@ -614,8 +605,8 @@ bool Blockade::execute() {
     if (validate()) {
         src->Armies *= 2;
         //remove territory from player's list
-        if (src == nullptr || src->PlayerOwned == nullptr)
-            std::cout << "Error: source territory or player owned attribute of territory is null." << std::endl;
+        if (src->PlayerOwned == nullptr)
+            std::cout << "Blockade Error: Player owned attribute of source territory is null." << std::endl;
         for (auto it = src->PlayerOwned->Territories.begin(); it != src->PlayerOwned->Territories.end(); ++it) {
             if ((*it)->TerritoryID == src->TerritoryID) {
                 src->PlayerOwned->Territories.erase(it);
@@ -696,6 +687,10 @@ Airlift::Airlift(const std::string& playerID, const int& armyNb, Territory* src,
     this->target = target;
     this->current = current;
     this->deck = deck;
+    // subtract sent armies from original
+    if (src->Armies < armyNb)
+        this->armyNb = 0;
+    src->Armies -= this->armyNb;
 }
 
 // clone function
@@ -704,9 +699,8 @@ Airlift* Airlift::clone() { return new Airlift(*this); }
 // validates order; returns true if src and target are owned by the player
 bool Airlift::validate() {
     std::cout << " Validating order..." << std::endl;
-    if (src == nullptr || target == nullptr || armyNb <= 0 ||
-        armyNb > src->Armies || src->OwnedBy.compare(playerID) != 0) {
-        std::cout << "OK";
+    if (src == nullptr || target == nullptr || armyNb <= 0
+         || src->OwnedBy.compare(playerID) != 0) {
         return false;
     }
 
@@ -728,10 +722,8 @@ bool Airlift::execute() {
     if (validate()) {
         // if target territory is also owned by user or has 0 armies, simply move
         // armies there
-        if (target->OwnedBy.compare(playerID) == 0 || target->Armies == 0) {
+        if (target->OwnedBy.compare(playerID) == 0) {
             target->Armies += armyNb;
-            // subtract sent armies from original
-            src->Armies -= armyNb;
             target->OwnedBy = playerID;
             std::cout << "[Valid] 1 Airlift order executed. Armies have been flown "
                 "to new territory."
@@ -765,39 +757,19 @@ bool Airlift::execute() {
             if (target->Armies <= 0 && armyNb <= 0) {
                 // if both lost all their armies during the attack
                 target->Armies = 0;
-                src->Armies -= armySent;
-                target->OwnedBy = "neutral";
-                std::cout << "[Valid] 1 Airlift order executed. Both territories lost "
-                    "their armies. Target"
-                    << " territory became neutral." << std::endl;
-                //delete territory neutral from player's list
-                for (auto it = current->Territories.begin(); it != current->Territories.end(); ++it) {
-                    if ((*it)->OwnedBy == "neutral") {
-                        current->Territories.erase(it);
-                        break;
-                    }
-                }
-                //delete territory neutral from target's list
-                for (auto it = target->PlayerOwned->Territories.begin(); it != target->PlayerOwned->Territories.end(); ++it) {
-                    if ((*it)->OwnedBy == "neutral") {
-                        current->Territories.erase(it);
-                        break;
-                    }
-                }
+                std::cout << "[Valid] 1 Airlift order executed. Attack unsuccessful:" << playerID << " lost their armies." << std::endl;
                 success_result = false;
             }
             else if (target->Armies <= 0) {
                 // if attacker won
+                target->Armies = armyNb;
                 std::cout << " --> " << armyNb << " army/armies from " << playerID
-                    << " were sacrificed in battle." << std::endl;
+                    << " survived from the battle." << std::endl;
                 std::cout
                     << " --> " << target->OwnedBy
                     << "'s army/armies have been eliminated. Press F to pay respects."
                     << std::endl;
                 std::cout << " --> ";
-                target->Armies = armyNb;
-                target->OwnedBy = playerID;
-                src->Armies -= armySent;
                 // give new card to player's hand if not given yet this turn
                 if (current->cardNotGiven) {
                     current->HandOfCards->add(
@@ -807,13 +779,23 @@ bool Airlift::execute() {
                 std::cout
                     << "[Valid] 1 Airlift order executed. Target territory captured by "
                     << playerID << "." << std::endl;
-                //add new territory to player's list
+                //add new territory to player's list and remove from old
                 current->Territories.push_back(target);
+                if (target->OwnedBy == "" || target->PlayerOwned == nullptr)
+                    std::cout << " -> Target territory is not initialized to any player name or player object." << std::endl;
+                if (target->OwnedBy != "neutral")
+                    for (auto it = target->PlayerOwned->Territories.begin(); it != target->PlayerOwned->Territories.end(); ++it) {
+                        if ((*it)->TerritoryID == target->TerritoryID) {
+                            target->PlayerOwned->Territories.erase(it);
+                            break;
+                        }
+                    }
+                target->OwnedBy = playerID;
+                target->PlayerOwned = current;
                 success_result = true;
             }
             else if (armyNb <= 0) {
                 // if defender won
-                src->Armies -= armySent;
                 std::cout << "[Valid] 1 Airlift order executed. Failed to capture "
                     "target territory."
                     << std::endl;
@@ -938,6 +920,8 @@ Negotiate::~Negotiate() {
 
  // default constructor
 Reinforcement::Reinforcement() : Order("REINFORCEMENT", 0) {}
+// copy constructor
+Reinforcement::Reinforcement(const Reinforcement& copy) : Order(copy, 0) {}
 
 /* constructor; gives 5 army units to the player.
  *  Reinforcement can only be created with reinforcement card.

@@ -69,7 +69,7 @@ protected:
 	//true if order is to be executed by game engine, false otherwise
 	bool executed{ false };
 	int armyNb{}; //the number of armies to change within order
-	std::string playerID; //current player's ID
+	std::string playerID{ "uninitialized" }; //current player's ID
 	Territory* src = nullptr;
 	Territory* target = nullptr;
 	std::vector<Territory*> adj{}; //adjacent territories of src
@@ -234,6 +234,7 @@ public:
 	// constructors
 	Reinforcement();
 	Reinforcement(Player* const current);
+	Reinforcement(const Reinforcement&);
 	Reinforcement* clone() override;
 	// order functions
 	bool validate() override;

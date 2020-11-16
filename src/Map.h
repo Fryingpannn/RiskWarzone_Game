@@ -48,7 +48,7 @@ struct Territory : public Subject {
   std::string Continent;
   float XCoordinate;
   float YCoordinate;
-  std::string OwnedBy = "";
+  std::string OwnedBy = "uninitializedT";
   Player* PlayerOwned;
   int Armies = 0;
 
