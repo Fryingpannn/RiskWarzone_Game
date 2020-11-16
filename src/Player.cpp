@@ -125,10 +125,11 @@ std::ostream &operator<<(std::ostream &out, const Player &p) {
   return out;
 }
 
-void Player::bindGameElements(std::vector<Player *> &Players, Map *mapIn,
+void Player::bindGameElements(std::vector<Player *> &inPlayers, Map *mapIn,
                               Deck *deckIn) {
   this->MainMap = mapIn;
   this->DeckOfCards = deckIn;
+  this->ListOfPlayers = inPlayers;
 }
 
 void Player::initIssueOrder() {
