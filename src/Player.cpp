@@ -45,6 +45,8 @@ Player::Player(std::vector<Territory *> territories, Hand handOfCards,
   // Declare those territories as belonging to this player
   for (auto &i : territories) {
     i->OwnedBy = this->PID;
+    i->PlayerOwned = this;
+    std::cout << i->PlayerOwned->PID << std::endl;
   }
 
   this->Territories = territories;

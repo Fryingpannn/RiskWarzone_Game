@@ -47,7 +47,7 @@ void ordersDriver() {
 	Singapore->OwnedBy = "Matthew";
 	auto* Philippines = new Territory{ "Philippines", 3, "ASEAN", 0, 0 };
 	Philippines->OwnedBy = "Zahra";
-	Philippines->Armies = 6;
+	Philippines->Armies = 5;
 	auto* China = new Territory{ "China", 4, "ASEAN", 0, 0 };
 	China->OwnedBy = "Stef";
 	China->Armies = 1;
@@ -75,9 +75,13 @@ void ordersDriver() {
 	playerOwned3.push_back(Indonesia); //sandra owns indonesia
 	playerOwned4.push_back(China); //stef owns china
 	Player* matthew = new Player(playerOwned, hand, orders, "Matthew");
+	matthew->ReinforcementPool = 30;
 	Player* zahra = new Player(playerOwned2, hand, orders, "Zahra");
+	zahra->ReinforcementPool = 30;
 	Player* sandra = new Player(playerOwned3, hand, orders, "Sandra");
+	sandra->ReinforcementPool = 30;
 	Player* stef = new Player(playerOwned4, hand, orders, "Stef");
+	stef->ReinforcementPool = 30;
 
 	/* The territories are linked as such: Singapore->Malaysia->Indonesia->Philippines->China */
 
@@ -87,8 +91,8 @@ void ordersDriver() {
 	//testing valid deploy order
 	std::cout << std::endl << "----- Valid Deploy -----" << std::endl << std::endl;
 	std::cout << "- Singapore's owner & army count: " << Singapore->OwnedBy << ", " << Singapore->Armies << std::endl;
-	std::cout << " Matthew: [Deploy] Deploying 6 armies to Singapore." << std::endl;
-	Order* deploy1 = new Deploy("Matthew", 6, Singapore, matthew);
+	std::cout << " Matthew: [Deploy] Deploying 10 armies to Singapore." << std::endl;
+	Order* deploy1 = new Deploy("Matthew", 10, Singapore, matthew);
 	deploy1->execute();
 	std::cout << "- Singapore's owner & army count: " << Singapore->OwnedBy << ", " << Singapore->Armies << std::endl;
 
@@ -204,7 +208,7 @@ void ordersDriver() {
 	std::cout << "- Philippines's owner & army count: " << Philippines->OwnedBy << ", " << Philippines->Armies << std::endl;
 	std::cout << "- China's owner & army count: " << China->OwnedBy << ", " << China->Armies << std::endl;
 	std::cout << " Matthew: [Airlift] Airlifting 2 armies from Philippines to China." << std::endl;
-	Order* airlift4 = new Airlift("Zahra", 2, Philippines, China, matthew, deck);
+	Order* airlift4 = new Airlift("Zahra", 2, Philippines, China, zahra, deck);
 	airlift4->execute();
 	std::cout << "- Philippines's owner & army count: " << Philippines->OwnedBy << ", " << Philippines->Armies << std::endl;
 	std::cout << "- China's owner & army count: " << China->OwnedBy << ", " << China->Armies << std::endl;

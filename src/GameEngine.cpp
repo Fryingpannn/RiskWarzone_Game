@@ -264,6 +264,8 @@ void GameEngine::startupPhase() {
         MainMap->ReturnListOfCountries().at(randomizedIDs.at(i)));
     MainMap->ReturnListOfCountries().at(randomizedIDs.at(i))->OwnedBy =
         ListOfPlayers.at(rr)->PID;
+    MainMap->ReturnListOfCountries().at(randomizedIDs.at(i))->PlayerOwned =
+        ListOfPlayers.at(rr);
 
     State new_state;
     new_state.current_state = State_enum::SETUP_PHASE_RECEIVE_TERRITORY;
