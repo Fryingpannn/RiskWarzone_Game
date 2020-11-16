@@ -260,12 +260,10 @@ void GameEngine::startupPhase() {
   // only once.
   int rr = 0;
   for (int i = 0; i < MainMap->NumOfCountries(); i++) {
-    ListOfPlayers.at(rr)->Territories.emplace_back(
-        MainMap->ReturnListOfCountries().at(randomizedIDs.at(i)));
-    MainMap->ReturnListOfCountries().at(randomizedIDs.at(i))->OwnedBy =
-        ListOfPlayers.at(rr)->PID;
-    MainMap->ReturnListOfCountries().at(randomizedIDs.at(i))->PlayerOwned =
-        ListOfPlayers.at(rr);
+    auto *territory = MainMap->ReturnListOfCountries().at(randomizedIDs.at(i));
+    ListOfPlayers.at(rr)->Territories.emplace_back(territory);
+    territory->PlayerOwned = ListOfPlayers.at(rr);
+    territory->OwnedBy = ListOfPlayers.at(rr)->PID;
 
     State new_state;
     new_state.current_state = State_enum::SETUP_PHASE_RECEIVE_TERRITORY;
@@ -420,10 +418,10 @@ void GameEngine::mainGameLoop() {
  * own
  */
 void GameEngine::reinforcementPhase() {
-  // get number of territories per player 
+  // get number of territories per player
 
   for (auto &player : ListOfPlayers) {
-   // TODO add + bonus per continent from mapLoader
+    // TODO add + bonus per continent from mapLoader
     auto territories = MainMap->ReturnListOfCountriesOwnedByPlayer(player->PID);
     auto armies = static_cast<int>(territories.size() / 3.0);
     player->ReinforcementPool += armies;
