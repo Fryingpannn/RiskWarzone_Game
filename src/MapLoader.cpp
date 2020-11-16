@@ -838,6 +838,14 @@ Map *MapFile::generateMap()
   Map *returnMap;
   returnMap = new Map(map_territories.size(), map_file_name);
 
+  for (unsigned int i = 0; i < map_continents.size(); i++) {
+    struct::ContinentData *newContinent = new ContinentData();
+    newContinent->Name = map_continents[i]->name;
+    newContinent->ContinentID = map_continents[i]->number;
+    newContinent->NumberOfTerritories = map_continents[i]->number_of_territories;
+    newContinent->BonusValue = map_continents[i]->value;
+    returnMap->AddContinent(newContinent);
+  }
   // Loop through all territories and add them to the map
   for (unsigned int i = 0; i < map_territories.size(); i++)
   {
