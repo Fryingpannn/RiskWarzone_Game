@@ -206,7 +206,10 @@ Map::~Map() {
     ListOfCountries[i]->clear();
     delete ListOfCountries[i];
   }
+
   delete[] ListOfCountries;
+
+  AllContinents.clear();
 
   delete NumberOfCountries;
   delete MapName;
@@ -220,11 +223,13 @@ void Map::AddEdges(Territory& country1, Territory& country2) {
   if (this->ListOfCountries[country1.TerritoryID]->size() == 0) {
     Log("Added" << country1.Name);
     this->ListOfCountries[country1.TerritoryID]->push_back(&country1);
+    
   }
 
   if (this->ListOfCountries[country2.TerritoryID]->size() == 0) {
     Log("Added" << country2.Name);
     this->ListOfCountries[country2.TerritoryID]->push_back(&country2);
+    
   }
 
   // error handling
@@ -260,6 +265,20 @@ std::vector<struct ::Territory*> Map::ReturnListOfCountries() {
   }
 
   return Temp;
+}
+
+std::vector<struct::Territory*> Map::DebugListOfUnitializedTerritories()
+{
+    std::vector<Territory*> Temp;
+    for (int i = 0; i < *NumberOfCountries; i++) {
+        if (ListOfCountries[i]->at(0)->PlayerOwned==nullptr || ListOfCountries[i]->at(0)->OwnedBy == "UnitializedT") {
+            Temp.push_back(ListOfCountries[i]->at(0));
+            std::cout << ListOfCountries[i]->at(0)->Name << std::endl;
+            // Log("This country "<< ListOfCountries[i]->at(0)->Name <<"Owned by
+            // player "<< PlayerName<< std::endl);
+        }
+    }
+    return Temp;
 }
 
 std::vector<struct ::Territory*> Map::ReturnListOfAdjacentCountriesByID(
@@ -381,33 +400,34 @@ void Map::Display(std::string continent) {
   std::cout << "\n\nMap Name: " << continent << std::endl;
 
   for (int i = 0; i < *this->NumberOfCountries; i++) {
-    int j = 0;
+      int j = 0;
+      bool SameCountry = false;
 
-    for (Territory* country : *(this->ListOfCountries[i])) {
-      if (j == 0) {
-        if (continent == country->Continent) {
-          std::cout << "Continent: " << country->Continent << std::endl;
-          std::cout << "Country: " << j << std::endl;
-          std::cout << "Name: " << country->Name << std::endl;
-          std::cout << "Owned By: " << country->OwnedBy << std::endl;
-          std::cout << "Armies: " << country->Armies << std::endl;
-
-          std::cout << "Adjacent Countries " << std::endl;
-          j++;
-        }
-      } else {
-        if (continent == country->Continent) {
-          std::cout << "-> ";
-          std::cout << "Country ID: " << country->TerritoryID << " ";
-          std::cout << country->Name;
-          std::cout << "Owned By: " << country->OwnedBy << " ";
-          std::cout << "Armies: " << country->Armies << " ";
-          j++;
-        }
+      for (Territory* country : *(this->ListOfCountries[i])) {
+          if (j == 0) {
+              if (country->Continent == continent) {
+                  std::cout << "Territory: " << i << std::endl;
+                  std::cout << "Name: " << country->Name << std::endl;
+                  std::cout << "Owned By: " << country->OwnedBy << std::endl;
+                  std::cout << "Armies: " << country->Armies << std::endl;
+                  std::cout << "Adjacent Countries " << std::endl;
+                  SameCountry = true;
+              } 
+              j++;
+          }
+          else {
+              if (SameCountry) {
+                  std::cout << "-> ";
+                  std::cout << "Country ID: " << country->TerritoryID << " ";
+                  std::cout << country->Name << "\n";
+                  std::cout << "Owned By: " << country->OwnedBy << std::endl;
+                  std::cout << "Armies: " << country->Armies << std::endl;
+                  j++;
+              }
+          }
       }
-    }
-    j = 0;
-    std::cout << std::endl;
+      j = 0;
+      std::cout << std::endl;
   }
 }
 

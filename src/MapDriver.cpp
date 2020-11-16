@@ -80,12 +80,17 @@ void mapDriver()
 
   WorldMap->Display("EastAsia");
 
+  Log("WorldMap number of territories");
+  std::cout << WorldMap->NumOfCountries() << std::endl;
+
   // not connected graph
   if (WorldMap->Validate()) {
     std::cout << "\n\nSuccess" << std::endl;
   } else {
     std::cout << "\n\nfalse" << std::endl;
   }
+
+  
 
   // fail cases where the country won't register due to having same ID
   // the country ID will causes the algorithm to think that it is another
@@ -122,8 +127,10 @@ void mapDriver()
   test.at(0)->Name = "Hahaha";
   WorldMap->Display();
   Log("WorldMap2");
+  
   WorldMap2->Display();
-
+  Log("WorldMap2 number of territories");
+  std::cout << WorldMap2->NumOfCountries() << std::endl;
   
 
   Territory TestCopy{Malaysia};

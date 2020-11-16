@@ -115,6 +115,9 @@ class Map {
 
   std::vector<struct ::Territory *> ReturnListOfCountries();
 
+  //this function will check when OwnedBy is unitialized and player object is unitialized 
+  std::vector<struct ::Territory*> DebugListOfUnitializedTerritories();
+
   //This function return the list of adjacent countries by their ID
   std::vector<struct ::Territory*> ReturnListOfAdjacentCountriesByID(int ID);
 
