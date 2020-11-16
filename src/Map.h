@@ -48,7 +48,7 @@ struct Territory : public Subject {
   std::string Continent;
   float XCoordinate;
   float YCoordinate;
-  std::string OwnedBy = "uninitializedT";
+  std::string OwnedBy;
   Player* PlayerOwned;
   int Armies = 0;
 
@@ -61,6 +61,7 @@ struct Territory : public Subject {
   Territory(const Territory &t);
   friend std::ostream &operator<<(std::ostream &out, const Territory &t);
   Territory &operator=(const Territory &t);
+  ~Territory();
 };
 
 struct ContinentData {

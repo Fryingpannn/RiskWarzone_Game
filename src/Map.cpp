@@ -26,6 +26,8 @@ Territory::Territory() {
   this->Continent = "";
   this->XCoordinate = 0;
   this->YCoordinate = 0;
+  this->PlayerOwned = nullptr;
+  this->OwnedBy = "uninitializedT";
 }
 
 Territory::Territory(std::string name, int territoryID, std::string continent,
@@ -35,6 +37,8 @@ Territory::Territory(std::string name, int territoryID, std::string continent,
   this->Continent = continent;
   this->XCoordinate = x;
   this->YCoordinate = y;
+  this->PlayerOwned = nullptr;
+  this->OwnedBy = "uninitializedT";
 }
 
 Territory::Territory(std::string name, int territoryID, std::string continent,
@@ -45,6 +49,11 @@ Territory::Territory(std::string name, int territoryID, std::string continent,
   this->XCoordinate = x;
   this->YCoordinate = y;
   this->PlayerOwned = playerOwned;
+  if (playerOwned != nullptr) {
+    this->OwnedBy = playerOwned->PID;
+  } else {
+    this->OwnedBy = "uninitializedT";
+  }
 }
 
 bool Territory::operator==(Territory& Territory) const {
@@ -57,6 +66,9 @@ Territory::Territory(const Territory& t) {
   this->Continent = t.Continent;
   this->XCoordinate = t.XCoordinate;
   this->YCoordinate = t.YCoordinate;
+  // we want to refer to the same player address not a new one
+  this->PlayerOwned = t.PlayerOwned;
+  this->OwnedBy = t.OwnedBy;
 }
 
 Territory& Territory::operator=(const Territory& t) {
@@ -65,7 +77,15 @@ Territory& Territory::operator=(const Territory& t) {
   this->Continent = t.Continent;
   this->XCoordinate = t.XCoordinate;
   this->YCoordinate = t.YCoordinate;
+  // we want to refer to the same player address not a new one
+  this->PlayerOwned = t.PlayerOwned;
+  this->OwnedBy = t.OwnedBy;
   return *this;
+}
+
+Territory::~Territory() {
+  delete this->PlayerOwned;
+  this->PlayerOwned = nullptr;
 }
 
 //////////////////////
@@ -79,14 +99,15 @@ ContinentData::ContinentData() {
   this->BonusValue = 0;
 }
 
-ContinentData::ContinentData(std::string name, int continentID, int numberOfTerritories, int bonusValue) {
+ContinentData::ContinentData(std::string name, int continentID,
+                             int numberOfTerritories, int bonusValue) {
   this->Name = name;
   this->ContinentID = continentID;
   this->NumberOfTerritories = numberOfTerritories;
   this->BonusValue = bonusValue;
 }
 
-ContinentData::ContinentData(const ContinentData& c){
+ContinentData::ContinentData(const ContinentData& c) {
   this->Name = c.Name;
   this->ContinentID = c.ContinentID;
   this->NumberOfTerritories = c.NumberOfTerritories;
@@ -101,7 +122,7 @@ ContinentData& ContinentData::operator=(const ContinentData& c) {
   return *this;
 }
 
-std::ostream &operator<<(std::ostream &out, const ContinentData &c) {
+std::ostream& operator<<(std::ostream& out, const ContinentData& c) {
   out << "\tName: " << c.Name << "\n";
   out << "\tID: " << c.ContinentID << "\n";
   out << "\tNumber of Territories: " << c.NumberOfTerritories << "\n";
@@ -113,7 +134,8 @@ std::ostream& operator<<(std::ostream& out, const Territory& t) {
   out << "\tName: " << t.Name << "\n";
   out << "\tID: " << t.TerritoryID << "\n";
   out << "\tContinent: " << t.Continent << "\n";
-
+  out << "\tOwnedBy: "  << t.OwnedBy <<"\n";
+  out << "\tArmies: " << t.Armies << "\n";
   return out;
 }
 
@@ -223,13 +245,11 @@ void Map::AddEdges(Territory& country1, Territory& country2) {
   if (this->ListOfCountries[country1.TerritoryID]->size() == 0) {
     Log("Added" << country1.Name);
     this->ListOfCountries[country1.TerritoryID]->push_back(&country1);
-    
   }
 
   if (this->ListOfCountries[country2.TerritoryID]->size() == 0) {
     Log("Added" << country2.Name);
     this->ListOfCountries[country2.TerritoryID]->push_back(&country2);
-    
   }
 
   // error handling
@@ -244,13 +264,13 @@ void Map::AddEdges(Territory& country1, Territory& country2) {
   this->ListOfCountries[country1.TerritoryID]->push_back(&country2);
 }
 
-void Map::AddContinent(ContinentData *new_continent) {
-  ContinentData *newContinent = new ContinentData(*new_continent);
+void Map::AddContinent(ContinentData* new_continent) {
+  ContinentData* newContinent = new ContinentData(*new_continent);
   this->AllContinents.push_back(newContinent);
 }
 
 // Returns the list of all continents
-std::vector<struct::ContinentData*> Map::getListOfContinents() {
+std::vector<struct ::ContinentData*> Map::getListOfContinents() {
   return this->AllContinents;
 }
 
@@ -262,23 +282,24 @@ std::vector<struct ::Territory*> Map::ReturnListOfCountries() {
   for (int i = 0; i < *NumberOfCountries; i++) {
     Temp.push_back(ListOfCountries[i]->at(0));
     Log(ListOfCountries[i]->at(0)->Name << std::endl);
+    std::cout << "[DEBUG] "<< ListOfCountries[i]->at(0)->OwnedBy << "\n";
   }
 
   return Temp;
 }
 
-std::vector<struct::Territory*> Map::DebugListOfUnitializedTerritories()
-{
-    std::vector<Territory*> Temp;
-    for (int i = 0; i < *NumberOfCountries; i++) {
-        if (ListOfCountries[i]->at(0)->PlayerOwned==nullptr || ListOfCountries[i]->at(0)->OwnedBy == "UnitializedT") {
-            Temp.push_back(ListOfCountries[i]->at(0));
-            std::cout << ListOfCountries[i]->at(0)->Name << std::endl;
-            // Log("This country "<< ListOfCountries[i]->at(0)->Name <<"Owned by
-            // player "<< PlayerName<< std::endl);
-        }
+std::vector<struct ::Territory*> Map::DebugListOfUnitializedTerritories() {
+  std::vector<Territory*> Temp;
+  for (int i = 0; i < *NumberOfCountries; i++) {
+    if (ListOfCountries[i]->at(0)->PlayerOwned == nullptr ||
+        ListOfCountries[i]->at(0)->OwnedBy == "UnitializedT") {
+      Temp.push_back(ListOfCountries[i]->at(0));
+      std::cout << ListOfCountries[i]->at(0)->Name << std::endl;
+      // Log("This country "<< ListOfCountries[i]->at(0)->Name <<"Owned by
+      // player "<< PlayerName<< std::endl);
     }
-    return Temp;
+  }
+  return Temp;
 }
 
 std::vector<struct ::Territory*> Map::ReturnListOfAdjacentCountriesByID(
@@ -319,8 +340,8 @@ std::vector<struct ::Territory*> Map::ReturnListOfCountriesByContinent(
 
 // method to check whether the player own continent
 // there's one possibility to break the code, if the parameter ContinentName
-// didn't match any of the continent name in the map it will return true Although
-// it shouldn't even be any way for it to happen but yeah
+// didn't match any of the continent name in the map it will return true
+// Although it shouldn't even be any way for it to happen but yeah
 bool Map::IfPlayerOwnContinent(std::string PlayerName,
                                std::string ContinentName) {
   for (int i = 0; i < *NumberOfCountries; i++) {
@@ -348,6 +369,7 @@ void Map::ShowListOfAdjacentCountriesByID(int ID) {
 
   for (Territory* Temp : *ListOfCountries[ID]) {
     std::cout << Temp->Name << std::endl;
+    std::cout << Temp->OwnedBy << std::endl;
   }
 }
 // method to display the countries owned by player
@@ -400,34 +422,33 @@ void Map::Display(std::string continent) {
   std::cout << "\n\nMap Name: " << continent << std::endl;
 
   for (int i = 0; i < *this->NumberOfCountries; i++) {
-      int j = 0;
-      bool SameCountry = false;
+    int j = 0;
+    bool SameCountry = false;
 
-      for (Territory* country : *(this->ListOfCountries[i])) {
-          if (j == 0) {
-              if (country->Continent == continent) {
-                  std::cout << "Territory: " << i << std::endl;
-                  std::cout << "Name: " << country->Name << std::endl;
-                  std::cout << "Owned By: " << country->OwnedBy << std::endl;
-                  std::cout << "Armies: " << country->Armies << std::endl;
-                  std::cout << "Adjacent Countries " << std::endl;
-                  SameCountry = true;
-              } 
-              j++;
-          }
-          else {
-              if (SameCountry) {
-                  std::cout << "-> ";
-                  std::cout << "Country ID: " << country->TerritoryID << " ";
-                  std::cout << country->Name << "\n";
-                  std::cout << "Owned By: " << country->OwnedBy << std::endl;
-                  std::cout << "Armies: " << country->Armies << std::endl;
-                  j++;
-              }
-          }
+    for (Territory* country : *(this->ListOfCountries[i])) {
+      if (j == 0) {
+        if (country->Continent == continent) {
+          std::cout << "Territory: " << i << std::endl;
+          std::cout << "Name: " << country->Name << std::endl;
+          std::cout << "Owned By: " << country->OwnedBy << std::endl;
+          std::cout << "Armies: " << country->Armies << std::endl;
+          std::cout << "Adjacent Countries " << std::endl;
+          SameCountry = true;
+        }
+        j++;
+      } else {
+        if (SameCountry) {
+          std::cout << "-> ";
+          std::cout << "Country ID: " << country->TerritoryID << " ";
+          std::cout << country->Name << "\n";
+          std::cout << "Owned By: " << country->OwnedBy << std::endl;
+          std::cout << "Armies: " << country->Armies << std::endl;
+          j++;
+        }
       }
-      j = 0;
-      std::cout << std::endl;
+    }
+    j = 0;
+    std::cout << std::endl;
   }
 }
 
