@@ -67,8 +67,14 @@ struct ContinentData {
   std::string Name;
   int ContinentID;
   int NumberOfTerritories;
-  std::string Colour;
-  static int Count;
+  int BonusValue;  
+
+  ContinentData();
+  ContinentData(std::string name, int continentID, int numberOfTerritories, int bonusValue);
+  ContinentData(const ContinentData &c);
+
+  friend std::ostream &operator<<(std::ostream &out, const ContinentData &c);
+  ContinentData &operator=(const ContinentData& c);
 
   bool operator==(ContinentData &ContinentData) const {
     return this->ContinentID == ContinentData.ContinentID;
@@ -81,6 +87,8 @@ class Map {
   int *NumberOfCountries;
 
   std::vector<Territory *> AllCountries;
+
+  std::vector<ContinentData *> AllContinents;
 
  public:
   // minimal Constructor
@@ -100,6 +108,10 @@ class Map {
   ~Map();
 
   void AddEdges(Territory &country1, Territory &country2);
+
+  void AddContinent(ContinentData *new_continent);
+
+  std::vector<struct::ContinentData*> Map::getListOfContinents();
 
   std::vector<struct ::Territory *> ReturnListOfCountries();
 

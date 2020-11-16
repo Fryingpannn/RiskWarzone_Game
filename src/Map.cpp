@@ -68,6 +68,47 @@ Territory& Territory::operator=(const Territory& t) {
   return *this;
 }
 
+//////////////////////
+// ContinentData Class
+//////////////////////
+
+ContinentData::ContinentData() {
+  this->Name = "default";
+  this->ContinentID = 0;
+  this->NumberOfTerritories = 0;
+  this->BonusValue = 0;
+}
+
+ContinentData::ContinentData(std::string name, int continentID, int numberOfTerritories, int bonusValue) {
+  this->Name = name;
+  this->ContinentID = continentID;
+  this->NumberOfTerritories = numberOfTerritories;
+  this->BonusValue = bonusValue;
+}
+
+ContinentData::ContinentData(const ContinentData& c){
+  this->Name = c.Name;
+  this->ContinentID = c.ContinentID;
+  this->NumberOfTerritories = c.NumberOfTerritories;
+  this->BonusValue = c.BonusValue;
+}
+
+ContinentData& ContinentData::operator=(const ContinentData& c) {
+  this->Name = c.Name;
+  this->ContinentID = c.ContinentID;
+  this->NumberOfTerritories = c.NumberOfTerritories;
+  this->BonusValue = c.BonusValue;
+  return *this;
+}
+
+std::ostream &operator<<(std::ostream &out, const ContinentData &c) {
+  out << "\tName: " << c.Name << "\n";
+  out << "\tID: " << c.ContinentID << "\n";
+  out << "\tNumber of Territories: " << c.NumberOfTerritories << "\n";
+  out << "\tBonus Value: " << c.BonusValue << "\n";
+  return out;
+}
+
 std::ostream& operator<<(std::ostream& out, const Territory& t) {
   out << "\tName: " << t.Name << "\n";
   out << "\tID: " << t.TerritoryID << "\n";
@@ -196,6 +237,16 @@ void Map::AddEdges(Territory& country1, Territory& country2) {
 
   this->ListOfCountries[country2.TerritoryID]->push_back(&country1);
   this->ListOfCountries[country1.TerritoryID]->push_back(&country2);
+}
+
+void Map::AddContinent(ContinentData *new_continent) {
+  ContinentData *newContinent = new ContinentData(*new_continent);
+  this->AllContinents.push_back(newContinent);
+}
+
+// Returns the list of all continents
+std::vector<struct::ContinentData*> Map::getListOfContinents() {
+  return this->AllContinents;
 }
 
 // iterate through the array and return the country at first index which is
