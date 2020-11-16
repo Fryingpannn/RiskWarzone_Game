@@ -140,6 +140,17 @@ void Player::initIssueOrder() {
   this->ReinforcementsDeployed = 0;
 }
 
+void Player::removeTerritory(Territory &t) {
+  int pos = 0;
+  for (auto * owned : this->Territories) {    
+    if (owned->TerritoryID == t.TerritoryID) {
+      break;
+    }
+    pos++;
+  }
+  this->Territories.erase(this->Territories.begin() + pos);
+};
+
 /**
  * A function that determines the territories a player can defend.
  *

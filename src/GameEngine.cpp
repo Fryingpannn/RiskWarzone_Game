@@ -517,23 +517,17 @@ void GameEngine::issueOrdersPhase()
 	// Initialize the phase with everyone having orders to make
 	auto ordersLeft = ListOfPlayers.size();
 
-	// Loop until no orders left for each player in same turn
-	while (ordersLeft > 0)
-	{
-		ordersLeft = ListOfPlayers.size();
-		for (auto &player : ListOfPlayers)
-		{
-			std::cout << "\n----- Player " << player->PID << "'s turn: ----- ";
-			if (player->AdvanceOrderDone && player->CardPlayed)
-			{
-				std::cout << "No orders left\n";
-				// If a player no longer has any order left to make
-				ordersLeft--;
-			}
-			else
-			{
-				std::cout << "Performing order ->";
-				player->issueOrder();
+  // Loop until no orders left for each player in same turn
+  while (ordersLeft > 0) {
+    ordersLeft = ListOfPlayers.size();
+    for (auto &player : ListOfPlayers) {
+      if (player->AdvanceOrderDone && player->CardPlayed) {
+        std::cout << "No orders left\n";
+        // If a player no longer has any order left to make
+        ordersLeft--;
+      } else {
+        std::cout << "Performing order ->";
+        player->issueOrder();
 
 				State new_state;
 				new_state.current_state = State_enum::ISSUE_ORDERS_PHASE;
@@ -639,26 +633,21 @@ void GameEngine::executeOrdersPhase()
 						target->Notify();
 					}
 
-					this->setState(new_game_stats_state);
-					this->Notify();
-					// TODO is this the right place for this?
-					player->cardNotGiven = true;
-				}
-				else
-				{
-					ordersLeft--;
-				}
-			}
-		}
-	}
-	//reset negotiated player list and card given status
-	for (auto *player : ListOfPlayers)
-	{
-		player->set.clear();
-		player->cardNotGiven = true;
-	}
-	std::cout << "END OF ORDER EXECUTION PHASE\n"
-			  << "--------------------------\n";
+          this->setState(new_game_stats_state);
+          this->Notify();
+        } else {
+          ordersLeft--;
+        }
+      }
+    }
+  }
+  //reset negotiated player list and card given status
+  for (auto* player : ListOfPlayers) {
+      player->set.clear();
+      player->cardNotGiven = true;
+  }
+  std::cout << "END OF ORDER EXECUTION PHASE\n"
+            << "--------------------------\n";
 }
 
 void GameEngine::displayStatistics()

@@ -64,6 +64,7 @@ class Player : public Subject {
   void bindGameElements(std::vector<Player *> &inPlayers, Map *mapIn,
                         Deck *deckIn);
   void initIssueOrder();
+  void removeTerritory(Territory &t);
 
   std::vector<Territory *> toDefend();
   std::vector<Territory *> toAttack();
