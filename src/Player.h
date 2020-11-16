@@ -61,7 +61,7 @@ class Player : public Subject {
   Player &operator=(const Player &p);
 
   // Helper function for game engine
-  void bindGameElements(std::vector<Player *> &Players, Map *mapIn,
+  void bindGameElements(std::vector<Player *> &inPlayers, Map *mapIn,
                         Deck *deckIn);
   void initIssueOrder();
 
