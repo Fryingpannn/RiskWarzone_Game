@@ -772,6 +772,8 @@ Map *MapFile::generateMap() {
 		newContinent->NumberOfTerritories = map_continents[i]->number_of_territories;
 		newContinent->BonusValue = map_continents[i]->value;
 		returnMap->AddContinent(newContinent);
+        delete newContinent;
+        newContinent = nullptr;
 	}
 	// Loop through all territories and add them to the map
 	for (unsigned int i = 0; i < map_territories.size(); i++) {

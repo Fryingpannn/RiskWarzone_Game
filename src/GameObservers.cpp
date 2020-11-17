@@ -84,9 +84,8 @@ void Subject::Notify() {
  *
  */
 Subject::~Subject() {
-  std::cout << "Deleting Observer Subject" << std::endl;
-  //delete _observers;
-  //_observers = nullptr;
+  delete _observers;
+  _observers = nullptr;
 }
 
 /**
