@@ -14,7 +14,8 @@
 //
 /////////////////////////////////////////////
 
-#include <stdlib.h>
+
+#include <stdio.h>
 
 #include <iostream>
 #include <string>
@@ -28,17 +29,19 @@
 #include "GameEngine.h"
 
 #include "windows.h"
-#define _CRTDBG_MAP_ALLOC //to get more details
+
+
+
 #include <stdlib.h>  
 #include <crtdbg.h>   //for malloc and free
 
-#ifdef _DEBUG
-#define DBG_NEW new ( _NORMAL_BLOCK , __FILE__ , __LINE__ )
-// Replace _NORMAL_BLOCK with _CLIENT_BLOCK if you want the
-// allocations to be of _CLIENT_BLOCK type
-#else
-#define DBG_NEW new
-#endif
+//#ifdef _DEBUG
+//#define DBG_NEW new ( _NORMAL_BLOCK , __FILE__ , __LINE__ )
+//// Replace _NORMAL_BLOCK with _CLIENT_BLOCK if you want the
+//// allocations to be of _CLIENT_BLOCK type
+//#else
+//#define DBG_NEW new
+//#endif
 
 void displayA1DemoMenu();
 void displayA2DemoMenu();
@@ -49,6 +52,7 @@ void doA2MainGame();
 
 int main()
 {
+    
   std::cout << "Group D26 Assignment Demos" << std::endl;
   std::cout << "Main Menu" << std::endl;
   std::cout << "========================" << std::endl;
@@ -81,8 +85,7 @@ int main()
       break;
     }
   }
-  _CrtDumpMemoryLeaks();
-  std::cin;
+  
   return 0;
 }
 void displayA1DemoMenu()
@@ -191,4 +194,5 @@ void doA2MainGame()
     //person doing part 5 turn on observer or no in this part :)
   }
   delete MainEngine;
+  //std::cout << "Deleted Main Engine" << std::endl;
 }
