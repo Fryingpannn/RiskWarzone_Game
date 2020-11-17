@@ -423,14 +423,14 @@ void Player::createReinforcement() {
  */
 Player::~Player() {
   // Delete list of territory pointers if they exist.
-  if (!this->Territories.empty()) {
+  /*if (!this->Territories.empty()) {
     for (auto &i : Territories) {
       if (i != nullptr) {
         delete i;
         i = nullptr;
       }
     }
-  }
+  }*/
   delete this->HandOfCards;
   this->HandOfCards = nullptr;
 

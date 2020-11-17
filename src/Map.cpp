@@ -179,6 +179,7 @@ Map::Map(int size, std::string name) {
   for (int i = 0; i < 1000; i++)
     ListOfCountries[i] = new std::vector<struct ::Territory*>;
 
+
   MapName = new std::string(name);
 }
 
@@ -236,6 +237,10 @@ Map::~Map() {
 
 //  AllContinents.clear();
 
+  for (auto* countries : AllCountries) {
+      delete countries;
+  }
+
   delete NumberOfCountries;
   NumberOfCountries = nullptr;
   delete MapName;
@@ -250,11 +255,13 @@ void Map::AddEdges(Territory& country1, Territory& country2) {
   if (this->ListOfCountries[country1.TerritoryID]->size() == 0) {
     // Log("Added" << country1.Name);
     this->ListOfCountries[country1.TerritoryID]->push_back(&country1);
+    this->AllCountries.push_back(&country1);
   }
 
   if (this->ListOfCountries[country2.TerritoryID]->size() == 0) {
     // Log("Added" << country2.Name);
     this->ListOfCountries[country2.TerritoryID]->push_back(&country2);
+    this->AllCountries.push_back(&country2);
   }
 
   // error handling
@@ -470,6 +477,8 @@ bool Map::Validate() {
 
   if (*this->NumberOfCountries == NULL) return false;
 
+  std::cout << "Passed checking number of countries" << std::endl;;
+
   for (int i = 0; i < *this->NumberOfCountries; i++) {
     for (int x = i + 1; x < *this->NumberOfCountries; x++) {
       if (i == *this->NumberOfCountries) {
@@ -492,6 +501,7 @@ bool Map::Validate() {
         }
       }
     }
+    std::cout << "Passed checking Country with different name with same ID" << std::endl;;
 
     for (unsigned int j = 0; j < this->ListOfCountries[i]->size() - 1; j++) {
       // using my code, and how I design it. You don't even need to check
@@ -500,6 +510,7 @@ bool Map::Validate() {
 
       if (this->ListOfCountries[i]->at(j)->Continent == "") {
         std::cout << "Continent is empty! Error " << std::endl;
+        std::cout << "Passed checking Country with same Continent" << std::endl;;
         return false;
       }
       /*if (ListOfCountries[i]->at(j)->TerritoryID == NULL) {
@@ -508,6 +519,7 @@ bool Map::Validate() {
       }*/
       if (ListOfCountries[i]->at(j)->Name == "") {
         std::cout << "Name is empty! Error " << std::endl;
+        std::cout << "Passed checking Country with empty Name" << std::endl;;
         return false;
       }
 
@@ -518,13 +530,18 @@ bool Map::Validate() {
           std::cout << "Same Territory ID found!! Error " << std::endl;
           return false;
         }
+        std::cout << "Passed checking Country with same ID" << std::endl;;
         if (ListOfCountries[i]->at(j)->Name ==
             ListOfCountries[i]->at(k)->Name) {
           std::cout << "Same Territory Name found!! Error " << std::endl;
           return false;
         }
+        std::cout << "Passed checking Country with same Territory Name" << std::endl;;
       }
     }
+
+    std::cout << "Passed checking Country with same name with same ID" << std::endl;;
+
 
     std::cout << std::endl;
   }

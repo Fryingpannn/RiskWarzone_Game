@@ -27,6 +27,19 @@
 
 #include "GameEngine.h"
 
+#include "windows.h"
+#define _CRTDBG_MAP_ALLOC //to get more details
+#include <stdlib.h>  
+#include <crtdbg.h>   //for malloc and free
+
+#ifdef _DEBUG
+#define DBG_NEW new ( _NORMAL_BLOCK , __FILE__ , __LINE__ )
+// Replace _NORMAL_BLOCK with _CLIENT_BLOCK if you want the
+// allocations to be of _CLIENT_BLOCK type
+#else
+#define DBG_NEW new
+#endif
+
 void displayA1DemoMenu();
 void displayA2DemoMenu();
 void displayAssignmentMenu();
@@ -49,7 +62,7 @@ int main()
     std::cout << "1. Assignment 1 Demos" << std::endl;
     std::cout << "2. Assignment 2 Demos" << std::endl;
     std::cout << "Please enter your choice 1-2 (q to quit): ";
-    //std::cin >> choice;
+    std::cin >> choice;
     switch (choice)
     {
     case '1':
@@ -68,7 +81,8 @@ int main()
       break;
     }
   }
-
+  _CrtDumpMemoryLeaks();
+  std::cin;
   return 0;
 }
 void displayA1DemoMenu()

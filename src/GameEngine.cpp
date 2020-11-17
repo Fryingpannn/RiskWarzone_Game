@@ -489,6 +489,8 @@ void GameEngine::reinforcementPhase() {
     player->setState(new_state);
     player->Notify();
   }
+  
+  
 }
 
 /**
