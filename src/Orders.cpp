@@ -422,7 +422,6 @@ bool Advance::execute() {
         std::cout << " --> ";
         // give new card to player's hand if not given yet this turn
         if (current->cardNotGiven) {
-          // todo update this to not give card here but in game engine at the
           // end of execute orders
           current->HandOfCards->add(
               *deck->draw(*current->HandOfCards).getType());
@@ -689,9 +688,7 @@ Airlift::Airlift(const std::string& playerID, const int& armyNb, Territory* src,
   this->target = target;
   this->current = current;
   this->deck = deck;
-  // subtract sent armies from original
-  if (src->Armies < armyNb) this->armyNb = 0;
-  src->Armies -= this->armyNb;
+ 
 }
 
 // clone function
@@ -721,6 +718,9 @@ bool Airlift::validate() {
 bool Airlift::execute() {
   bool success_result = false;
   if (validate()) {
+    // subtract sent armies from original
+    if (src->Armies < armyNb) this->armyNb = 0;
+    src->Armies -= this->armyNb;
     // if target territory is also owned by user or has 0 armies, simply move
     // armies there
     if (target->OwnedBy == playerID) {

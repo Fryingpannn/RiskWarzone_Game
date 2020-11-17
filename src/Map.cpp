@@ -83,10 +83,7 @@ Territory& Territory::operator=(const Territory& t) {
   return *this;
 }
 
-Territory::~Territory() {
-  delete this->PlayerOwned;
-  this->PlayerOwned = nullptr;
-}
+Territory::~Territory() { this->PlayerOwned = nullptr; }
 
 //////////////////////
 // ContinentData Class
@@ -134,7 +131,7 @@ std::ostream& operator<<(std::ostream& out, const Territory& t) {
   out << "\tName: " << t.Name << "\n";
   out << "\tID: " << t.TerritoryID << "\n";
   out << "\tContinent: " << t.Continent << "\n";
-  out << "\tOwnedBy: "  << t.OwnedBy <<"\n";
+  out << "\tOwnedBy: " << t.OwnedBy << "\n";
   out << "\tArmies: " << t.Armies << "\n";
   return out;
 }
@@ -165,7 +162,7 @@ std::ostream& operator<<(std::ostream& out, const Map& map) {
 }
 
 Map::Map() {
-  Log("Default Constructor" << std::endl);
+  // Log("Default Constructor" << std::endl);
   NumberOfCountries = new int(0);
   ListOfCountries = new std::vector<struct ::Territory*>*[1000];
   for (int i = 0; i < 1000; i++)
@@ -217,16 +214,17 @@ Map::Map(Map& Copy) {
       }
     }
   }
-  Log("Copied successful\n");
+  // Log("Copied successful\n");
 
   NumberOfCountries = new int(*Copy.NumberOfCountries);
 }
 
 Map::~Map() {
   for (int i = 0; i < 1000; i++) {
-    Log("Deleting! : " << i);
+    // Log("Deleting! : " << i);
     ListOfCountries[i]->clear();
     delete ListOfCountries[i];
+    ListOfCountries[i] = nullptr;
   }
 
   delete[] ListOfCountries;
@@ -234,21 +232,23 @@ Map::~Map() {
   AllContinents.clear();
 
   delete NumberOfCountries;
+  NumberOfCountries = nullptr;
   delete MapName;
+  MapName = nullptr;
 }
 
 void Map::AddEdges(Territory& country1, Territory& country2) {
-  Log("Passed by Add Edges\n");
+  // Log("Passed by Add Edges\n");
 
   // When the Array still doesn't have the country yet, it will automatically
   // add a new country
   if (this->ListOfCountries[country1.TerritoryID]->size() == 0) {
-    Log("Added" << country1.Name);
+    // Log("Added" << country1.Name);
     this->ListOfCountries[country1.TerritoryID]->push_back(&country1);
   }
 
   if (this->ListOfCountries[country2.TerritoryID]->size() == 0) {
-    Log("Added" << country2.Name);
+    // Log("Added" << country2.Name);
     this->ListOfCountries[country2.TerritoryID]->push_back(&country2);
   }
 
@@ -256,7 +256,7 @@ void Map::AddEdges(Territory& country1, Territory& country2) {
   // if list of country1 contains country2
   int first = 0;
   for (Territory* country : *(ListOfCountries[country1.TerritoryID])) {
-    Log("Error Handling" << country->Name);
+    // Log("Error Handling" << country->Name);
     if (*country == country2) return;
   }
 
@@ -281,8 +281,6 @@ std::vector<struct ::Territory*> Map::ReturnListOfCountries() {
   std::vector<Territory*> Temp;
   for (int i = 0; i < *NumberOfCountries; i++) {
     Temp.push_back(ListOfCountries[i]->at(0));
-    Log(ListOfCountries[i]->at(0)->Name << std::endl);
-    std::cout << "[DEBUG] "<< ListOfCountries[i]->at(0)->OwnedBy << "\n";
   }
 
   return Temp;
@@ -294,7 +292,6 @@ std::vector<struct ::Territory*> Map::DebugListOfUnitializedTerritories() {
     if (ListOfCountries[i]->at(0)->PlayerOwned == nullptr ||
         ListOfCountries[i]->at(0)->OwnedBy == "UnitializedT") {
       Temp.push_back(ListOfCountries[i]->at(0));
-      std::cout << ListOfCountries[i]->at(0)->Name << std::endl;
       // Log("This country "<< ListOfCountries[i]->at(0)->Name <<"Owned by
       // player "<< PlayerName<< std::endl);
     }
@@ -347,16 +344,17 @@ bool Map::IfPlayerOwnContinent(std::string PlayerName,
   for (int i = 0; i < *NumberOfCountries; i++) {
     // If the continent is found then it will check
     if (ListOfCountries[i]->at(0)->Continent == ContinentName) {
-      Log("This country " << ListOfCountries[i]->at(0)->Name
-                          << "Is in continent" << ContinentName << std::endl);
+      // Log("This country " << ListOfCountries[i]->at(0)->Name
+      //                    << "Is in continent" << ContinentName << std::endl);
       if (ListOfCountries[i]->at(0)->OwnedBy != PlayerName) {
-        Log("This country " << ListOfCountries[i]->at(0)->Name << "Owned by"
-                            << ListOfCountries[i]->at(0)->OwnedBy << std::endl);
+        // Log("This country " << ListOfCountries[i]->at(0)->Name << "Owned by"
+        //                    << ListOfCountries[i]->at(0)->OwnedBy <<
+        //                    std::endl);
 
         return false;
       } else {
-        Log("This country " << ListOfCountries[i]->at(0)->Name << "Owned by"
-                            << ContinentName << std::endl);
+        // Log("This country " << ListOfCountries[i]->at(0)->Name << "Owned by"
+        // << ContinentName << std::endl);
       }
     }
   }
@@ -525,7 +523,7 @@ bool Map::Validate() {
 
     std::cout << std::endl;
   }
-  Log("Checking the visited");
+  // Log("Checking the visited");
   // thie section are responsible for finding whether the graph are connected a
   // not array of pointers this two variable are used to contain arrays C++
   // doesn't allow initializing Array of variable length
@@ -537,7 +535,7 @@ bool Map::Validate() {
     VisitedA[i] = new bool(false);
     VisitedB[i] = new bool(false);
   }
-  Log("Filling up the array\n\n");
+  // Log("Filling up the array\n\n");
   /*if (_DEBUG) {
       DFS(0, VisitedA);
   }*/
@@ -572,19 +570,19 @@ bool Map::Validate() {
 // will knows
 void Map::DFS(int x, bool** visited) {
   *visited[x] = true;
-  Log("visited: " << x << " " << *visited[x] << "\n");
+  // Log("visited: " << x << " " << *visited[x] << "\n");
   int i = 0;
 
   for (Territory* temp : *ListOfCountries[0]) {
-    Log("Country???: " << temp->Name << temp->TerritoryID << std::endl);
-    Log("temp->territoryID: " << *visited[temp->TerritoryID]);
+    // Log("Country???: " << temp->Name << temp->TerritoryID << std::endl);
+    // Log("temp->territoryID: " << *visited[temp->TerritoryID]);
 
     if (i == 0) {
       i++;
     } else {
-      Log("Country: " << temp->Name);
+      // Log("Country: " << temp->Name);
       if (!*visited[temp->TerritoryID]) {
-        Log("Visit: " << temp->Name << "\n");
+        // Log("Visit: " << temp->Name << "\n");
         DFS(temp->TerritoryID, visited);
       }
     }
@@ -592,7 +590,7 @@ void Map::DFS(int x, bool** visited) {
 }
 
 Map& Map::operator=(const Map* map) {
-  Log("Using Assignment Operator");
+  // Log("Using Assignment Operator");
   MapName = new std::string(*(map->MapName));
   ListOfCountries = new std::vector<Territory*>*[1000];
 
@@ -607,7 +605,7 @@ Map& Map::operator=(const Map* map) {
       }
     }
   }
-  Log("Copied successful\n");
+  // Log("Copied successful\n");
 
   NumberOfCountries = new int(*(map->NumberOfCountries));
   // TODO: insert return statement here

@@ -19,37 +19,18 @@
 
 #include "GameObservers.hpp"
 
-
-//this macro will only print when in debug mode :3
-#ifdef _DEBUG
-#define Log(x) std::cout << x << std::endl;
-#define _CRTDBG_MAP_ALLOC
-#include <stdlib.h>
-#include <crtdbg.h>
-#define FindMemoryLeak()_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
-#else
-#define FindMemoryLeak();
-#define Log(x)
-#endif
-
-//#ifndef H_PLAYER
-//#define H_PLAYER
-//class Player;
-//#endif
-
 class Player;
 
 // country only need name, a unique ID and a continent
 // is a struct and not a class, so do what you need to do :)
 struct Territory : public Subject {
- public:
   std::string Name;
   int TerritoryID;
   std::string Continent;
   float XCoordinate;
   float YCoordinate;
   std::string OwnedBy;
-  Player* PlayerOwned;
+  Player *PlayerOwned;
   int Armies = 0;
 
   bool operator==(Territory &Territory) const;
@@ -57,7 +38,8 @@ struct Territory : public Subject {
   Territory();
   Territory(std::string name, int territoryID, std::string continent, float x,
             float y);
-  Territory(std::string name, int territoryID, std::string continent, float x,float y, Player* playerOwned);
+  Territory(std::string name, int territoryID, std::string continent, float x,
+            float y, Player *playerOwned);
   Territory(const Territory &t);
   friend std::ostream &operator<<(std::ostream &out, const Territory &t);
   Territory &operator=(const Territory &t);
@@ -68,14 +50,15 @@ struct ContinentData {
   std::string Name;
   int ContinentID;
   int NumberOfTerritories;
-  int BonusValue;  
+  int BonusValue;
 
   ContinentData();
-  ContinentData(std::string name, int continentID, int numberOfTerritories, int bonusValue);
+  ContinentData(std::string name, int continentID, int numberOfTerritories,
+                int bonusValue);
   ContinentData(const ContinentData &c);
 
   friend std::ostream &operator<<(std::ostream &out, const ContinentData &c);
-  ContinentData &operator=(const ContinentData& c);
+  ContinentData &operator=(const ContinentData &c);
 
   bool operator==(ContinentData &ContinentData) const {
     return this->ContinentID == ContinentData.ContinentID;
@@ -112,19 +95,22 @@ class Map {
 
   void AddContinent(ContinentData *new_continent);
 
-  std::vector<struct::ContinentData*> getListOfContinents();
+  std::vector<struct ::ContinentData *> getListOfContinents();
 
   std::vector<struct ::Territory *> ReturnListOfCountries();
 
-  //this function will check when OwnedBy is unitialized and player object is unitialized 
-  std::vector<struct ::Territory*> DebugListOfUnitializedTerritories();
+  // this function will check when OwnedBy is unitialized and player object is
+  // unitialized
+  std::vector<struct ::Territory *> DebugListOfUnitializedTerritories();
 
-  //This function return the list of adjacent countries by their ID
-  std::vector<struct ::Territory*> ReturnListOfAdjacentCountriesByID(int ID);
+  // This function return the list of adjacent countries by their ID
+  std::vector<struct ::Territory *> ReturnListOfAdjacentCountriesByID(int ID);
 
-  std::vector<struct ::Territory*> ReturnListOfCountriesOwnedByPlayer(std::string PlayerName);
+  std::vector<struct ::Territory *> ReturnListOfCountriesOwnedByPlayer(
+      std::string PlayerName);
 
-  std::vector<struct ::Territory*> ReturnListOfCountriesByContinent(std::string ContinentName);
+  std::vector<struct ::Territory *> ReturnListOfCountriesByContinent(
+      std::string ContinentName);
 
   bool IfPlayerOwnContinent(std::string PlayerName, std::string ContinentName);
 
@@ -141,7 +127,7 @@ class Map {
   bool Validate();
   void DFS(int x, bool **visited);
 
-  friend std::ostream& operator<<(std::ostream& out, const Map& map);
-  
-  Map& operator=(const Map* map);
+  friend std::ostream &operator<<(std::ostream &out, const Map &map);
+
+  Map &operator=(const Map *map);
 };
