@@ -14,22 +14,21 @@
 /////////////////////////////////////////////
 
 #pragma once
-#include <map>
 #include <ostream>
 #include <unordered_set>
 #include <vector>
 
-#include "Cards.h"
 #include "GameObservers.hpp"
 #include "Map.h"
 #include "Orders.h"
+#include "Cards.h"
 
 struct Territory;
 class Map;
 class Deck;
 
 /**
- * A class for the object Player which managers territories, cards and orders
+ * A class for the object Player which manages territories, cards and orders
  * owned by a player.
  */
 class Player : public Subject {
@@ -48,7 +47,7 @@ class Player : public Subject {
   // at the end of every turn. this is used by Advance order's execute function.
   bool cardNotGiven = true;
 
-  // Game knowledge
+  // Game knowledge members
   std::vector<Player *> ListOfPlayers;
   Map *MainMap;
   Deck *DeckOfCards;

@@ -20,6 +20,7 @@
 #include <ctime>
 #include <map>
 #include <ostream>
+#include <utility>
 #include <vector>
 
 /**
@@ -30,6 +31,15 @@ Player::Player() {
   this->HandOfCards = new Hand();
   this->ListOfOrders = new OrderList();
   this->PID = "";
+  this->ReinforcementPool = 0;
+  this->ReinforcementsDeployed = 0;
+  this->AdvanceOrderDone = true;
+  this->CardPlayed = true;
+  this->cardNotGiven = true;
+  this->set = std::unordered_set<std::string>{};
+  this->ListOfPlayers = std::vector<Player *>{};
+  this->MainMap = nullptr;
+  this->DeckOfCards = nullptr;
 }
 
 /**
@@ -38,20 +48,30 @@ Player::Player() {
  * @param territories A list of territory objects the player owns.
  * @param handOfCards A hand of cards the player owns.
  * @param listOfOrders A list of orders the player owns.
+ * @param pID The name of the player
  */
 Player::Player(std::vector<Territory *> territories, Hand handOfCards,
-               OrderList listOfOrders, std::string pid) {
-  this->PID = pid;
+               OrderList listOfOrders, std::string pID) {
+  this->PID = std::move(pID);
   // Declare those territories as belonging to this player
   for (auto &i : territories) {
     i->OwnedBy = this->PID;
     i->PlayerOwned = this;
-    std::cout << i->PlayerOwned->PID << std::endl;
   }
 
   this->Territories = territories;
   this->HandOfCards = new Hand(handOfCards);
   this->ListOfOrders = new OrderList(listOfOrders);
+
+  this->ReinforcementPool = 0;
+  this->ReinforcementsDeployed = 0;
+  this->AdvanceOrderDone = true;
+  this->CardPlayed = true;
+  this->cardNotGiven = true;
+  this->set = std::unordered_set<std::string>{};
+  this->ListOfPlayers = std::vector<Player *>{};
+  this->MainMap = nullptr;
+  this->DeckOfCards = nullptr;
 }
 
 /**
@@ -64,6 +84,15 @@ Player::Player(const Player &p) {
   this->ListOfOrders = new OrderList(*p.ListOfOrders);
   this->PID = p.PID;
   this->ReinforcementPool = p.ReinforcementPool;
+  this->ReinforcementsDeployed = p.ReinforcementsDeployed;
+  this->AdvanceOrderDone = p.AdvanceOrderDone;
+  this->CardPlayed = p.CardPlayed;
+  this->cardNotGiven = p.cardNotGiven;
+  this->set = p.set;
+  this->ListOfPlayers = p.ListOfPlayers;
+  // Not deep copies since we want to use same map and deck.
+  this->MainMap = p.MainMap;
+  this->DeckOfCards = p.DeckOfCards;
 
   for (auto i = p.Territories.begin(); i != p.Territories.end(); ++i) {
     auto *country = new Territory(**i);
@@ -91,6 +120,15 @@ Player &Player::operator=(const Player &p) {
   this->ListOfOrders = new OrderList(*p.ListOfOrders);
   this->PID = p.PID;
   this->ReinforcementPool = p.ReinforcementPool;
+  this->ReinforcementsDeployed = p.ReinforcementsDeployed;
+  this->AdvanceOrderDone = p.AdvanceOrderDone;
+  this->CardPlayed = p.CardPlayed;
+  this->cardNotGiven = p.cardNotGiven;
+  this->set = p.set;
+  this->ListOfPlayers = p.ListOfPlayers;
+  // Not deep copies since we want to use same map and deck.
+  this->MainMap = p.MainMap;
+  this->DeckOfCards = p.DeckOfCards;
 
   for (auto i = p.Territories.begin(); i != p.Territories.end(); ++i) {
     auto *country = new Territory(**i);
@@ -115,13 +153,13 @@ std::ostream &operator<<(std::ostream &out, const Player &p) {
   }
   out << "\n";
 
-  out << "\tCards: " << *p.HandOfCards;
-  out << "\n\n";
+  out << "\tReinforcement Pool: " << p.ReinforcementPool;
+  out << "\n";
 
   out << "\tOrders: " << *p.ListOfOrders;
   out << "\n";
 
-  out << "\tReinforcement Pool: " << p.ReinforcementPool;
+  out << "\tCards: " << *p.HandOfCards;
   out << "\n";
 
   return out;
@@ -142,7 +180,7 @@ void Player::initIssueOrder() {
 
 void Player::removeTerritory(Territory &t) {
   int pos = 0;
-  for (auto * owned : this->Territories) {    
+  for (auto *owned : this->Territories) {
     if (owned->TerritoryID == t.TerritoryID) {
       break;
     }
@@ -172,12 +210,12 @@ std::vector<Territory *> Player::toAttack() {
     // that the player owns
     auto computeAdjacentResult =
         this->MainMap->ReturnListOfAdjacentCountriesByID(elem->TerritoryID);
-    std::cout << "adjacent of " << elem->Name<< "\n";
+    std::cout << "adjacent of " << elem->Name << "\n";
 
-    for (auto &t :computeAdjacentResult) {
+    for (auto &t : computeAdjacentResult) {
       std::cout << "\t\t" << t->Name << " [Owned by " << t->OwnedBy
                 << " PlayerOwned" << t->PlayerOwned->PID << "]"
-                << " Armies " << t->Armies << "\n";     
+                << " Armies " << t->Armies << "\n";
     }
     // Keep only territories that a player does not already own.
     for (auto &t : computeAdjacentResult) {
@@ -193,8 +231,6 @@ std::vector<Territory *> Player::toAttack() {
   for (auto &t : toAttackMap) {
     toAttack.push_back(t.second);
   }
-
-
   return toAttack;
 }
 
@@ -212,7 +248,8 @@ void Player::issueOrder() {
   } else if (!AdvanceOrderDone) {
     srand(time(NULL));
 
-    if (rand() % 2 == 0) {
+    // Make players more likely to attack than transfer to end game faster
+    if ((rand() % 100) > 99) {
       advanceTransfer();
     } else {
       advanceAttack();
@@ -261,18 +298,16 @@ void Player::advanceAttack() {
 
   srand(time(NULL));
 
-  // Chooses a random source and target territory to attack with a random number
-  // of armies
-  auto *src = ownedTerritories.at(rand() % (ownedTerritories.size()));
+  // Chose a territory as a source of attack
+  Territory *src = ownedTerritories.at(rand() % (ownedTerritories.size()));
+
+  // Chose any target from to attack pool even if not a neighbor, orders will
+  // validate
   auto *target = toAttackTerritories.at(rand() % (toAttackTerritories.size()));
 
-  int armies = 0;
-  if (src->Armies > 0) {
-    armies = 1 + rand() % src->Armies;
-  }
-
-  auto *order = new Advance(this->PID, armies, src, target, this->MainMap, this,
-                            this->DeckOfCards);
+  // Attack with all armies in that territory to speed up game play
+  auto *order = new Advance(this->PID, src->Armies, src, target, this->MainMap,
+                            this, this->DeckOfCards);
   this->ListOfOrders->addToList(order);
 }
 
@@ -316,23 +351,31 @@ void Player::playCard() {
   }
 }
 
+/**
+ * Wrapper function of card BOMB that issues the respective order.
+ */
 void Player::createBomb() {
   srand(time(NULL));
 
-  // TODO validate random function
-  auto *target = this->MainMap->ReturnListOfCountries().at(
-      rand() % this->MainMap->NumOfCountries());
+  auto toBomb = this->toAttack();
+  auto *target = toBomb.at(rand() % toBomb.size());
 
   auto *order = new Bomb(this->PID, target, this);
   this->ListOfOrders->addToList(order);
 }
+
+/**
+ * Wrapper function of card AIRLIFT that issues the respective order.
+ */
 void Player::createAirlift() {
   srand(time(NULL));
 
   auto ownedTerritories = this->toDefend();
-
   auto *src = ownedTerritories.at(rand() % (ownedTerritories.size()));
-  auto *target = ownedTerritories.at(rand() % (ownedTerritories.size()));
+
+  const auto pos = rand() % this->MainMap->NumOfCountries();
+  auto *target = this->MainMap->ReturnListOfCountries().at(pos);
+
   int armies = 0;
   if (src->Armies > 0) {
     armies = 1 + rand() % src->Armies;
@@ -342,6 +385,10 @@ void Player::createAirlift() {
       new Airlift(this->PID, armies, src, target, this, this->DeckOfCards);
   this->ListOfOrders->addToList(order);
 }
+
+/**
+ * Wrapper function of card BLOCKADE that issues the respective order.
+ */
 void Player::createBlockade() {
   srand(time(NULL));
 
@@ -352,15 +399,21 @@ void Player::createBlockade() {
   auto *order = new Blockade(this->PID, src);
   this->ListOfOrders->addToList(order);
 }
+
+/**
+ * Wrapper function of card NEGOTIATE that issues the respective order.
+ */
 void Player::createNegotiate() {
   srand(time(NULL));
 
-  auto *enemy = this->ListOfPlayers.at(rand() % (this->ListOfPlayers.size()));
+  Player *enemy = this->ListOfPlayers.at(rand() % (this->ListOfPlayers.size()));
   auto *order = new Negotiate(this, enemy);
-
   this->ListOfOrders->addToList(order);
 }
 
+/**
+ * Wrapper function of card REINFORCEMENT that issues the respective order.
+ */
 void Player::createReinforcement() {
   this->ListOfOrders->addToList(new Reinforcement(this));
 }
@@ -372,17 +425,24 @@ Player::~Player() {
   // Delete list of territory pointers if they exist.
   if (!this->Territories.empty()) {
     for (auto &i : Territories) {
-      delete i;
-      i = nullptr;
+      if (i != nullptr) {
+        delete i;
+        i = nullptr;
+      }
     }
   }
-  // Delete the members that are pointers.
   delete this->HandOfCards;
-  delete this->ListOfOrders;
   this->HandOfCards = nullptr;
+
+  delete this->ListOfOrders;
   this->ListOfOrders = nullptr;
-  delete this->MainMap;
-  this->MainMap = nullptr;
-  delete this->DeckOfCards;
-  this->DeckOfCards = nullptr;
+
+  // These pointers are deleted by game engine
+  if (this->MainMap != nullptr) {
+    this->MainMap = nullptr;
+  }
+
+  if (this->DeckOfCards != nullptr) {
+    this->DeckOfCards = nullptr;
+  }
 }

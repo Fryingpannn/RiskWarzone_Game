@@ -42,13 +42,14 @@ int main()
   char choice;
   bool running = true;
 
+  choice = '2';
+
   while (running)
   {
     std::cout << "1. Assignment 1 Demos" << std::endl;
     std::cout << "2. Assignment 2 Demos" << std::endl;
     std::cout << "Please enter your choice 1-2 (q to quit): ";
     //std::cin >> choice;
-    choice = '2';
     switch (choice)
     {
     case '1':
@@ -56,6 +57,7 @@ int main()
       break;
     case '2':
       a2DemoHandler();
+      choice = 'q';
       break;
     case 'q':
     case 'Q':
@@ -140,16 +142,18 @@ void a2DemoHandler()
   char choice;
   bool running = true;
 
+  choice = '1';
+
   while (running)
   {
     displayA2DemoMenu();
     std::cout << "Please enter your choice 1-2 (q to quit): ";
     //std::cin >> choice;
-    choice = '1';
     switch (choice)
     {
     case '1':
       doA2MainGame();
+      choice = 'q';
       break;
     case '2':
       ordersDriver();

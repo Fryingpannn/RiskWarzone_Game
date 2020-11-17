@@ -21,7 +21,7 @@
 void mapDriver()
 {
 
-    FindMemoryLeak();
+    //FindMemoryLeak();
     //one way to optimise is to put enum
     //all these will be in stack memory
 
@@ -80,7 +80,7 @@ void mapDriver()
 
   WorldMap->Display("EastAsia");
 
-  Log("WorldMap number of territories");
+  //Log("WorldMap number of territories");
   std::cout << WorldMap->NumOfCountries() << std::endl;
 
   // not connected graph
@@ -103,14 +103,14 @@ void mapDriver()
   WorldMap2->AddEdges(France, Korea);
   WorldMap2->AddEdges(France, Malaysia);
   WorldMap2->Display();
-  Log("ERM");
+  //Log("ERM");
 
 
 
   // connected graph
   // in a triangle
   Map* WorldMap3 = new Map(3, "Small Map");
-  Log("Construct successful");
+  //Log("Construct successful");
   WorldMap3->AddEdges(Malaysia, Indonesia);
   WorldMap3->AddEdges(Indonesia, Singapore);
   WorldMap3->AddEdges(Singapore, Malaysia);
@@ -126,10 +126,10 @@ void mapDriver()
   std::vector<Territory* > test = WorldMap2->ReturnListOfCountries();
   test.at(0)->Name = "Hahaha";
   WorldMap->Display();
-  Log("WorldMap2");
+  //Log("WorldMap2");
   
   WorldMap2->Display();
-  Log("WorldMap2 number of territories");
+  //Log("WorldMap2 number of territories");
   std::cout << WorldMap2->NumOfCountries() << std::endl;
   
 
@@ -141,8 +141,8 @@ void mapDriver()
   WorldMap2->Display();
   //it shouldn't be affected
 
-  Log(Malaysia.Name);
-  Log(TestCopy.Name);
+ // Log(Malaysia.Name);
+  //Log(TestCopy.Name);
   
   //testing assignment operator
   std::cout<<"Testing Assignment Operator"<<std::endl;
@@ -156,12 +156,12 @@ void mapDriver()
 
   delete WorldMap;
   WorldMap = nullptr;
-  Log("Deleted WorldMap1");
+ // Log("Deleted WorldMap1");
   
   delete WorldMap2;
   
   WorldMap2 = nullptr;
-  Log("Deleted WorldMap2");
+ // Log("Deleted WorldMap2");
 
   delete WorldMap3;
 
