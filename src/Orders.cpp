@@ -53,24 +53,24 @@ int OrderList::remove(int position) {
 
 // returns: nullptr if list is empty, otherwise returns a pointer to a copy
 //          of the next priority element (needs to be explicitly deleted)
-Order* OrderList::peek() {
+ Order* OrderList::peek() {
   // if list is empty, return null
   if (list.empty()) return nullptr;
 
   // return 1st Deploy if available
   for (auto it = list.begin(); it != list.end(); ++it) {
-    if ((*it)->priority == 1) return (*it)->clone();
+    if ((*it)->priority == 1) return (*it);
   }
   // return 1st Airlift if available
   for (auto it = list.begin(); it != list.end(); ++it) {
-    if ((*it)->priority == 2) return (*it)->clone();
+    if ((*it)->priority == 2) return (*it); ;
   }
   // return 1st Blockade if available
   for (auto it = list.begin(); it != list.end(); ++it) {
-    if ((*it)->priority == 3) return (*it)->clone();
+    if ((*it)->priority == 3) return (*it);
   }
   // return in FIFO order if no priority orders available
-  return (*list.begin())->clone();
+  return (*list.begin());
 }
 
 // pops top priority element from the list; Deploy -> Airlift -> Blockade ->
