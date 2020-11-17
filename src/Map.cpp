@@ -229,7 +229,12 @@ Map::~Map() {
 
   delete[] ListOfCountries;
 
-  AllContinents.clear();
+  for (auto i = 0; i < AllContinents.size(); i++) {
+      delete AllContinents[i];
+      AllContinents[i] = nullptr;
+  }
+
+//  AllContinents.clear();
 
   delete NumberOfCountries;
   NumberOfCountries = nullptr;
