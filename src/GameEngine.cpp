@@ -385,6 +385,7 @@ void GameEngine::startupPhase() {
 void GameEngine::mainGameLoop() {
   bool gameOver{false};
 
+  unsigned long long int round_counter = 0;
   // Loop until a player owns all territories
   while (!gameOver) {
     // CHECK: Can we remove any players who have no territories?
@@ -427,7 +428,10 @@ void GameEngine::mainGameLoop() {
     issueOrdersPhase();
     // order execution phase
     executeOrdersPhase();
+    round_counter++;
+    std::cout << "Finished round: " << round_counter << std::endl;
   }
+  std::cout << "Game Finished after " << round_counter << " rounds." << std::endl;
 }
 
 /**
@@ -600,7 +604,7 @@ void GameEngine::executeOrdersPhase() {
 void GameEngine::displayStatistics() {
   int total_territories = MainMap->NumOfCountries();
 
-  std::cout << "Game Statistics: " << std::endl;
+  std::cout << "\nGame Statistics: " << std::endl;
   std::cout << "==================================" << std::endl;
   std::cout << "Map Name: " << MainMap->GetMapName() << std::endl;
   std::cout << "Total Territories: " << total_territories << std::endl;
