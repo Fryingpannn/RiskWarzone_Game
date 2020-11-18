@@ -608,12 +608,14 @@ bool Blockade::execute() {
                    "is null."
                 << std::endl;
     }
-    for (auto it = src->PlayerOwned->Territories.begin();
-         it != src->PlayerOwned->Territories.end(); ++it) {
-      if ((*it)->TerritoryID == src->TerritoryID) {
-        src->PlayerOwned->Territories.erase(it);
-        break;
-      }
+    else {
+        for (auto it = src->PlayerOwned->Territories.begin();
+            it != src->PlayerOwned->Territories.end(); ++it) {
+            if ((*it)->TerritoryID == src->TerritoryID) {
+                src->PlayerOwned->Territories.erase(it);
+                break;
+            }
+        }
     }
     src->OwnedBy = "neutral";
     std::cout << "[Valid] 1 Blockade order executed." << std::endl;
@@ -688,7 +690,9 @@ Airlift::Airlift(const std::string& playerID, const int& armyNb, Territory* src,
   this->target = target;
   this->current = current;
   this->deck = deck;
- 
+  // subtract sent armies from original
+  if (src->Armies < armyNb) this->armyNb = 0;
+  src->Armies -= this->armyNb;
 }
 
 // clone function
@@ -718,9 +722,6 @@ bool Airlift::validate() {
 bool Airlift::execute() {
   bool success_result = false;
   if (validate()) {
-    // subtract sent armies from original
-    if (src->Armies < armyNb) this->armyNb = 0;
-    src->Armies -= this->armyNb;
     // if target territory is also owned by user or has 0 armies, simply move
     // armies there
     if (target->OwnedBy == playerID) {
@@ -782,18 +783,21 @@ bool Airlift::execute() {
             << playerID << "." << std::endl;
         // add new territory to player's list and remove from old
         current->Territories.push_back(target);
-        if (target->OwnedBy == "" || target->PlayerOwned == nullptr)
-          std::cout << " -> Target territory is not initialized to any player "
-                       "name or player object."
-                    << std::endl;
-        if (target->OwnedBy != "neutral")
-          for (auto it = target->PlayerOwned->Territories.begin();
-               it != target->PlayerOwned->Territories.end(); ++it) {
-            if ((*it)->TerritoryID == target->TerritoryID) {
-              target->PlayerOwned->Territories.erase(it);
-              break;
+        if (target->OwnedBy == "" || target->PlayerOwned == nullptr) {
+            std::cout << " -> Target territory is not initialized to any player "
+                "name or player object."
+                << std::endl;
+        }
+        else {
+            if (target->OwnedBy != "neutral")
+                for (auto it = target->PlayerOwned->Territories.begin();
+                    it != target->PlayerOwned->Territories.end(); ++it) {
+                if ((*it)->TerritoryID == target->TerritoryID) {
+                    target->PlayerOwned->Territories.erase(it);
+                    break;
+                }
             }
-          }
+        }
         target->OwnedBy = playerID;
         target->PlayerOwned = current;
         success_result = true;

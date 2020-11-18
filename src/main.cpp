@@ -165,7 +165,7 @@ void a2DemoHandler()
   {
     displayA2DemoMenu();
     std::cout << "Please enter your choice 1-2 (q to quit): ";
-    //std::cin >> choice;
+    std::cin >> choice;
     switch (choice)
     {
     case '1':
