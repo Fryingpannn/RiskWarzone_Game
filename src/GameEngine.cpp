@@ -46,7 +46,7 @@ void GameEngine::Init() {
 
 	// the variable for observer input
 	std::string InputObserver;
-	bool InputObserverNotSucceed = false;
+	bool InputObserverNotSucceed = true;
 
 	// the main menu for player to setup how many players and the map they want
 	// to use :O
