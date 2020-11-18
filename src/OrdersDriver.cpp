@@ -253,16 +253,6 @@ void ordersDriver() {
 	oList.remove(1);
 	std::cout << oList << std::endl;
 
-	//Displaying an order without executing it
-	std::cout << "Displaying an order before it has been executed:" << std::endl;
-	Deploy obj;
-	std::cout << obj << std::endl << std::endl;
-
-	//Displaying an order when its been executed
-	std::cout << "Displaying an order after it has been executed:" << std::endl;
-	obj.execute();
-	std::cout << obj << std::endl;
-
 	//making a copy of the list with assignment operator and displaying it
 	std::cout << "----- Copying previous list with assignment operator: Constructor chain -----" << std::endl;
 	OrderList assignCopy;
