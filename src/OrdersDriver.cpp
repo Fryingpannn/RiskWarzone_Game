@@ -225,12 +225,12 @@ void ordersDriver() {
 	OrderList oList;
 
 	//adding orders to the list
-	oList.addToList(new Deploy());
-	oList.addToList(new Advance());
-	oList.addToList(new Bomb());
-	oList.addToList(new Blockade());
-	oList.addToList(new Negotiate());
-	oList.addToList(new Airlift());
+	oList.addToList(static_cast<std::shared_ptr<Order>>(new Deploy()));
+	oList.addToList(static_cast<std::shared_ptr<Order>>(new Advance()));
+	oList.addToList(static_cast<std::shared_ptr<Order>>(new Bomb()));
+	oList.addToList(static_cast<std::shared_ptr<Order>>(new Blockade()));
+	oList.addToList(static_cast<std::shared_ptr<Order>>(new Negotiate()));
+	oList.addToList(static_cast<std::shared_ptr<Order>>(new Airlift()));
 
 	//displaying list
 	std::cout << std::endl << oList;

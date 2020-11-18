@@ -19,6 +19,7 @@
 #include <string>
 #include <unordered_set>
 #include <vector>
+#include <memory>
 
 class Map;
 class Hand;
@@ -32,21 +33,22 @@ class Order;
 class OrderList {
  private:
   // list of orders
-  std::vector<Order*> list;
-
+//  std::vector<Order*> list;
+	std::vector<std::shared_ptr<Order>> list;
  public:
   // constructors
   OrderList();
   OrderList(const OrderList& copy);
   // adds an order to the list
-  bool addToList(Order* order);
+//  bool addToList(Order* order);
+  bool addToList(std::shared_ptr<Order> order);
   // removes an order from the list
   // returns: the armyNb of the order to refill reinforcement pool of player
   int remove(int position);
   // removes and returns the top priority element from list
-  Order* pop();
+	std::shared_ptr<Order> pop();
   // returns a copy of the next top priority element from list
-  Order* peek();
+	std::shared_ptr<Order> peek();
   // moves/swaps an order from an index with another in the list
   bool move(int firstIndex, int secondIndex);
   // returns size/emptyness of current list
@@ -86,7 +88,8 @@ public:
 	//constructor to set name data member, used by subclass constructors
 	Order(const std::string& name, const int& priority);
 	//clone function for polymorphic classes used by OrderList's copy constructor
-	virtual Order* clone() = 0;
+//	virtual Order* clone() = 0;
+	virtual std::shared_ptr<Order> clone() const = 0;
 	//executes an order if it's valid
 	virtual bool execute() = 0;
 	virtual bool validate() = 0;
@@ -117,7 +120,8 @@ public:
 	//playerID is the player who issued this order
 	Deploy(const std::string& playerID, const int& armyNb, Territory* target, Player* const current);
 	//clone function for polymorphic classes
-	Deploy* clone() override;
+//	Deploy* clone() override;
+		virtual std::shared_ptr<Order> clone() const override;
 	//order functions
 	bool validate() override;
 	bool execute() override;
@@ -139,14 +143,15 @@ class Advance : public Order {
   Advance(const std::string& playerID, const int& armyNb, Territory* src,
           Territory* target, Map* map, Player* const current, Deck* const deck);
   // clone function
-  Advance* clone() override;
+//  Advance* clone() override;
+	virtual std::shared_ptr<Order> clone() const override;
   // order functions
   bool validate();
   bool execute() override;
   // assignment & stream functions
   Advance& operator=(const Advance& adv);
   std::ostream& doprint(std::ostream& out) override;
-  ~Advance();
+  virtual ~Advance();
 };
 
 // Bomb order used to bomb target country making them lose half their army units
@@ -158,7 +163,8 @@ class Bomb : public Order {
   Bomb(const Bomb&);
   Bomb(const std::string& playerID, Territory* target, Player* const current);
   // clone function for polymorphic classes
-  Bomb* clone() override;
+//  Bomb* clone() override;
+		virtual std::shared_ptr<Order> clone() const override;
   // order functions
   bool validate() override;
   bool execute() override;
@@ -177,7 +183,8 @@ class Blockade : public Order {
   // if executed, need to remove neutral territory from player list
   Blockade(const std::string& playerID, Territory* src);
   // clone function for polymorphic classes
-  Blockade* clone() override;
+//  Blockade* clone() override;
+		virtual std::shared_ptr<Order> clone() const override;
   // order functions
   bool validate() override;
   bool execute() override;
@@ -196,7 +203,8 @@ class Airlift : public Order {
   Airlift(const std::string& playerID, const int& armyNb, Territory* src,
           Territory* target, Player* const current, Deck* const deck);
   // clone function for polymorphic classes
-  Airlift* clone() override;
+//  Airlift* clone() override;
+		virtual std::shared_ptr<Order> clone() const override;
   // order functions
   bool validate() override;
   bool execute() override;
@@ -217,7 +225,8 @@ class Negotiate : public Order {
   // the set contains players with whom playerID cannot attack this turn
   Negotiate(Player* const current, Player* const enemy);
   // clone function for polymorphic class
-  Negotiate* clone() override;
+//  Negotiate* clone() override;
+		virtual std::shared_ptr<Order> clone() const override;
   // order functions
   bool validate() override;
   bool execute() override;
@@ -235,7 +244,8 @@ public:
 	Reinforcement();
 	Reinforcement(Player* const current);
 	Reinforcement(const Reinforcement&);
-	Reinforcement* clone() override;
+//	Reinforcement* clone() override;
+		virtual std::shared_ptr<Order> clone() const override;
 	// order functions
 	bool validate() override;
 	bool execute() override;
