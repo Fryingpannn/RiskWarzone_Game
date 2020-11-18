@@ -194,7 +194,15 @@ void Player::removeTerritory(Territory &t) {
  *
  * @return A list of territories.
  */
-std::vector<Territory *> Player::toDefend() { return this->Territories; }
+std::vector<Territory *> Player::toDefend() {
+  std::cout << "\tDefending\n";
+
+  for (auto &t : this->Territories) {
+    std::cout << "\t\t" << t->Name << " armies: " << t->Armies << "\n";
+  }
+
+  return this->Territories;
+}
 
 /**
  *  A function that determines the list of territories a player can attack.
@@ -224,6 +232,12 @@ std::vector<Territory *> Player::toAttack() {
   std::vector<Territory *> toAttack;
   for (auto &t : toAttackMap) {
     toAttack.push_back(t.second);
+  }
+
+std:
+  std::cout << "\tCan attack:\n";
+  for (auto &t : toAttack) {
+    std::cout << "\t\t" << t->Name << " armies: " << t->Armies << "\n";
   }
   return toAttack;
 }
@@ -284,8 +298,9 @@ void Player::createDeploy() {
 
   // Perform the deploy order
   auto *order = new Deploy(this->PID, armies, territoryToDeploy, this);
-  std::cout << this->PID << " deploy " << armies << " from "
-            << this->ReinforcementPool << " - " << this->ReinforcementsDeployed;
+  std::cout << "\t" << this->PID << " deploy " << armies << " from ["
+            << this->ReinforcementPool - this->ReinforcementsDeployed << "] reinforcement pool "
+            << "to " << territoryToDeploy->Name << "[" << territoryToDeploy->Armies << "]\n";
   this->ListOfOrders->addToList(static_cast<std::shared_ptr<Order>>(order));
   this->ReinforcementsDeployed += armies;
 }
@@ -310,6 +325,11 @@ void Player::advanceAttack() {
   // Attack with all armies in that territory to speed up game play
   auto *order = new Advance(this->PID, src->Armies, src, target, this->MainMap,
                             this, this->DeckOfCards);
+
+  std::cout << "\t" << this->PID << " attacks " << target->Name << " - "
+            << target->Armies << " owned by " << target->OwnedBy << " with "
+            << src->Name << " - " << src->Armies << " armies " << '\n';
+
   this->ListOfOrders->addToList(static_cast<std::shared_ptr<Order>>(order));
 }
 
@@ -330,6 +350,10 @@ void Player::advanceTransfer() {
 
   auto *order = new Advance(this->PID, armies, src, target, this->MainMap, this,
                             this->DeckOfCards);
+
+  std::cout << "\t" << this->PID << " transfers " << armies << " armies to "
+            << target->Name << " - " << target->Armies << " from " << src->Name
+            << " - " << src->Armies << " total armies " << '\n';
   this->ListOfOrders->addToList(static_cast<std::shared_ptr<Order>>(order));
 }
 
@@ -345,7 +369,6 @@ void Player::playCard() {
     // Display the cards in a player's hand.
     std::cout << "These are the card in your hand:\n";
     std::cout << *this->HandOfCards << std::endl;
-
 
     auto cardToPlay =
         this->HandOfCards->returnByPos(rand() % (this->HandOfCards->size()));
@@ -366,6 +389,9 @@ void Player::createBomb() {
   auto *target = this->MainMap->ReturnListOfCountries().at(pos);
 
   auto *order = new Bomb(this->PID, target, this);
+
+  std::cout << "\t" << this->PID << " bombs " << target->Name << " - "
+            << target->Armies << " owned by " << target->OwnedBy << '\n';
   this->ListOfOrders->addToList(static_cast<std::shared_ptr<Order>>(order));
 }
 
@@ -388,6 +414,10 @@ void Player::createAirlift() {
 
   auto *order =
       new Airlift(this->PID, armies, src, target, this, this->DeckOfCards);
+  std::cout << "\t" << this->PID << " airlifts " << armies << " armies to "
+            << target->Name << " - " << target->Armies << " owned by "
+            << target->OwnedBy << " from " << src->Name << " - " << src->Armies
+            << " armies " << '\n';
   this->ListOfOrders->addToList(static_cast<std::shared_ptr<Order>>(order));
 }
 
@@ -402,6 +432,8 @@ void Player::createBlockade() {
   auto *src = ownedTerritories.at(rand() % (ownedTerritories.size()));
 
   auto *order = new Blockade(this->PID, src);
+  std::cout << "\t" << this->PID << " blockades " << src->Name << " - "
+            << src->Armies << '\n';
   this->ListOfOrders->addToList(static_cast<std::shared_ptr<Order>>(order));
 }
 
@@ -413,6 +445,8 @@ void Player::createNegotiate() {
 
   Player *enemy = this->ListOfPlayers.at(rand() % (this->ListOfPlayers.size()));
   auto *order = new Negotiate(this, enemy);
+  std::cout << "\t" << this->PID << " negotiates with " << enemy->PID << " - "
+            << '\n';
   this->ListOfOrders->addToList(static_cast<std::shared_ptr<Order>>(order));
 }
 
@@ -420,6 +454,7 @@ void Player::createNegotiate() {
  * Wrapper function of card REINFORCEMENT that issues the respective order.
  */
 void Player::createReinforcement() {
+  std::cout << "\t" << this->PID << " reinforces his pool\n";
   this->ListOfOrders->addToList(
       static_cast<std::shared_ptr<Order>>(new Reinforcement(this)));
 }
