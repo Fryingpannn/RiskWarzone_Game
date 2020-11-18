@@ -14,9 +14,6 @@
 //
 /////////////////////////////////////////////
 
-
-#include <stdio.h>
-
 #include <iostream>
 #include <string>
 
@@ -28,24 +25,9 @@
 
 #include "GameEngine.h"
 
-//#include "windows.h"
-
-
-
-#include <stdlib.h>  
-//#include <crtdbg.h>   //for malloc and free
-
-//#ifdef _DEBUG
-//#define DBG_NEW new ( _NORMAL_BLOCK , __FILE__ , __LINE__ )
-//// Replace _NORMAL_BLOCK with _CLIENT_BLOCK if you want the
-//// allocations to be of _CLIENT_BLOCK type
-//#else
-//#define DBG_NEW new
-//#endif
 
 void displayA1DemoMenu();
 void displayA2DemoMenu();
-void displayAssignmentMenu();
 void a1DemoHandler();
 void a2DemoHandler();
 void doA2MainGame();
@@ -101,12 +83,6 @@ void displayA2DemoMenu()
 {
   std::cout << "1. Run main game" << std::endl;
   std::cout << "2. Part 4: Orders Driver Demo" << std::endl;
-}
-
-void displayAssignmentMenu()
-{
-  std::cout << "1. Assignment 1 Demos" << std::endl;
-  std::cout << "2. Assignment 2 Demos" << std::endl;
 }
 
 void a1DemoHandler()
