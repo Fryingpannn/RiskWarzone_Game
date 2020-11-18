@@ -67,10 +67,9 @@ void GameEngine::Init() {
 			std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 			std::cout << "Please Enter a valid number between 2 and 5 =__=";
 			std::cin >> NumberOfPlayers;
-		} else if (NumberOfPlayers == 1) {
+		} else if (NumberOfPlayers < 2 || NumberOfPlayers > 5) {
 			std::cout
-							<< "You can't be playing alone... Please get a friend and you "
-								 "need it\n";
+							<< "Invalid number of players.  Please enter a valid number between 2 and 5.\n";
 			std::cin >> NumberOfPlayers;
 		} else {
 			InputPlayersNotSucceed = false;
