@@ -284,7 +284,7 @@ void Player::createDeploy() {
   auto *order = new Deploy(this->PID, armies, territoryToDeploy, this);
   std::cout << this->PID << " deploy " << armies << " from "
             << this->ReinforcementPool << " - " << this->ReinforcementsDeployed;
-  this->ListOfOrders->addToList(order);
+  this->ListOfOrders->addToList(static_cast<std::shared_ptr<Order>>(order));
   this->ReinforcementsDeployed += armies;
 }
 
@@ -308,7 +308,7 @@ void Player::advanceAttack() {
   // Attack with all armies in that territory to speed up game play
   auto *order = new Advance(this->PID, src->Armies, src, target, this->MainMap,
                             this, this->DeckOfCards);
-  this->ListOfOrders->addToList(order);
+  this->ListOfOrders->addToList(static_cast<std::shared_ptr<Order>>(order));
 }
 
 /**
@@ -328,7 +328,7 @@ void Player::advanceTransfer() {
 
   auto *order = new Advance(this->PID, armies, src, target, this->MainMap, this,
                             this->DeckOfCards);
-  this->ListOfOrders->addToList(order);
+  this->ListOfOrders->addToList(static_cast<std::shared_ptr<Order>>(order));
 }
 
 /**
@@ -361,7 +361,7 @@ void Player::createBomb() {
   auto *target = toBomb.at(rand() % toBomb.size());
 
   auto *order = new Bomb(this->PID, target, this);
-  this->ListOfOrders->addToList(order);
+  this->ListOfOrders->addToList(static_cast<std::shared_ptr<Order>>(order));
 }
 
 /**
@@ -383,7 +383,7 @@ void Player::createAirlift() {
 
   auto *order =
       new Airlift(this->PID, armies, src, target, this, this->DeckOfCards);
-  this->ListOfOrders->addToList(order);
+  this->ListOfOrders->addToList(static_cast<std::shared_ptr<Order>>(order));
 }
 
 /**
@@ -397,7 +397,7 @@ void Player::createBlockade() {
   auto *src = ownedTerritories.at(rand() % (ownedTerritories.size()));
 
   auto *order = new Blockade(this->PID, src);
-  this->ListOfOrders->addToList(order);
+  this->ListOfOrders->addToList(static_cast<std::shared_ptr<Order>>(order));
 }
 
 /**
@@ -408,14 +408,14 @@ void Player::createNegotiate() {
 
   Player *enemy = this->ListOfPlayers.at(rand() % (this->ListOfPlayers.size()));
   auto *order = new Negotiate(this, enemy);
-  this->ListOfOrders->addToList(order);
+  this->ListOfOrders->addToList(static_cast<std::shared_ptr<Order>>(order));
 }
 
 /**
  * Wrapper function of card REINFORCEMENT that issues the respective order.
  */
 void Player::createReinforcement() {
-  this->ListOfOrders->addToList(new Reinforcement(this));
+  this->ListOfOrders->addToList(static_cast<std::shared_ptr<Order>>(new Reinforcement(this)));
 }
 
 /**

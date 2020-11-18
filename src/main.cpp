@@ -28,12 +28,12 @@
 
 #include "GameEngine.h"
 
-#include "windows.h"
+//#include "windows.h"
 
 
 
 #include <stdlib.h>  
-#include <crtdbg.h>   //for malloc and free
+//#include <crtdbg.h>   //for malloc and free
 
 //#ifdef _DEBUG
 //#define DBG_NEW new ( _NORMAL_BLOCK , __FILE__ , __LINE__ )
