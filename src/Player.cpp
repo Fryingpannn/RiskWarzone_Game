@@ -210,13 +210,7 @@ std::vector<Territory *> Player::toAttack() {
     // that the player owns
     auto computeAdjacentResult =
         this->MainMap->ReturnListOfAdjacentCountriesByID(elem->TerritoryID);
-    std::cout << "adjacent of " << elem->Name << "\n";
 
-    for (auto &t : computeAdjacentResult) {
-      std::cout << "\t\t" << t->Name << " [Owned by " << t->OwnedBy
-                << " PlayerOwned" << t->PlayerOwned->PID << "]"
-                << " Armies " << t->Armies << "\n";
-    }
     // Keep only territories that a player does not already own.
     for (auto &t : computeAdjacentResult) {
       auto it = std::find(ownedTerritories.begin(), ownedTerritories.end(), t);
@@ -242,14 +236,20 @@ std::vector<Territory *> Player::toAttack() {
 void Player::issueOrder() {
   // Deploy armies until nothing left in pool
   if (this->ReinforcementPool - this->ReinforcementsDeployed > 0) {
+    std::cout << "\t" << this->PID << " has "
+              << this->ReinforcementPool - this->ReinforcementsDeployed
+              << " armies left to deploy.\n";
     createDeploy();
 
     // Perform an advance order that either attacks or transfers
   } else if (!AdvanceOrderDone) {
+    std::cout << "\t" << this->PID << " has no more armies left to deploy: "
+              << this->ReinforcementPool - this->ReinforcementsDeployed
+              << " armies\n";
     srand(time(NULL));
-
+    std::cout << "\tIssuing advance order...\n";
     // Make players more likely to attack than transfer to end game faster
-    if ((rand() % 100) > 99) {
+    if ((rand() % 100) > 70) {
       advanceTransfer();
     } else {
       advanceAttack();
@@ -257,6 +257,8 @@ void Player::issueOrder() {
     this->AdvanceOrderDone = true;
     // Play a card
   } else if (!CardPlayed) {
+    std::cout << "\t" << this->PID << " already did deploy/advance order\n"
+              << "\tChoosing card\n";
     playCard();
     this->CardPlayed = true;
   }
@@ -338,15 +340,18 @@ void Player::playCard() {
   srand(time(NULL));
 
   if (this->HandOfCards->size() == 0) {
-    std::cout << "You have no cards in your hand.\n";
+    std::cout << "\tYou have no cards in your hand.\n";
   } else {
     // Display the cards in a player's hand.
     std::cout << "These are the card in your hand:\n";
     std::cout << *this->HandOfCards << std::endl;
+
+
     auto cardToPlay =
         this->HandOfCards->returnByPos(rand() % (this->HandOfCards->size()));
     // Method inside cards class calls the correct player creation order
     // function
+    std::cout << "Playing card: " << cardToPlay << "\n";
     cardToPlay.Play(*this, *this->HandOfCards, *this->DeckOfCards);
   }
 }
@@ -357,8 +362,8 @@ void Player::playCard() {
 void Player::createBomb() {
   srand(time(NULL));
 
-  auto toBomb = this->toAttack();
-  auto *target = toBomb.at(rand() % toBomb.size());
+  const auto pos = rand() % this->MainMap->NumOfCountries();
+  auto *target = this->MainMap->ReturnListOfCountries().at(pos);
 
   auto *order = new Bomb(this->PID, target, this);
   this->ListOfOrders->addToList(static_cast<std::shared_ptr<Order>>(order));
@@ -415,7 +420,8 @@ void Player::createNegotiate() {
  * Wrapper function of card REINFORCEMENT that issues the respective order.
  */
 void Player::createReinforcement() {
-  this->ListOfOrders->addToList(static_cast<std::shared_ptr<Order>>(new Reinforcement(this)));
+  this->ListOfOrders->addToList(
+      static_cast<std::shared_ptr<Order>>(new Reinforcement(this)));
 }
 
 /**
@@ -423,14 +429,15 @@ void Player::createReinforcement() {
  */
 Player::~Player() {
   // Delete list of territory pointers if they exist.
-  /*if (!this->Territories.empty()) {
+  if (!this->Territories.empty()) {
     for (auto &i : Territories) {
       if (i != nullptr) {
-        delete i;
         i = nullptr;
       }
     }
-  }*/
+    this->Territories.clear();
+  }
+
   delete this->HandOfCards;
   this->HandOfCards = nullptr;
 

@@ -246,9 +246,7 @@ Deploy::Deploy(const std::string& playerID, const int& armyNb,
   this->armyNb = armyNb;
   this->target = target;
   this->playerID = playerID;
-  this->current = current;
-  if (current->ReinforcementPool < armyNb) this->armyNb = 0;
-  current->ReinforcementPool -= this->armyNb;
+  this->current = current;  
 }
 
 // clone function for Deploy
@@ -271,6 +269,7 @@ bool Deploy::execute() {
   bool success_result = false;
   // add the armies to target territory if it belongs to the player
   if (validate()) {
+    current->ReinforcementPool -= this->armyNb;
     target->Armies += armyNb;
     std::cout << "[Valid] 1 Deploy order executed." << std::endl;
     success_result = true;
@@ -336,9 +335,6 @@ Advance::Advance(const std::string& playerID, const int& armyNb, Territory* src,
   this->map = map;
   this->current = current;
   this->deck = deck;
-  // subtract sent armies from original
-  if (src->Armies < armyNb) this->armyNb = 0;
-  src->Armies -= this->armyNb;
 }
 
 // clone function for Advance
@@ -381,6 +377,7 @@ bool Advance::validate() {
 bool Advance::execute() {
   bool success_result = false;
   if (validate()) {
+    src->Armies -= this->armyNb;
     // if target territory is also owned by user, simply move
     // armies there
     if (target->OwnedBy == playerID) {
@@ -708,9 +705,6 @@ Airlift::Airlift(const std::string& playerID, const int& armyNb, Territory* src,
   this->target = target;
   this->current = current;
   this->deck = deck;
-  // subtract sent armies from original
-  if (src->Armies < armyNb) this->armyNb = 0;
-  src->Armies -= this->armyNb;
 }
 
 // clone function
@@ -743,6 +737,8 @@ bool Airlift::validate() {
 bool Airlift::execute() {
   bool success_result = false;
   if (validate()) {
+    src->Armies -= this->armyNb;
+
     // if target territory is also owned by user or has 0 armies, simply move
     // armies there
     if (target->OwnedBy == playerID) {

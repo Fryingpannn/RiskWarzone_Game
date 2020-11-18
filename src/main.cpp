@@ -41,8 +41,6 @@ int main()
   char choice;
   bool running = true;
 
-  choice = '2';
-
   while (running)
   {
     std::cout << "1. Assignment 1 Demos" << std::endl;
@@ -56,7 +54,6 @@ int main()
       break;
     case '2':
       a2DemoHandler();
-      choice = 'q';
       break;
     case 'q':
     case 'Q':

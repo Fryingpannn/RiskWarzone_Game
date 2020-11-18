@@ -11,21 +11,22 @@
 GameEngine::GameEngine() { Init(); }
 
 GameEngine::~GameEngine() {
-	delete this->DeckOfCards;
-	this->DeckOfCards = nullptr;
+  delete this->DeckOfCards;
+  this->DeckOfCards = nullptr;
 
-	if (MainMap != nullptr) {
-		delete MainMap;
-		MainMap = nullptr;
-	}
-	delete MainFile;
-	MainFile = nullptr;
-	for (Player *player : ListOfPlayers) {
-		if (player != nullptr) {
-			delete player;
-			player = nullptr;
-		}
-	}
+  if (MainMap != nullptr) {
+    delete MainMap;
+    MainMap = nullptr;
+  }
+  delete MainFile;
+  MainFile = nullptr;
+  for (Player *player : ListOfPlayers) {
+    if (player != nullptr) {
+      delete player;
+      player = nullptr;
+    }
+  }
+  this->ListOfValidPlayers.clear();
 }
 
 /**
@@ -35,206 +36,204 @@ GameEngine::~GameEngine() {
  * until a winner is declared.
  */
 void GameEngine::Init() {
-	// The variable for players input
-	int NumberOfPlayers;
-	bool InputPlayersNotSucceed = true;
-	std::string PlayerName;
+  // The variable for players input
+  int NumberOfPlayers;
+  bool InputPlayersNotSucceed = true;
+  std::string PlayerName;
 
-	// The variable for map input
-	std::string MapFileName;
-	bool InputMapNotSucceed = true;
+  // The variable for map input
+  std::string MapFileName;
+  bool InputMapNotSucceed = true;
 
-	// the variable for observer input
-	std::string InputObserver;
-	bool InputObserverNotSucceed = true;
+  // the variable for observer input
+  std::string InputObserver;
+  bool InputObserverNotSucceed = true;
 
-	// the main menu for player to setup how many players and the map they want
-	// to use :O
-	std::cout << "Hey there you little filty general! Welcome to Warzone where "
-							 "you control armies and conquer other countries!"
-						<< std::endl;
-	std::this_thread::sleep_for(std::chrono::milliseconds(100));
-	std::cout << "Now! Now! How many person will be playing this game??"
-						<< std::endl;
-	std::cout << "Or" << std::endl;
-	std::this_thread::sleep_for(std::chrono::milliseconds(100));
-	std::cout << "love to command and conquer?? and trying to end humanity??"
-						<< std::endl;
-	std::cin >> NumberOfPlayers;
-	while (InputPlayersNotSucceed) {
-		if (std::cin.fail()) {
-			std::cin.clear();
-			std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-			std::cout << "Please Enter a valid number between 2 and 5 =__=";
-			std::cin >> NumberOfPlayers;
-		} else if (NumberOfPlayers < 2 || NumberOfPlayers > 5) {
-			std::cout
-							<< "Invalid number of players.  Please enter a valid number between 2 and 5.\n";
-			std::cin >> NumberOfPlayers;
-		} else {
-			InputPlayersNotSucceed = false;
-		}
-	}
-	std::cout << "GOOOD!\n";
-	Timer(100);
-	std::cout << "So you will be playing with " << NumberOfPlayers
-						<< " Number of Players\n ";
+  // the main menu for player to setup how many players and the map they want
+  // to use :O
+  std::cout << "Hey there you little filty general! Welcome to Warzone where "
+               "you control armies and conquer other countries!"
+            << std::endl;
+  std::this_thread::sleep_for(std::chrono::milliseconds(100));
+  std::cout << "Now! Now! How many person will be playing this game??"
+            << std::endl;
+  std::cout << "Or" << std::endl;
+  std::this_thread::sleep_for(std::chrono::milliseconds(100));
+  std::cout << "love to command and conquer?? and trying to end humanity??"
+            << std::endl;
+  std::cin >> NumberOfPlayers;
+  while (InputPlayersNotSucceed) {
+    if (std::cin.fail()) {
+      std::cin.clear();
+      std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+      std::cout << "Please Enter a valid number between 2 and 5 =__=";
+      std::cin >> NumberOfPlayers;
+    } else if (NumberOfPlayers < 2 || NumberOfPlayers > 5) {
+      std::cout << "Invalid number of players.  Please enter a valid number "
+                   "between 2 and 5.\n";
+      std::cin >> NumberOfPlayers;
+    } else {
+      InputPlayersNotSucceed = false;
+    }
+  }
+  std::cout << "GOOOD!\n";
+  Timer(100);
+  std::cout << "So you will be playing with " << NumberOfPlayers
+            << " Number of Players\n ";
 
-	for (int i = 0; i < NumberOfPlayers; i++) {
-		Timer(100);
-		std::cout << ". " << std::endl;
-		auto *player = new Player();
-		// For game loop to keep track of who is left in the game
-		ListOfValidPlayers.push_back(player);
+  for (int i = 0; i < NumberOfPlayers; i++) {
+    Timer(100);
+    std::cout << ". " << std::endl;
+    auto *player = new Player();
+    // For game loop to keep track of who is left in the game
+    ListOfValidPlayers.push_back(player);
 
-		// List of all the players at the start of the game
-		ListOfPlayers.push_back(player);
-		std::cout << "Please enter player" << i << "'s name: ";
-		std::cin >> PlayerName;
-		ListOfValidPlayers.at(ListOfValidPlayers.size() - 1)->PID = PlayerName;
-	}
+    // List of all the players at the start of the game
+    ListOfPlayers.push_back(player);
+    std::cout << "Please enter player" << i << "'s name: ";
+    std::cin >> PlayerName;
+    ListOfValidPlayers.at(ListOfValidPlayers.size() - 1)->PID = PlayerName;
+  }
 
+  std::cout << "Successfully added" << NumberOfPlayers
+            << " Number of Players\n ";
 
-	std::cout << "Successfully added" << NumberOfPlayers
-						<< " Number of Players\n ";
+  std::string MapFolderBasePath = "./maps/";
 
-	std::string MapFolderBasePath = "./maps/";
+  while (InputMapNotSucceed) {
+    std::cout << "Now tell me the name of the map you want to load? (must be "
+                 "in the ./maps/ directory)\n ";
 
-	while (InputMapNotSucceed) {
-		std::cout << "Now tell me the name of the map you want to load? (must be "
-								 "in the ./maps/ directory)\n ";
+    std::cin >> MapFileName;
 
-		std::cin >> MapFileName;
+    trim(MapFileName);
+    MainFile = new MapFile(MapFolderBasePath + MapFileName);
+    Result<void> ReadMapFileResult = MainFile->readMapFile();
+    if (ReadMapFileResult.success) {
+      std::cout << "Map file successfully read: " << MainFile->map_file_name
+                << std::endl;
 
+      // Validate what was read into testMapFile
+      Result<void> ValidateMapFile = MainFile->validate();
+      if (ValidateMapFile.success) {
+        // Valid items in testMapFile
+        // Generate a Map object
 
-		trim(MapFileName);
-		MainFile = new MapFile(MapFolderBasePath + MapFileName);
-		Result<void> ReadMapFileResult = MainFile->readMapFile();
-		if (ReadMapFileResult.success) {
-			std::cout << "Map file successfully read: " << MainFile->map_file_name
-								<< std::endl;
+        MainMap = MainFile->generateMap();
 
-			// Validate what was read into testMapFile
-			Result<void> ValidateMapFile = MainFile->validate();
-			if (ValidateMapFile.success) {
-				// Valid items in testMapFile
-				// Generate a Map object
+        // Display the map
+        MainMap->Display();
 
-				MainMap = MainFile->generateMap();
+        // only when the map is valid then it will break through the loop
+        if (MainMap->Validate()) {
+          std::cout << "The map is valid!\n";
+          InputMapNotSucceed = false;
+        } else {
+          std::cout << "Deleting the garbage map...\n";
+          delete MainMap;
+          MapFileName.clear();
+        }
+      } else {
+        std::cerr << "ERROR: testMapFile failed validation checks."
+                  << ValidateMapFile.message << std::endl;
+      }
+    } else {
+      std::cerr << "ERROR: Could not read map file: "
+                << ReadMapFileResult.message << std::endl;
+    }
+  }
 
-				// Display the map
-				MainMap->Display();
+  phaseObserverToggle = true;
+  gameStatsObserverToggle = true;
 
-				// only when the map is valid then it will break through the loop
-				if (MainMap->Validate()) {
-					std::cout << "The map is valid!\n";
-					InputMapNotSucceed = false;
-				} else {
-					std::cout << "Deleting the garbage map...\n";
-					delete MainMap;
-					MapFileName.clear();
-				}
-			} else {
-				std::cerr << "ERROR: testMapFile failed validation checks."
-									<< ValidateMapFile.message << std::endl;
-			}
-		} else {
-			std::cerr << "ERROR: Could not read map file: "
-								<< ReadMapFileResult.message << std::endl;
-		}
-	}
+  while (InputObserverNotSucceed) {
+    std::cout << std::boolalpha;
+    std::cout << "1. Phase Observer: " << phaseObserverToggle << std::endl;
+    std::cout << "2. Game Statistics Observer: " << gameStatsObserverToggle
+              << std::endl;
+    std::cout << "Enter your selection ('q' to quit and save your selection): ";
 
-	phaseObserverToggle = true;
-	gameStatsObserverToggle = true;
+    //    InputObserver = '1';
+    std::cin >> InputObserver;
+    //    InputObserver = 'q';
+    if (InputObserver == "1") {
+      phaseObserverToggle = !phaseObserverToggle;
+    } else if (InputObserver == "2") {
+      gameStatsObserverToggle = !gameStatsObserverToggle;
+    } else if (InputObserver == "q") {
+      InputObserverNotSucceed = false;
+    } else {
+      std::cout << "Invalid Selection" << std::endl;
+    }
+  }
 
-	while (InputObserverNotSucceed) {
-		std::cout << std::boolalpha;
-		std::cout << "1. Phase Observer: " << phaseObserverToggle << std::endl;
-		std::cout << "2. Game Statistics Observer: " << gameStatsObserverToggle
-							<< std::endl;
-		std::cout << "Enter your selection ('q' to quit and save your selection): ";
+  std::list<Observer *> observerList;
+  for (auto *player : ListOfValidPlayers) {
+    if (phaseObserverToggle) {
+      auto *newPhaseObserver = new PhaseObserver(player);
+      observerList.push_back(newPhaseObserver);
+    }
+    if (gameStatsObserverToggle) {
+      auto *newGameStatsObserver = new GameStatisticsObserver(player);
+      observerList.push_back(newGameStatsObserver);
+    }
+  }
 
-//    InputObserver = '1';
-		std::cin >> InputObserver;
-//    InputObserver = 'q';
-		if (InputObserver == "1") {
-			phaseObserverToggle = !phaseObserverToggle;
-		} else if (InputObserver == "2") {
-			gameStatsObserverToggle = !gameStatsObserverToggle;
-		} else if (InputObserver == "q") {
-			InputObserverNotSucceed = false;
-		} else {
-			std::cout << "Invalid Selection" << std::endl;
-		}
-	}
+  // Add GameEngine observers
+  if (phaseObserverToggle) {
+    auto *newPhaseObserver = new PhaseObserver(this);
+    observerList.push_back(newPhaseObserver);
+  }
+  if (gameStatsObserverToggle) {
+    auto *newGameStatsObserver = new GameStatisticsObserver(this);
+    observerList.push_back(newGameStatsObserver);
+  }
 
-	std::list<Observer *> observerList;
-	for (auto *player : ListOfValidPlayers) {
-		if (phaseObserverToggle) {
-			auto *newPhaseObserver = new PhaseObserver(player);
-			observerList.push_back(newPhaseObserver);
-		}
-		if (gameStatsObserverToggle) {
-			auto *newGameStatsObserver = new GameStatisticsObserver(player);
-			observerList.push_back(newGameStatsObserver);
-		}
-	}
+  for (auto *territory : MainMap->ReturnListOfCountries()) {
+    if (phaseObserverToggle) {
+      auto *newPhaseObserver = new PhaseObserver(territory);
+      observerList.push_back(newPhaseObserver);
+    }
+    if (gameStatsObserverToggle) {
+      auto *newGameStatsObserver = new GameStatisticsObserver(territory);
+      observerList.push_back(newGameStatsObserver);
+    }
+  }
 
-	// Add GameEngine observers
-	if (phaseObserverToggle) {
-		auto *newPhaseObserver = new PhaseObserver(this);
-		observerList.push_back(newPhaseObserver);
-	}
-	if (gameStatsObserverToggle) {
-		auto *newGameStatsObserver = new GameStatisticsObserver(this);
-		observerList.push_back(newGameStatsObserver);
-	}
+  // Init deck from main map
+  this->DeckOfCards = new Deck(MainMap->NumOfCountries());
 
-	for (auto *territory : MainMap->ReturnListOfCountries()) {
-		if (phaseObserverToggle) {
-			auto *newPhaseObserver = new PhaseObserver(territory);
-			observerList.push_back(newPhaseObserver);
-		}
-		if (gameStatsObserverToggle) {
-			auto *newGameStatsObserver = new GameStatisticsObserver(territory);
-			observerList.push_back(newGameStatsObserver);
-		}
-	}
+  // Bind map and deck elements to each player object
+  for (auto &player : ListOfValidPlayers) {
+    player->bindGameElements(this->ListOfValidPlayers, this->MainMap,
+                             this->DeckOfCards);
+  }
 
-	// Init deck from main map
-	this->DeckOfCards = new Deck(MainMap->NumOfCountries());
+  std::cout << "[GAME START] The following players were created: \n";
 
-	// Bind map and deck elements to each player object
-	for (auto &player : ListOfValidPlayers) {
-		player->bindGameElements(this->ListOfValidPlayers, this->MainMap,
-														 this->DeckOfCards);
-	}
+  for (auto &p : ListOfValidPlayers) {
+    std::cout << "\t" << *p << "\n";
+  }
 
-	std::cout << "[GAME START] The following players were created: \n";
+  std::cout << "[GAME START] The deck of cards has "
+            << this->DeckOfCards->GetSize() << " cards\n";
+  std::cout << "\nNow the game is ready to go! (≧▽≦)!! \n";
 
-	for (auto &p : ListOfValidPlayers) {
-		std::cout << "\t" << *p << "\n";
-	}
+  // -------------------------------------------------------
+  // STARTUP PHASE LOOP
+  // -------------------------------------------------------
+  startupPhase();
 
-	std::cout << "[GAME START] The deck of cards has "
-						<< this->DeckOfCards->GetSize() << " cards\n";
-	std::cout << "\nNow the game is ready to go! (≧▽≦)!! \n";
+  // -------------------------------------------------------
+  // MAIN GAME LOOP
+  // -------------------------------------------------------
+  mainGameLoop();
 
-	// -------------------------------------------------------
-	// STARTUP PHASE LOOP
-	// -------------------------------------------------------
-	startupPhase();
-
-	// -------------------------------------------------------
-	// MAIN GAME LOOP
-	// -------------------------------------------------------
-	mainGameLoop();
-
-	// Delete observers
-	for (auto &o : observerList) {
-		delete o;
-		o = nullptr;
-	}
+  // Delete observers
+  for (auto &o : observerList) {
+    delete o;
+    o = nullptr;
+  }
 }
 
 /**
@@ -248,17 +247,17 @@ void GameEngine::startupPhase() {
 	//now the players will play in this order for the rest of the game
 	std::random_shuffle(ListOfValidPlayers.begin(), ListOfValidPlayers.end());
 
-	// create a list of numbers from 0 to the number of countries in the map
-	std::vector<int> randomizedIDs;
+  // create a list of numbers from 0 to the number of countries in the map
+  std::vector<int> randomizedIDs;
 
-	for (int i = 0; i < MainMap->NumOfCountries(); i++) {
-		randomizedIDs.emplace_back(i);
-	}
+  for (int i = 0; i < MainMap->NumOfCountries(); i++) {
+    randomizedIDs.emplace_back(i);
+  }
 
-	// randomize the list of numbers
-	unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
-	std::shuffle(std::begin(randomizedIDs), std::end(randomizedIDs),
-							 std::default_random_engine(seed));
+  // randomize the list of numbers
+  unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
+  std::shuffle(std::begin(randomizedIDs), std::end(randomizedIDs),
+               std::default_random_engine(seed));
 
 	// now iterate through the randomized list, assign countries to players in
 	// robin round fashion The randomized list plays the role of territory
@@ -282,10 +281,10 @@ void GameEngine::startupPhase() {
 		ListOfValidPlayers.at(robinRoundCounter)->setState(new_state);
 		ListOfValidPlayers.at(robinRoundCounter)->Notify();
 
-		MainMap->ReturnListOfCountries()
-						.at(randomizedIDs.at(i))
-						->setState(new_state);
-		MainMap->ReturnListOfCountries().at(randomizedIDs.at(i))->Notify();
+    MainMap->ReturnListOfCountries()
+        .at(randomizedIDs.at(i))
+        ->setState(new_state);
+    MainMap->ReturnListOfCountries().at(randomizedIDs.at(i))->Notify();
 
 		//go to the next player in the list
 		robinRoundCounter += 1;
@@ -294,78 +293,78 @@ void GameEngine::startupPhase() {
 		}
 	}
 
-	// give armies to the players based on the number of players in the game
-	switch (ListOfValidPlayers.size()) {
-		case 2:
-			for (int i = 0; i < 2; i++) {
-				ListOfValidPlayers.at(i)->ReinforcementPool = 40;
-				State new_state;
-				new_state.current_state =
-								State_enum::SETUP_PHASE_RECEIVE_REINFORCEMENTS;
-				new_state.newReinforcements = 40;
-				ListOfValidPlayers.at(i)->setState(new_state);
-				ListOfValidPlayers.at(i)->Notify();
-			}
-			break;
-		case 3:
-			for (int i = 0; i < 3; i++) {
-				ListOfValidPlayers.at(i)->ReinforcementPool = 35;
-				State new_state;
-				new_state.current_state =
-								State_enum::SETUP_PHASE_RECEIVE_REINFORCEMENTS;
-				new_state.newReinforcements = 35;
-				ListOfValidPlayers.at(i)->setState(new_state);
-				ListOfValidPlayers.at(i)->Notify();
-			}
-			break;
-		case 4:
-			for (int i = 0; i < 4; i++) {
-				ListOfValidPlayers.at(i)->ReinforcementPool = 30;
-				State new_state;
-				new_state.current_state =
-								State_enum::SETUP_PHASE_RECEIVE_REINFORCEMENTS;
-				new_state.newReinforcements = 30;
-				ListOfValidPlayers.at(i)->setState(new_state);
-				ListOfValidPlayers.at(i)->Notify();
-			}
-			break;
-		case 5:
-			for (int i = 0; i < 5; i++) {
-				ListOfValidPlayers.at(i)->ReinforcementPool = 25;
-				State new_state;
-				new_state.current_state =
-								State_enum::SETUP_PHASE_RECEIVE_REINFORCEMENTS;
-				new_state.newReinforcements = 25;
-				ListOfValidPlayers.at(i)->setState(new_state);
-				ListOfValidPlayers.at(i)->Notify();
-			}
-			break;
-	}
+  // give armies to the players based on the number of players in the game
+  switch (ListOfValidPlayers.size()) {
+    case 2:
+      for (int i = 0; i < 2; i++) {
+        ListOfValidPlayers.at(i)->ReinforcementPool = 40;
+        State new_state;
+        new_state.current_state =
+            State_enum::SETUP_PHASE_RECEIVE_REINFORCEMENTS;
+        new_state.newReinforcements = 40;
+        ListOfValidPlayers.at(i)->setState(new_state);
+        ListOfValidPlayers.at(i)->Notify();
+      }
+      break;
+    case 3:
+      for (int i = 0; i < 3; i++) {
+        ListOfValidPlayers.at(i)->ReinforcementPool = 35;
+        State new_state;
+        new_state.current_state =
+            State_enum::SETUP_PHASE_RECEIVE_REINFORCEMENTS;
+        new_state.newReinforcements = 35;
+        ListOfValidPlayers.at(i)->setState(new_state);
+        ListOfValidPlayers.at(i)->Notify();
+      }
+      break;
+    case 4:
+      for (int i = 0; i < 4; i++) {
+        ListOfValidPlayers.at(i)->ReinforcementPool = 30;
+        State new_state;
+        new_state.current_state =
+            State_enum::SETUP_PHASE_RECEIVE_REINFORCEMENTS;
+        new_state.newReinforcements = 30;
+        ListOfValidPlayers.at(i)->setState(new_state);
+        ListOfValidPlayers.at(i)->Notify();
+      }
+      break;
+    case 5:
+      for (int i = 0; i < 5; i++) {
+        ListOfValidPlayers.at(i)->ReinforcementPool = 25;
+        State new_state;
+        new_state.current_state =
+            State_enum::SETUP_PHASE_RECEIVE_REINFORCEMENTS;
+        new_state.newReinforcements = 25;
+        ListOfValidPlayers.at(i)->setState(new_state);
+        ListOfValidPlayers.at(i)->Notify();
+      }
+      break;
+  }
 
-	std::cout << "PLAYERS' INFORMATION:" << std::endl;
-	std::cout << "----------------------------------------------------"
-						<< std::endl;
+  std::cout << "PLAYERS' INFORMATION:" << std::endl;
+  std::cout << "----------------------------------------------------"
+            << std::endl;
 
-	for (auto &i : ListOfValidPlayers) {
-		std::cout << *i;
-		std::cout << std::endl;
-	}
+  for (auto &i : ListOfValidPlayers) {
+    std::cout << *i;
+    std::cout << std::endl;
+  }
 
-	std::cout << "TERRITORIES' INFORMATION:" << std::endl;
-	std::cout << "----------------------------------------------------"
-						<< std::endl;
+  std::cout << "TERRITORIES' INFORMATION:" << std::endl;
+  std::cout << "----------------------------------------------------"
+            << std::endl;
 
 	for (auto &i : MainMap->ReturnListOfCountries()) {
 		std::cout << *i;
 		std::cout << std::endl;
 	}
 
-	// to show that there are no duplicates, we compare the number of territories
-	// owned by all the players to number of territories in the map
-	int sumOfPlayerOwnedTerritories = 0;
-	for (int i = 0; i < ListOfValidPlayers.size(); i++) {
-		sumOfPlayerOwnedTerritories += ListOfValidPlayers.at(i)->Territories.size();
-	}
+  // to show that there are no duplicates, we compare the number of territories
+  // owned by all the players to number of territories in the map
+  int sumOfPlayerOwnedTerritories = 0;
+  for (int i = 0; i < ListOfValidPlayers.size(); i++) {
+    sumOfPlayerOwnedTerritories += ListOfValidPlayers.at(i)->Territories.size();
+  }
 
 	std::cout << "\tPlayers own " << sumOfPlayerOwnedTerritories
 						<< " territories altogether" << std::endl;
@@ -379,68 +378,68 @@ void GameEngine::startupPhase() {
  * phases. Decides who the winner is.
  */
 void GameEngine::mainGameLoop() {
-	// DEMO VARIABLE will end game after 10 turns
-	bool simulateGameEnd{false};
-	bool gameOver{false};
+  // DEMO VARIABLE will end game after 10 turns
+  bool simulateGameEnd{true};
+  bool gameOver{false};
 
-	unsigned long long int round_counter = 0;
-	// Loop until a player owns all territories (aka wins the game)
-	while (!gameOver) {
-		// CHECK: Can we remove any players who have no territories?
-		for (unsigned int i = 0; i < ListOfValidPlayers.size(); i++) {
-			if (ListOfValidPlayers.at(i)->Territories.empty()) {
-				State new_state;
-				new_state.current_state = State_enum::PLAYER_ELIMINATED;
-				new_state.player_name = ListOfValidPlayers.at(i)->PID;
-				// Remove player from game by removing him from the list
-				ListOfValidPlayers.erase(ListOfValidPlayers.begin() + i);
+  unsigned long long int round_counter = 0;
+  // Loop until a player owns all territories (aka wins the game)
+  while (!gameOver) {
+    // CHECK: Can we remove any players who have no territories?
+    for (unsigned int i = 0; i < ListOfValidPlayers.size(); i++) {
+      if (ListOfValidPlayers.at(i)->Territories.empty()) {
+        State new_state;
+        new_state.current_state = State_enum::PLAYER_ELIMINATED;
+        new_state.player_name = ListOfValidPlayers.at(i)->PID;
+        // Remove player from game by removing him from the list
+        ListOfValidPlayers.erase(ListOfValidPlayers.begin() + i);
 
-				this->setState(new_state);
-				this->Notify();
-			} else if (simulateGameEnd && round_counter == 10) {
-				for (unsigned int i = 0; i < ListOfValidPlayers.size(); i++) {
-					ListOfValidPlayers.erase(ListOfValidPlayers.begin() + i);
-				}
-				auto *playerLeft = ListOfValidPlayers.at(0);
-				for (auto &t : this->MainMap->ReturnListOfCountries()) {
-					if (t->OwnedBy != playerLeft->PID) {
-						t->OwnedBy = playerLeft->PID;
-						t->PlayerOwned = playerLeft;
-					}
-				}
-			}
-		}
+        this->setState(new_state);
+        this->Notify();
+      } else if (simulateGameEnd && round_counter == 50) {
+        for (unsigned int i = 0; i < ListOfValidPlayers.size(); i++) {
+          ListOfValidPlayers.erase(ListOfValidPlayers.begin() + i);
+        }
+        auto *playerLeft = ListOfValidPlayers.at(0);
+        for (auto &t : this->MainMap->ReturnListOfCountries()) {
+          if (t->OwnedBy != playerLeft->PID) {
+            t->OwnedBy = playerLeft->PID;
+            t->PlayerOwned = playerLeft;
+          }
+        }
+      }
+    }
 
-		// CHECK: Do we have a winner?
-		if (ListOfValidPlayers.size() == 1) {
-			// TODO check this is in the right place
-			std::cout << ListOfValidPlayers.at(0)->PID << " has won the game."
-								<< std::endl;
+    // CHECK: Do we have a winner?
+    if (ListOfValidPlayers.size() == 1) {
+      // TODO check this is in the right place
+      std::cout << ListOfValidPlayers.at(0)->PID << " has won the game."
+                << std::endl;
 
-			gameOver = true;
+      gameOver = true;
 
-			State new_state;
-			new_state.current_state = State_enum::PLAYER_OWNS_ALL_TERRITORIES;
-			new_state.player_name = ListOfValidPlayers.at(0)->PID;
+      State new_state;
+      new_state.current_state = State_enum::PLAYER_OWNS_ALL_TERRITORIES;
+      new_state.player_name = ListOfValidPlayers.at(0)->PID;
 
-			this->setState(new_state);
-			this->Notify();
+      this->setState(new_state);
+      this->Notify();
 
-			break;
-		}
+      break;
+    }
 
-		// ----------------------------------
-		// GAME PHASES
-		// ----------------------------------
-		reinforcementPhase();
-		issueOrdersPhase();
-		executeOrdersPhase();
+    // ----------------------------------
+    // GAME PHASES
+    // ----------------------------------
+    reinforcementPhase();
+    issueOrdersPhase();
+    executeOrdersPhase();
 
-		round_counter++;
-		std::cout << "Finished round: " << round_counter << std::endl;
-	}
-	std::cout << "Game Finished after " << round_counter << " rounds."
-						<< std::endl;
+    round_counter++;
+    std::cout << "Finished round: " << round_counter << std::endl;
+  }
+  std::cout << "Game Finished after " << round_counter << " rounds."
+            << std::endl;
 }
 
 /**
@@ -448,165 +447,180 @@ void GameEngine::mainGameLoop() {
  * own
  */
 void GameEngine::reinforcementPhase() {
-	std::vector<ContinentData *> ListOfContinents =
-					MainMap->getListOfContinents();
+  std::cout << "\n\n--------------------------\n"
+            << "BEGIN REINFORCEMENT PHASE\n\n";
+  std::vector<ContinentData *> ListOfContinents =
+      MainMap->getListOfContinents();
 
-	for (auto &player : ListOfValidPlayers) {
-		int armies = 0;
+  for (auto &player : ListOfValidPlayers) {
+    int armies = 0;
 
-		// Give armies related to number of territories owned
-		auto territories = MainMap->ReturnListOfCountriesOwnedByPlayer(player->PID);
-		armies += static_cast<int>(territories.size() / static_cast<long>(3));
+    // Give armies related to number of territories owned
+    auto territories = MainMap->ReturnListOfCountriesOwnedByPlayer(player->PID);
+    armies += static_cast<int>(territories.size() / static_cast<long>(3));
 
-		// Give bonus if a player owns a continent
-		for (auto *continent : ListOfContinents) {
-			if (MainMap->IfPlayerOwnContinent(player->PID, continent->Name)) {
-				armies += continent->BonusValue;
-			}
-		}
+    // Give bonus if a player owns a continent
+    for (auto *continent : ListOfContinents) {
+      if (MainMap->IfPlayerOwnContinent(player->PID, continent->Name)) {
+        armies += continent->BonusValue;
+      }
+    }
 
-		player->ReinforcementPool += armies;
+    player->ReinforcementPool += armies;
 
-		State new_state;
-		new_state.current_state = State_enum::REINFORCEMENT_PHASE;
-		new_state.newReinforcements = armies;
-		player->setState(new_state);
-		player->Notify();
-	}
+    State new_state;
+    new_state.current_state = State_enum::REINFORCEMENT_PHASE;
+    new_state.newReinforcements = armies;
+    player->setState(new_state);
+    player->Notify();
+  }
 
+  for (auto &p : ListOfValidPlayers) {
+    std::cout << "\t" << p->PID << " now has " << p->ReinforcementPool
+              << " armies in his pool\n";
+  }
 
+  std::cout << "END OF REINFORCEMENT PHASE\n"
+            << "--------------------------\n";
 }
 
 /**
  * Players issue orders and place them in their own order list.
  */
 void GameEngine::issueOrdersPhase() {
-	std::cout << "--------------------------\n"
-						<< "BEGIN ORDER ISSUING PHASE\n";
-	// Initialize issue order phase for each player with helpful flags
-	for (auto &player : ListOfValidPlayers) {
-		player->initIssueOrder();
-	}
+  std::cout << "\n\n--------------------------\n"
+            << "BEGIN ORDER ISSUING PHASE\n\n";
+  // Initialize issue order phase for each player with helpful flags
+  for (auto &player : ListOfValidPlayers) {
+    player->initIssueOrder();
+  }
 
-	// Initialize each turn with everyone having orders to make
-	auto ordersLeft = ListOfValidPlayers.size();
+  // Initialize each turn with everyone having orders to make
+  auto ordersLeft = ListOfValidPlayers.size();
 
-	// Loop until no orders left for each player in same turn
-	while (ordersLeft > 0) {
-		ordersLeft = ListOfValidPlayers.size();
-		for (auto &player : ListOfValidPlayers) {
-			if (player->AdvanceOrderDone && player->CardPlayed) {
-				// If a player no longer has any order left to make
-				ordersLeft--;
-			} else {
-				player->issueOrder();
+  // Loop until no orders left for each player in same turn
+  while (ordersLeft > 0) {
+    ordersLeft = ListOfValidPlayers.size();
+    for (auto &player : ListOfValidPlayers) {
+      if (player->AdvanceOrderDone && player->CardPlayed) {
+        // If a player no longer has any order left to make
+        ordersLeft--;
+      } else {
+        std::cout << "\n\t" << player->PID << " issuing order...\n";
+        player->issueOrder();
 
-				State new_state;
-				new_state.current_state = State_enum::ISSUE_ORDERS_PHASE;
-				player->setState(new_state);
-				player->Notify();
-			}
-		}
-	}
-	std::cout << "END OF ORDER ISSUING PHASE\n"
-						<< "--------------------------\n";
+        if (!player->AdvanceOrderDone ||
+            (player->AdvanceOrderDone && !player->CardPlayed) ||
+            (player->AdvanceOrderDone && player->HandOfCards->size() > 0)) {
+          State new_state;
+          new_state.current_state = State_enum::ISSUE_ORDERS_PHASE;
+          player->setState(new_state);
+          player->Notify();
+        }
+      }
+    }
+  }
+  std::cout << "END OF ORDER ISSUING PHASE\n"
+            << "--------------------------\n";
 }
 
 /**
  * Executes orders of players from their orders list.
  */
 void GameEngine::executeOrdersPhase() {
-	std::cout << "--------------------------\n"
-						<< "BEGIN ORDER EXECUTION PHASE\n";
+  std::cout << "\n\n--------------------------\n"
+            << "BEGIN ORDER EXECUTION PHASE\n\n";
 
-	// Execute only deploy orders first
-	auto ordersLeft = ListOfValidPlayers.size();
-	while (ordersLeft > 0) {
-		ordersLeft = ListOfValidPlayers.size();
-		for (auto &player : ListOfValidPlayers) {
-			if (player->ListOfOrders->peek()->getName() == "DEPLOY") {
-				State new_phase_state;
-				new_phase_state.current_state = State_enum::EXECUTE_ORDERS_PHASE;
-				new_phase_state.executed_order_name =
-								player->ListOfOrders->peek()->getName();
+  // Execute only deploy orders first
+  auto ordersLeft = ListOfValidPlayers.size();
+  while (ordersLeft > 0) {
+    ordersLeft = ListOfValidPlayers.size();
+    for (auto &player : ListOfValidPlayers) {
+      if (player->ListOfOrders->peek()->getName() == "DEPLOY") {
+        State new_phase_state;
+        new_phase_state.current_state = State_enum::EXECUTE_ORDERS_PHASE;
+        new_phase_state.executed_order_name =
+            player->ListOfOrders->peek()->getName();
+        std::cout << "\n\t" << player->PID << " executing DEPLOY order\n";
+        const bool success = player->ListOfOrders->pop()->execute();
+        new_phase_state.execute_order_success = success;
 
-				const bool success = player->ListOfOrders->pop()->execute();
-				new_phase_state.execute_order_success = success;
+        player->setState(new_phase_state);
+        player->Notify();
 
-				player->setState(new_phase_state);
-				player->Notify();
+      } else {
+        ordersLeft--;
+      }
+    }
+  }
 
-			} else {
-				ordersLeft--;
-			}
-		}
-	}
+  std::cout << "All deploy orders are finished.\n";
 
-	// Execute other orders by priority
-	ordersLeft = ListOfValidPlayers.size();
-	while (ordersLeft > 0) {
-		ordersLeft = ListOfValidPlayers.size();
-		for (auto &player : ListOfValidPlayers) {
-			if (!player->ListOfOrders->empty()) {
-				Territory *target = player->ListOfOrders->peek()->getTarget();
+  // Execute other orders by priority
+  ordersLeft = ListOfValidPlayers.size();
+  while (ordersLeft > 0) {
+    ordersLeft = ListOfValidPlayers.size();
+    for (auto &player : ListOfValidPlayers) {
+      if (!player->ListOfOrders->empty()) {
+        Territory *target = player->ListOfOrders->peek()->getTarget();
 
-				State new_phase_state;
-				new_phase_state.current_state = State_enum::EXECUTE_ORDERS_PHASE;
-				new_phase_state.executed_order_name =
-								player->ListOfOrders->peek()->getName();
+        State new_phase_state;
+        new_phase_state.current_state = State_enum::EXECUTE_ORDERS_PHASE;
+        new_phase_state.executed_order_name =
+            player->ListOfOrders->peek()->getName();
 
-				State new_game_stats_state;
-				new_game_stats_state.current_state = State_enum::TERRITORY_CONQUERED;
-				new_game_stats_state.executed_order_name =
-								player->ListOfOrders->peek()->getName();
+        State new_game_stats_state;
+        new_game_stats_state.current_state = State_enum::TERRITORY_CONQUERED;
+        new_game_stats_state.executed_order_name =
+            player->ListOfOrders->peek()->getName();
+        std::cout << "\n\t" << player->PID << " executing order\n";
+        bool success = player->ListOfOrders->pop()->execute();
 
-				bool success = player->ListOfOrders->pop()->execute();
+        new_phase_state.execute_order_success = success;
+        new_game_stats_state.execute_order_success = success;
 
-				new_phase_state.execute_order_success = success;
-				new_game_stats_state.execute_order_success = success;
+        player->setState(new_phase_state);
+        player->Notify();
+        if (target != nullptr) {
+          target->setState(new_game_stats_state);
+          target->Notify();
+        }
 
-				player->setState(new_phase_state);
-				player->Notify();
-				if (target != nullptr) {
-					target->setState(new_game_stats_state);
-					target->Notify();
-				}
-
-				this->setState(new_game_stats_state);
-				this->Notify();
-			} else {
-				ordersLeft--;
-			}
-		}
-	}
-	// reset negotiated player list and card given status
-	for (auto *player : ListOfValidPlayers) {
-		player->set.clear();
-		player->cardNotGiven = true;
-	}
-	std::cout << "END OF ORDER EXECUTION PHASE\n"
-						<< "--------------------------\n";
+        this->setState(new_game_stats_state);
+        this->Notify();
+      } else {
+        ordersLeft--;
+      }
+    }
+  }
+  // reset negotiated player list and card given status
+  for (auto *player : ListOfValidPlayers) {
+    player->set.clear();
+    player->cardNotGiven = true;
+  }
+  std::cout << "END OF ORDER EXECUTION PHASE\n"
+            << "--------------------------\n";
 }
 
 void GameEngine::displayStatistics() {
-	int total_territories = MainMap->NumOfCountries();
+  int total_territories = MainMap->NumOfCountries();
 
-	std::cout << "\nGame Statistics: " << std::endl;
-	std::cout << "==================================" << std::endl;
-	std::cout << "Map Name: " << MainMap->GetMapName() << std::endl;
-	std::cout << "Total Territories: " << total_territories << std::endl;
-	std::cout << "--------------------------" << std::endl;
-	for (auto *player : ListOfValidPlayers) {
-		// int player_territories = player->Territories.size();
-		int player_territories;
-		player_territories =
-						MainMap->ReturnListOfCountriesOwnedByPlayer(player->PID).size();
-		std::cout << "Name: " << player->PID << std::endl;
-		std::cout << std::fixed << std::showpoint << std::setprecision(2);
-		std::cout << "\tOwned Territories: " << player_territories << " ( "
-							<< static_cast<double>(player_territories) / total_territories *
-								 100
-							<< "% of total)" << std::endl;
-		std::cout << "--------------------------" << std::endl;
-	}
+  std::cout << "\nGame Statistics: " << std::endl;
+  std::cout << "==================================" << std::endl;
+  std::cout << "Map Name: " << MainMap->GetMapName() << std::endl;
+  std::cout << "Total Territories: " << total_territories << std::endl;
+  std::cout << "--------------------------" << std::endl;
+  for (auto *player : ListOfValidPlayers) {
+    // int player_territories = player->Territories.size();
+    int player_territories;
+    player_territories =
+        MainMap->ReturnListOfCountriesOwnedByPlayer(player->PID).size();
+    std::cout << "Name: " << player->PID << std::endl;
+    std::cout << std::fixed << std::showpoint << std::setprecision(2);
+    std::cout << "\tOwned Territories: " << player_territories << " ( "
+              << static_cast<double>(player_territories) / total_territories *
+                     100
+              << "% of total)" << std::endl;
+    std::cout << "--------------------------" << std::endl;
+  }
 }
