@@ -245,6 +245,7 @@ void GameEngine::Init() {
 void GameEngine::startupPhase() {
 	srand(time(NULL));
 	// Shuffle the list of players
+	//now the players will play in this order for the rest of the game
 	std::random_shuffle(ListOfValidPlayers.begin(), ListOfValidPlayers.end());
 
 	// create a list of numbers from 0 to the number of countries in the map
@@ -263,26 +264,33 @@ void GameEngine::startupPhase() {
 	// robin round fashion The randomized list plays the role of territory
 	// indexes. each territory has a unique ID (index), so it is assigned once and
 	// only once.
-	int rr = 0;
+	int robinRoundCounter = 0;
 	for (int i = 0; i < MainMap->NumOfCountries(); i++) {
-		auto *territory = MainMap->ReturnListOfCountries().at(randomizedIDs.at(i));
-		ListOfValidPlayers.at(rr)->Territories.emplace_back(territory);
-		territory->PlayerOwned = ListOfValidPlayers.at(rr);
-		territory->OwnedBy = ListOfValidPlayers.at(rr)->PID;
 
+
+		auto *territory = MainMap->ReturnListOfCountries().at(randomizedIDs.at(i));
+
+		//add the territory to the player's list of territories
+		ListOfValidPlayers.at(robinRoundCounter)->Territories.emplace_back(territory);
+		// Specify the territory's owner
+		territory->PlayerOwned = ListOfValidPlayers.at(robinRoundCounter);
+		territory->OwnedBy = ListOfValidPlayers.at(robinRoundCounter)->PID;
+
+		//observer notifications
 		State new_state;
 		new_state.current_state = State_enum::SETUP_PHASE_RECEIVE_TERRITORY;
-		ListOfValidPlayers.at(rr)->setState(new_state);
-		ListOfValidPlayers.at(rr)->Notify();
+		ListOfValidPlayers.at(robinRoundCounter)->setState(new_state);
+		ListOfValidPlayers.at(robinRoundCounter)->Notify();
 
 		MainMap->ReturnListOfCountries()
 						.at(randomizedIDs.at(i))
 						->setState(new_state);
 		MainMap->ReturnListOfCountries().at(randomizedIDs.at(i))->Notify();
 
-		rr += 1;
-		if (rr == ListOfValidPlayers.size()) {
-			rr = 0;
+		//go to the next player in the list
+		robinRoundCounter += 1;
+		if (robinRoundCounter == ListOfValidPlayers.size()) {
+			robinRoundCounter = 0;
 		}
 	}
 
@@ -349,7 +357,6 @@ void GameEngine::startupPhase() {
 
 	for (auto &i : MainMap->ReturnListOfCountries()) {
 		std::cout << *i;
-		std::cout << "\tOwned By: " << i->OwnedBy << std::endl;
 		std::cout << std::endl;
 	}
 
@@ -364,6 +371,7 @@ void GameEngine::startupPhase() {
 						<< " territories altogether" << std::endl;
 	std::cout << "\tThere are " << MainMap->NumOfCountries()
 						<< " territories in the map in total." << std::endl;
+
 }
 
 /**
