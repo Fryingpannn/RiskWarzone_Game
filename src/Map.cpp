@@ -477,7 +477,6 @@ bool Map::Validate() {
 
   if (*this->NumberOfCountries == NULL) return false;
 
-  std::cout << "Passed checking number of countries" << std::endl;;
 
   for (int i = 0; i < *this->NumberOfCountries; i++) {
     for (int x = i + 1; x < *this->NumberOfCountries; x++) {
@@ -491,17 +490,13 @@ bool Map::Validate() {
         for (Territory* country2 : *(this->ListOfCountries[x])) {
           if (country->TerritoryID == country2->TerritoryID) {
             if (country->Name != country2->Name) {
-              std::cout
-                  << "Error Occured! Country with different name with same ID: "
-                  << country->Name << "& " << country2->Name
-                  << " with ID: " << country->TerritoryID << std::endl;
               return false;
             }
           }
         }
       }
     }
-    std::cout << "Passed checking Country with different name with same ID" << std::endl;;
+
 
     for (unsigned int j = 0; j < this->ListOfCountries[i]->size() - 1; j++) {
       // using my code, and how I design it. You don't even need to check
@@ -509,8 +504,6 @@ bool Map::Validate() {
       // string
 
       if (this->ListOfCountries[i]->at(j)->Continent == "") {
-        std::cout << "Continent is empty! Error " << std::endl;
-        std::cout << "Passed checking Country with same Continent" << std::endl;;
         return false;
       }
       /*if (ListOfCountries[i]->at(j)->TerritoryID == NULL) {
@@ -518,8 +511,6 @@ bool Map::Validate() {
               return false;
       }*/
       if (ListOfCountries[i]->at(j)->Name == "") {
-        std::cout << "Name is empty! Error " << std::endl;
-        std::cout << "Passed checking Country with empty Name" << std::endl;;
         return false;
       }
 
@@ -527,20 +518,18 @@ bool Map::Validate() {
       for (unsigned int k = j + 1; k < this->ListOfCountries[i]->size(); k++) {
         if (ListOfCountries[i]->at(j)->TerritoryID ==
             ListOfCountries[i]->at(k)->TerritoryID) {
-          std::cout << "Same Territory ID found!! Error " << std::endl;
           return false;
         }
-        std::cout << "Passed checking Country with same ID" << std::endl;;
         if (ListOfCountries[i]->at(j)->Name ==
             ListOfCountries[i]->at(k)->Name) {
-          std::cout << "Same Territory Name found!! Error " << std::endl;
+
           return false;
         }
-        std::cout << "Passed checking Country with same Territory Name" << std::endl;;
+
       }
     }
 
-    std::cout << "Passed checking Country with same name with same ID" << std::endl;;
+
 
 
     std::cout << std::endl;
