@@ -323,6 +323,7 @@ MapFile::~MapFile() {
  *
  */
 Result<void> MapFile::readMapFile() {
+	Continent::count = 0;
 	Result<void> returnResult;
 	returnResult.success = false;
 	returnResult.message =
