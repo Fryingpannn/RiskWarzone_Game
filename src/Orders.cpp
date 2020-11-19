@@ -24,7 +24,7 @@
  * ----------------------------------*/
 
 // default constructor
-OrderList::OrderList() { this->list = std::vector<Order*>{}; }
+OrderList::OrderList() { this->list = std::vector<std::shared_ptr<Order>>{}; }
 
 // copy constructor for OrderList
 OrderList::OrderList(const OrderList& copy) {
@@ -36,7 +36,7 @@ OrderList::OrderList(const OrderList& copy) {
 }
 
 // add order to list
-bool OrderList::addToList(Order* order) {
+bool OrderList::addToList(std::shared_ptr<Order> order) {
   this->list.push_back(order);
   std::cout << "-> New order added!" << std::endl;
   return true;
@@ -45,7 +45,7 @@ bool OrderList::addToList(Order* order) {
 int OrderList::remove(int position) {
   auto it = this->list.begin() + position;
   int reArmyNb = (*it)->getArmyNb();
-  delete *it;
+//  delete *it;
   this->list.erase(it);
   std::cout << "-> Order " << position << " has been removed." << std::endl;
   return reArmyNb;
@@ -53,7 +53,7 @@ int OrderList::remove(int position) {
 
 // returns: nullptr if list is empty, otherwise returns a pointer to a copy
 //          of the next priority element (needs to be explicitly deleted)
- Order* OrderList::peek() {
+std::shared_ptr<Order> OrderList::peek() {
   // if list is empty, return null
   if (list.empty()) return nullptr;
 
@@ -78,14 +78,14 @@ int OrderList::remove(int position) {
 //
 // returns: nullptr if list is empty (be careful when dereferencing!),
 //          otherwise returns a pointer (needs to be explicitly deleted)
-Order* OrderList::pop() {
+std::shared_ptr<Order> OrderList::pop() {
   // if list is empty, return null
   if (list.empty()) return nullptr;
 
   // return Deploy if available
   for (auto it = list.begin(); it != list.end(); ++it) {
     if ((*it)->priority == 1) {
-      Order* popped = *it;
+			std::shared_ptr<Order> popped = *it;
       list.erase(it);
       return popped;
     }
@@ -93,7 +93,7 @@ Order* OrderList::pop() {
   // return Airlift if available
   for (auto it = list.begin(); it != list.end(); ++it) {
     if ((*it)->priority == 2) {
-      Order* popped = *it;
+			std::shared_ptr<Order> popped = *it;
       list.erase(it);
       return popped;
     }
@@ -101,13 +101,13 @@ Order* OrderList::pop() {
   // return Blockade if available
   for (auto it = list.begin(); it != list.end(); ++it) {
     if ((*it)->priority == 3) {
-      Order* popped = *it;
+			std::shared_ptr<Order> popped = *it;
       list.erase(it);
       return popped;
     }
   }
   // return in FIFO order if no priority orders available
-  Order* popped = *list.begin();
+	std::shared_ptr<Order> popped = *list.begin();
   list.erase(list.begin());
   return popped;
 }
@@ -117,7 +117,7 @@ bool OrderList::move(int first, int second) {
   auto it1 = this->list.begin() + first;
   auto it2 = this->list.begin() + second;
 
-  Order* temp = *it2;
+	std::shared_ptr<Order> temp = *it2;
   *it2 = *it1;
   *it1 = temp;
   std::cout << "-> Swapped orders " << first << " and " << second << " <-"
@@ -150,7 +150,7 @@ std::ostream& operator<<(std::ostream& out, const OrderList& o) {
 // the receiving function does not have to delete pointers inside the vector.
 OrderList::~OrderList() {
   for (int i = 0; i < this->list.size(); ++i) {
-    delete list[i];
+//    delete list[i];
     list[i] = nullptr;
   }
   this->list.clear();
@@ -216,7 +216,15 @@ bool Order::getExecuted() { return this->executed; }
 Territory* Order::getTarget() { return this->target; }
 
 // virtual destructor
-Order::~Order() { std::cout << "Cleaning up..." << std::endl; }
+Order::~Order() {
+	std::cout << "Cleaning up..." << std::endl;
+	std::vector<Territory *>::iterator it;
+	for (it = adj.begin(); it != adj.end(); it++){
+//		delete * it;
+//		it = adj.erase(it);
+	}
+//	adj.clear();
+}
 
 /*---------------------------------- Deploy class
  * ----------------------------------*/
@@ -238,14 +246,14 @@ Deploy::Deploy(const std::string& playerID, const int& armyNb,
   this->armyNb = armyNb;
   this->target = target;
   this->playerID = playerID;
-  this->current = current;
-  if (current->ReinforcementPool < armyNb) this->armyNb = 0;
-  current->ReinforcementPool -= this->armyNb;
+  this->current = current;  
 }
 
 // clone function for Deploy
-Deploy* Deploy::clone() { return new Deploy(*this); }
-
+//Deploy* Deploy::clone() { return new Deploy(*this); }
+std::shared_ptr<Order> Deploy::clone() const  {
+	return std::make_unique<Deploy>(*this);
+}
 // validates deploy; returns true if target territory belongs to player
 bool Deploy::validate() {
   std::cout << " Validating order..." << std::endl;
@@ -261,6 +269,7 @@ bool Deploy::execute() {
   bool success_result = false;
   // add the armies to target territory if it belongs to the player
   if (validate()) {
+    current->ReinforcementPool -= this->armyNb;
     target->Armies += armyNb;
     std::cout << "[Valid] 1 Deploy order executed." << std::endl;
     success_result = true;
@@ -326,13 +335,13 @@ Advance::Advance(const std::string& playerID, const int& armyNb, Territory* src,
   this->map = map;
   this->current = current;
   this->deck = deck;
-  // subtract sent armies from original
-  if (src->Armies < armyNb) this->armyNb = 0;
-  src->Armies -= this->armyNb;
 }
 
 // clone function for Advance
-Advance* Advance::clone() { return new Advance(*this); }
+//Advance* Advance::clone() { return new Advance(*this); }
+	std::shared_ptr<Order> Advance::clone() const  {
+		return std::make_unique<Advance>(*this);
+	}
 
 // validates the Advance order
 bool Advance::validate() {
@@ -368,6 +377,7 @@ bool Advance::validate() {
 bool Advance::execute() {
   bool success_result = false;
   if (validate()) {
+    src->Armies -= this->armyNb;
     // if target territory is also owned by user, simply move
     // armies there
     if (target->OwnedBy == playerID) {
@@ -508,8 +518,10 @@ Bomb::Bomb(const std::string& playerID, Territory* target,
 }
 
 // clone function
-Bomb* Bomb::clone() { return new Bomb(*this); }
-
+//Bomb* Bomb::clone() { return new Bomb(*this); }
+std::shared_ptr<Order> Bomb::clone() const  {
+	return std::make_unique<Bomb>(*this);
+}
 // validates order
 bool Bomb::validate() {
   std::cout << " Validating order..." << std::endl;
@@ -585,7 +597,10 @@ Blockade::Blockade(const std::string& playerID, Territory* src)
 }
 
 // clone function
-Blockade* Blockade::clone() { return new Blockade(*this); }
+//Blockade* Blockade::clone() { return new Blockade(*this); }
+std::shared_ptr<Order> Blockade::clone() const  {
+	return std::make_unique<Blockade>(*this);
+}
 
 // validates order
 bool Blockade::validate() {
@@ -690,13 +705,13 @@ Airlift::Airlift(const std::string& playerID, const int& armyNb, Territory* src,
   this->target = target;
   this->current = current;
   this->deck = deck;
-  // subtract sent armies from original
-  if (src->Armies < armyNb) this->armyNb = 0;
-  src->Armies -= this->armyNb;
 }
 
 // clone function
-Airlift* Airlift::clone() { return new Airlift(*this); }
+//Airlift* Airlift::clone() { return new Airlift(*this); }
+std::shared_ptr<Order> Airlift::clone() const  {
+	return std::make_unique<Airlift>(*this);
+}
 
 // validates order; returns true if src and target are owned by the player
 bool Airlift::validate() {
@@ -722,6 +737,8 @@ bool Airlift::validate() {
 bool Airlift::execute() {
   bool success_result = false;
   if (validate()) {
+    src->Armies -= this->armyNb;
+
     // if target territory is also owned by user or has 0 armies, simply move
     // armies there
     if (target->OwnedBy == playerID) {
@@ -864,7 +881,10 @@ Negotiate::Negotiate(Player* const current, Player* const enemy)
 }
 
 // clone function
-Negotiate* Negotiate::clone() { return new Negotiate(*this); }
+//Negotiate* Negotiate::clone() { return new Negotiate(*this); }
+std::shared_ptr<Order> Negotiate::clone() const  {
+	return std::make_unique<Negotiate>(*this);
+}
 
 // validates order; return true if target player is not self
 bool Negotiate::validate() {
@@ -939,8 +959,10 @@ Reinforcement::Reinforcement(Player* const current)
 }
 
 // clone function
-Reinforcement* Reinforcement::clone() { return new Reinforcement(*this); }
-
+//Reinforcement* Reinforcement::clone() { return new Reinforcement(*this); }
+std::shared_ptr<Order> Reinforcement::clone() const  {
+	return std::make_unique<Reinforcement>(*this);
+}
 // validates order; left empty because there isn't anything to validate
 bool Reinforcement::validate() { return true; }
 
