@@ -5,7 +5,9 @@
 #include <iomanip>  // For std::setprecision()
 #include <random>
 #include <thread>
+
 #define Timer(i) std::this_thread::sleep_for(std::chrono::milliseconds(i));
+
 GameEngine::GameEngine() { Init(); }
 
 GameEngine::~GameEngine() {
@@ -24,6 +26,7 @@ GameEngine::~GameEngine() {
       player = nullptr;
     }
   }
+  this->ListOfValidPlayers.clear();
 }
 
 /**
@@ -46,75 +49,50 @@ void GameEngine::Init() {
   std::string InputObserver;
   bool InputObserverNotSucceed = true;
 
-  /// DEBUG code creates 3 players automatically
-  /// set to false to create your own players!!!
-  bool debugMainLoop{true};
-
-  if (!debugMainLoop) {
-    // the main menu for player to setup how many players and the map they want
-    // to use :O
-    std::cout << "Hey there you little filty general! Welcome to Warzone where "
-                 "you control armies and conquer other countries!"
-              << std::endl;
-    std::this_thread::sleep_for(std::chrono::milliseconds(100));
-    std::cout << "Now! Now! How many person will be playing this game??"
-              << std::endl;
-    std::cout << "Or" << std::endl;
-    std::this_thread::sleep_for(std::chrono::milliseconds(100));
-    std::cout << "love to command and conquer?? and trying to end humanity??"
-              << std::endl;
-    std::cin >> NumberOfPlayers;
-    while (InputPlayersNotSucceed) {
-      if (std::cin.fail()) {
-        std::cin.clear();
-        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-        std::cout << "Please Enter a valid number between 2 and 5 =__=";
-        std::cin >> NumberOfPlayers;
-      } else if (NumberOfPlayers == 1) {
-        std::cout
-            << "You can't be playing alone... Please get a friend and you "
-               "need it\n";
-        std::cin >> NumberOfPlayers;
-      } else {
-        InputPlayersNotSucceed = false;
-      }
+  // the main menu for player to setup how many players and the map they want
+  // to use :O
+  std::cout << "Hey there you little filty general! Welcome to Warzone where "
+               "you control armies and conquer other countries!"
+            << std::endl;
+  std::this_thread::sleep_for(std::chrono::milliseconds(100));
+  std::cout << "Now! Now! How many person will be playing this game??"
+            << std::endl;
+  std::cout << "Or" << std::endl;
+  std::this_thread::sleep_for(std::chrono::milliseconds(100));
+  std::cout << "love to command and conquer?? and trying to end humanity??"
+            << std::endl;
+  std::cin >> NumberOfPlayers;
+  while (InputPlayersNotSucceed) {
+    if (std::cin.fail()) {
+      std::cin.clear();
+      std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+      std::cout << "Please Enter a valid number between 2 and 5 =__=";
+      std::cin >> NumberOfPlayers;
+    } else if (NumberOfPlayers < 2 || NumberOfPlayers > 5) {
+      std::cout << "Invalid number of players.  Please enter a valid number "
+                   "between 2 and 5.\n";
+      std::cin >> NumberOfPlayers;
+    } else {
+      InputPlayersNotSucceed = false;
     }
-    std::cout << "GOOOD!\n";
+  }
+  std::cout << "GOOOD!\n";
+  Timer(100);
+  std::cout << "So you will be playing with " << NumberOfPlayers
+            << " Number of Players\n ";
+
+  for (int i = 0; i < NumberOfPlayers; i++) {
     Timer(100);
-    std::cout << "So you will be playing with " << NumberOfPlayers
-              << " Number of Players\n ";
+    std::cout << ". " << std::endl;
+    auto *player = new Player();
+    // For game loop to keep track of who is left in the game
+    ListOfValidPlayers.push_back(player);
 
-    for (int i = 0; i < NumberOfPlayers; i++) {
-      Timer(100);
-      std::cout << ". " << std::endl;
-      auto *player = new Player();
-      // For game loop to keep track of who is left in the game
-      ListOfValidPlayers.push_back(player);
-
-      // List of all the players at the start of the game
-      ListOfPlayers.push_back(player);
-      std::cout << "Please enter player" << i << "'s name: ";
-      std::cin >> PlayerName;
-      ListOfValidPlayers.at(ListOfValidPlayers.size() - 1)->PID = PlayerName;
-    }
-  } else {
-    /// DEBUG CODE TO DELETE
-    /// creates 3 players and chooses map
-    NumberOfPlayers = 3;
-    MapFileName = "europe.map";
-    auto *player1 = new Player();
-    player1->PID = "Sandra";
-    ListOfPlayers.push_back(player1);
-    ListOfValidPlayers.push_back(player1);
-    auto *player2 = new Player();
-    player2->PID = "Dog";
-    ListOfPlayers.push_back(player2);
-    ListOfValidPlayers.push_back(player2);
-    auto *player3 = new Player();
-    player3->PID = "Kuro";
-    ListOfPlayers.push_back(player3);
-    ListOfValidPlayers.push_back(player3);
-    /// DEBUG CODE TO DELETE
+    // List of all the players at the start of the game
+    ListOfPlayers.push_back(player);
+    std::cout << "Please enter player" << i << "'s name: ";
+    std::cin >> PlayerName;
+    ListOfValidPlayers.at(ListOfValidPlayers.size() - 1)->PID = PlayerName;
   }
 
   std::cout << "Successfully added" << NumberOfPlayers
@@ -126,10 +104,7 @@ void GameEngine::Init() {
     std::cout << "Now tell me the name of the map you want to load? (must be "
                  "in the ./maps/ directory)\n ";
 
-    ///  DEBUG CODE choses map already for us
-    if (!debugMainLoop) {
-      std::cin >> MapFileName;
-    }
+    std::cin >> MapFileName;
 
     trim(MapFileName);
     MainFile = new MapFile(MapFolderBasePath + MapFileName);
@@ -178,9 +153,9 @@ void GameEngine::Init() {
               << std::endl;
     std::cout << "Enter your selection ('q' to quit and save your selection): ";
 
-    InputObserver = '1';
-    // std::cin >> InputObserver;
-    InputObserver = 'q';
+    //    InputObserver = '1';
+    std::cin >> InputObserver;
+    //    InputObserver = 'q';
     if (InputObserver == "1") {
       phaseObserverToggle = !phaseObserverToggle;
     } else if (InputObserver == "2") {
@@ -396,7 +371,7 @@ void GameEngine::startupPhase() {
  */
 void GameEngine::mainGameLoop() {
   // DEMO VARIABLE will end game after 10 turns
-  bool simulateGameEnd{true};
+  bool simulateGameEnd{false};
   bool gameOver{false};
 
   unsigned long long int round_counter = 0;
@@ -413,7 +388,7 @@ void GameEngine::mainGameLoop() {
 
         this->setState(new_state);
         this->Notify();
-      } else if (simulateGameEnd && round_counter == 10) {
+      } else if (simulateGameEnd && round_counter == 30) {
         for (unsigned int i = 0; i < ListOfValidPlayers.size(); i++) {
           ListOfValidPlayers.erase(ListOfValidPlayers.begin() + i);
         }
@@ -464,6 +439,8 @@ void GameEngine::mainGameLoop() {
  * own
  */
 void GameEngine::reinforcementPhase() {
+  std::cout << "\n\n--------------------------\n"
+            << "BEGIN REINFORCEMENT PHASE\n\n";
   std::vector<ContinentData *> ListOfContinents =
       MainMap->getListOfContinents();
 
@@ -489,16 +466,22 @@ void GameEngine::reinforcementPhase() {
     player->setState(new_state);
     player->Notify();
   }
-  
-  
+
+  for (auto &p : ListOfValidPlayers) {
+    std::cout << "\t" << p->PID << " now has " << p->ReinforcementPool
+              << " armies in his pool\n";
+  }
+
+  std::cout << "END OF REINFORCEMENT PHASE\n"
+            << "--------------------------\n";
 }
 
 /**
  * Players issue orders and place them in their own order list.
  */
 void GameEngine::issueOrdersPhase() {
-  std::cout << "--------------------------\n"
-            << "BEGIN ORDER ISSUING PHASE\n";
+  std::cout << "\n\n--------------------------\n"
+            << "BEGIN ORDER ISSUING PHASE\n\n";
   // Initialize issue order phase for each player with helpful flags
   for (auto &player : ListOfValidPlayers) {
     player->initIssueOrder();
@@ -515,12 +498,17 @@ void GameEngine::issueOrdersPhase() {
         // If a player no longer has any order left to make
         ordersLeft--;
       } else {
+        std::cout << "\n\t" << player->PID << " issuing order...\n";
         player->issueOrder();
 
-        State new_state;
-        new_state.current_state = State_enum::ISSUE_ORDERS_PHASE;
-        player->setState(new_state);
-        player->Notify();
+        if (!player->AdvanceOrderDone ||
+            (player->AdvanceOrderDone && !player->CardPlayed) ||
+            (player->AdvanceOrderDone && player->HandOfCards->size() > 0)) {
+          State new_state;
+          new_state.current_state = State_enum::ISSUE_ORDERS_PHASE;
+          player->setState(new_state);
+          player->Notify();
+        }
       }
     }
   }
@@ -532,8 +520,8 @@ void GameEngine::issueOrdersPhase() {
  * Executes orders of players from their orders list.
  */
 void GameEngine::executeOrdersPhase() {
-  std::cout << "--------------------------\n"
-            << "BEGIN ORDER EXECUTION PHASE\n";
+  std::cout << "\n\n--------------------------\n"
+            << "BEGIN ORDER EXECUTION PHASE\n\n";
 
   // Execute only deploy orders first
   auto ordersLeft = ListOfValidPlayers.size();
@@ -545,7 +533,7 @@ void GameEngine::executeOrdersPhase() {
         new_phase_state.current_state = State_enum::EXECUTE_ORDERS_PHASE;
         new_phase_state.executed_order_name =
             player->ListOfOrders->peek()->getName();
-
+        std::cout << "\n\t" << player->PID << " executing DEPLOY order\n";
         const bool success = player->ListOfOrders->pop()->execute();
         new_phase_state.execute_order_success = success;
 
@@ -557,6 +545,8 @@ void GameEngine::executeOrdersPhase() {
       }
     }
   }
+
+  std::cout << "All deploy orders are finished.\n";
 
   // Execute other orders by priority
   ordersLeft = ListOfValidPlayers.size();
@@ -575,7 +565,7 @@ void GameEngine::executeOrdersPhase() {
         new_game_stats_state.current_state = State_enum::TERRITORY_CONQUERED;
         new_game_stats_state.executed_order_name =
             player->ListOfOrders->peek()->getName();
-
+        std::cout << "\n\t" << player->PID << " executing order\n";
         bool success = player->ListOfOrders->pop()->execute();
 
         new_phase_state.execute_order_success = success;

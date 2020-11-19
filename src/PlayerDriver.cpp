@@ -67,7 +67,7 @@ void playerDriver() {
   // Creating orders to be owned by a player
   auto *order = new Deploy();
   OrderList orderlist;
-  orderlist.addToList(order);
+  orderlist.addToList(static_cast<std::shared_ptr<Order>>(order));
 
   ////////////////////////////////////////////////////////////////////////
   // Start of tests

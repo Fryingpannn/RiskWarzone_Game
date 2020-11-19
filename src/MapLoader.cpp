@@ -323,6 +323,7 @@ MapFile::~MapFile() {
  *
  */
 Result<void> MapFile::readMapFile() {
+	Continent::count = 0;
 	Result<void> returnResult;
 	returnResult.success = false;
 	returnResult.message =
@@ -758,6 +759,7 @@ Map *MapFile::generateMap() {
 		Territory *tempTerritory;
 		tempTerritory = new Territory(tempTerrName, tempTerrID, tempTerrContName, 0.0f, 0.0f);
 		converted_territories.insert(std::pair<int, Territory *>(tempTerrID, tempTerritory));
+		tempTerritory = nullptr;
 	}
 
 	// Create a Map object to return
@@ -772,8 +774,8 @@ Map *MapFile::generateMap() {
 		newContinent->NumberOfTerritories = map_continents[i]->number_of_territories;
 		newContinent->BonusValue = map_continents[i]->value;
 		returnMap->AddContinent(newContinent);
-        delete newContinent;
-        newContinent = nullptr;
+		delete newContinent;
+		newContinent = nullptr;
 	}
 	// Loop through all territories and add them to the map
 	for (unsigned int i = 0; i < map_territories.size(); i++) {

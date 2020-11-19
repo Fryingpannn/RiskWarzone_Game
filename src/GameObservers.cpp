@@ -197,9 +197,6 @@ void PhaseObserver::Update() {
  */
 PhaseObserver::~PhaseObserver() {
   _phase_subject->Detach(this);
-
-  //delete _phase_subject;
- // _phase_subject = nullptr;
 }
 
 /////////////////////////////////////////////
@@ -276,6 +273,4 @@ void GameStatisticsObserver::Update() {
  */
 GameStatisticsObserver::~GameStatisticsObserver() {
   _game_observer_subject->Detach(this);
-  //delete _game_observer_subject;
-  //_game_observer_subject = nullptr;
 }

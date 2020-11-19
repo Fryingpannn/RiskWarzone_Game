@@ -21,9 +21,9 @@ Balkan 5 black
 
 
 [countries]
-1 Portugal 1 57 305
+;1 Portugal 1 57 305
 ;; Invalid continent ID
-;1 Portugal 99 57 305
+1 Portugal 99 57 305
 2 Spanien 1 114 312
 3 Frankreich 1 193 206
 ;; Invalid types of line arguments
