@@ -146,6 +146,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="PlayerStrategy.cpp" />
     <ClCompile Include="src\Cards.cpp" />
     <ClCompile Include="src\CardsDriver.cpp" />
     <ClCompile Include="src\GameEngine.cpp" />
@@ -161,6 +162,7 @@
     <ClCompile Include="src\PlayerDriver.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="PlayerStrategy.h" />
     <ClInclude Include="src\Cards.h" />
     <ClInclude Include="src\CardsDriver.h" />
     <ClInclude Include="src\GameEngine.h" />
