@@ -83,19 +83,19 @@ void Card::Play(Player& p, Hand& h, Deck& d) {
 
     switch (*getType()) {
       case CardType::BOMB:
-        p.createBomb();
+        p.Strategy->createBomb(p);
         break;
       case CardType::AIRLIFT:
-        p.createAirlift();
+        p.Strategy->createAirlift(p);
         break;
       case CardType::BLOCKADE:
-        p.createBlockade();
+        p.Strategy->createBlockade(p);
         break;
       case CardType::DIPLOMACY:
-        p.createNegotiate();
+        p.Strategy->createNegotiate(p);
         break;
       case CardType::REINFORCEMENT:
-        p.createReinforcement();
+        p.Strategy->createReinforcement(p);
         break;
     }
 

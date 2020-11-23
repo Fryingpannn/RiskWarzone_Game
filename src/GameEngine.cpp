@@ -213,6 +213,9 @@ void GameEngine::Init() {
 
   for (auto &p : ListOfValidPlayers) {
     std::cout << "\t" << *p << "\n";
+    // TODO implement correct strategies
+    // TODO strategy delete is currently handled in player deconstructor
+    p->setStrategy(new HumanStrategy());
   }
 
   std::cout << "[GAME START] The deck of cards has "
@@ -371,7 +374,7 @@ void GameEngine::startupPhase() {
  */
 void GameEngine::mainGameLoop() {
   // DEMO VARIABLE will end game after 10 turns
-  bool simulateGameEnd{false};
+  bool simulateGameEnd{true};
   bool gameOver{false};
 
   unsigned long long int round_counter = 0;

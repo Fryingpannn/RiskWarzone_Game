@@ -5,8 +5,9 @@
 #include "Player.h"
 #include "Map.h"
 #include "GameObservers.hpp"
+#include "PlayerStrategy.h"
 
-
+class HumanStrategy;
 
 // Look at how all the members are public, other programmers can access to the
 // component they want easily :)
