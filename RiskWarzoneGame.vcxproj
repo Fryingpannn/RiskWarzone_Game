@@ -146,7 +146,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="PlayerStrategy.cpp" />
     <ClCompile Include="src\Cards.cpp" />
     <ClCompile Include="src\CardsDriver.cpp" />
     <ClCompile Include="src\GameEngine.cpp" />
@@ -160,9 +159,9 @@
     <ClCompile Include="src\OrdersDriver.cpp" />
     <ClCompile Include="src\Player.cpp" />
     <ClCompile Include="src\PlayerDriver.cpp" />
+    <ClCompile Include="src\PlayerStrategy.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="PlayerStrategy.h" />
     <ClInclude Include="src\Cards.h" />
     <ClInclude Include="src\CardsDriver.h" />
     <ClInclude Include="src\GameEngine.h" />
@@ -175,6 +174,7 @@
     <ClInclude Include="src\OrdersDriver.h" />
     <ClInclude Include="src\Player.h" />
     <ClInclude Include="src\PlayerDriver.h" />
+    <ClInclude Include="src\PlayerStrategy.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

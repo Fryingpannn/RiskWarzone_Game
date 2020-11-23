@@ -57,7 +57,7 @@
     <ClCompile Include="src\GameObservers.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="PlayerStrategy.cpp">
+    <ClCompile Include="src\PlayerStrategy.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -98,7 +98,7 @@
     <ClInclude Include="src\GameObservers.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="PlayerStrategy.h">
+    <ClInclude Include="src\PlayerStrategy.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
