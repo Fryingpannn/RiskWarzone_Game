@@ -18,14 +18,16 @@
 #include <unordered_set>
 #include <vector>
 
+#include "Cards.h"
 #include "GameObservers.hpp"
 #include "Map.h"
 #include "Orders.h"
-#include "Cards.h"
+#include "PlayerStrategy.h"
 
 struct Territory;
 class Map;
 class Deck;
+class PlayerStrategy;
 
 /**
  * A class for the object Player which manages territories, cards and orders
@@ -33,6 +35,9 @@ class Deck;
  */
 class Player : public Subject {
  public:
+  // -----------------------------------
+  // Members
+  // -----------------------------------
   std::vector<Territory *> Territories;
   Hand *HandOfCards;
   OrderList *ListOfOrders;
@@ -40,26 +45,34 @@ class Player : public Subject {
   int ReinforcementPool = 0;
   bool AdvanceOrderDone = true;
   bool CardPlayed = true;
-  // set of players with whom playerID cannot attack or be attacked by this
-  // turn; this set is used by Negotiation order's execute function.
-  std::unordered_set<std::string> set;
-  // a player can only receive one new card each turn. reset this value to true
-  // at the end of every turn. this is used by Advance order's execute function.
-  bool cardNotGiven = true;
-
-  // Game knowledge members
   std::vector<Player *> ListOfPlayers;
   Map *MainMap;
   Deck *DeckOfCards;
   int ReinforcementsDeployed;
+  bool cardNotGiven = true;
+  // set of players with whom playerID cannot attack or be attacked by
+  std::unordered_set<std::string> set;
+  // Strategy pattern
+  PlayerStrategy *Strategy;
 
+  // -----------------------------------
+  // Constructors/Destructors
+  // -----------------------------------
   Player();
   Player(std::vector<Territory *> territories, Hand hand, OrderList orderList,
          std::string pID);
   Player(const Player &p);
-  Player &operator=(const Player &p);
+  ~Player();
 
-  // Helper function for game engine
+  // -----------------------------------
+  // Operators
+  // -----------------------------------
+  Player &operator=(const Player &p);
+  friend std::ostream &operator<<(std::ostream &out, const Player &p);
+
+  // -----------------------------------
+  // Functions
+  // -----------------------------------
   void bindGameElements(std::vector<Player *> &inPlayers, Map *mapIn,
                         Deck *deckIn);
   void initIssueOrder();
@@ -69,19 +82,6 @@ class Player : public Subject {
   std::vector<Territory *> toAttack();
   void issueOrder();
 
-  // Helper functions of issue order
-  void createDeploy();
-  void advanceAttack();
-  void advanceTransfer();
-  void playCard();
-
-  // Wrapper functions for orders from cards
-  void createBomb();
-  void createAirlift();
-  void createBlockade();
-  void createNegotiate();
-  void createReinforcement();
-
-  friend std::ostream &operator<<(std::ostream &out, const Player &p);
-  ~Player();
+  // Strategy pattern functions
+  void setStrategy(PlayerStrategy *strategy);
 };

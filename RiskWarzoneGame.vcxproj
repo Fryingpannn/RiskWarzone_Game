@@ -159,6 +159,7 @@
     <ClCompile Include="src\OrdersDriver.cpp" />
     <ClCompile Include="src\Player.cpp" />
     <ClCompile Include="src\PlayerDriver.cpp" />
+    <ClCompile Include="src\PlayerStrategy.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Cards.h" />
@@ -173,6 +174,7 @@
     <ClInclude Include="src\OrdersDriver.h" />
     <ClInclude Include="src\Player.h" />
     <ClInclude Include="src\PlayerDriver.h" />
+    <ClInclude Include="src\PlayerStrategy.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
