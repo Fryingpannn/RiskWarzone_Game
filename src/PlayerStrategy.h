@@ -81,18 +81,8 @@ class BenevolentPlayerStrategy : public PlayerStrategy {
   void createReinforcement(Player &p);
 };
 
+// neutral player doesn't issue any order
 class NeutralPlayerStrategy : public PlayerStrategy {
  public:
-  std::vector<Territory *> toAttack(Player &p);
   void issueOrder(Player &p);
-  std::vector<Territory *> toDefend(Player &p);
-  void createDeploy(Player &p);
-  void advanceAttack(Player &p);
-  void advanceTransfer(Player &p);
-  void playCard(Player &p);
-  void createBomb(Player &p);
-  void createAirlift(Player &p);
-  void createBlockade(Player &p);
-  void createNegotiate(Player &p);
-  void createReinforcement(Player &p);
 };

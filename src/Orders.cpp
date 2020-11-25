@@ -238,7 +238,6 @@ Deploy::Deploy(const Deploy& deploy) : Order(deploy, 1) {}
 /* -constructor to deploy armies to target territory (note: territory passed is
  * a pointer).
  *  -current is the player who issued this order
- *  -the armyNb is only returned if remove() is used on the order.
  */
 Deploy::Deploy(const std::string& playerID, const int& armyNb,
                Territory* target, Player* const current)

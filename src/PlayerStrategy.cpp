@@ -1,5 +1,6 @@
 #include "PlayerStrategy.h"
 #include <map>
+#include <ctime>
 
 
 std::vector<Territory *> HumanStrategy::toAttack(Player &p) {
@@ -262,19 +263,6 @@ void BenevolentPlayerStrategy::createBlockade(Player &p){}
 void BenevolentPlayerStrategy::createNegotiate(Player &p){}
 void BenevolentPlayerStrategy::createReinforcement(Player &p){}
 
-std::vector<Territory *> NeutralPlayerStrategy::toAttack(Player &p) {
-  return std::vector<Territory *>{};
-}
-std::vector<Territory *> NeutralPlayerStrategy::toDefend(Player &p) {
-  return std::vector<Territory *>{};
-}
-void NeutralPlayerStrategy::issueOrder(Player &p) {}
-void NeutralPlayerStrategy::createDeploy(Player &p){}
-void NeutralPlayerStrategy::advanceAttack(Player &p) {}
-void NeutralPlayerStrategy::advanceTransfer(Player &p) {}
-void NeutralPlayerStrategy::playCard(Player &p) {}
-void NeutralPlayerStrategy::createBomb(Player &p){}
-void NeutralPlayerStrategy::createAirlift(Player &p){}
-void NeutralPlayerStrategy::createBlockade(Player &p){}
-void NeutralPlayerStrategy::createNegotiate(Player &p){}
-void NeutralPlayerStrategy::createReinforcement(Player &p){}
+/*no orders issued for neutral player*/
+void NeutralPlayerStrategy::issueOrder(Player& p) { std::cout << "[Neutral Player] No orders issued." << std::endl; }
+
