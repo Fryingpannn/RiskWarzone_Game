@@ -163,10 +163,14 @@ void PhaseObserver::Update() {
       break;
     case State_enum::ISSUE_ORDERS_PHASE:
       std::cout << "[Phase Observer] Issue Orders Phase ";
-      if (player_subject)
-        std::cout << ": " << player_subject->PID << " issued order \""
-                  << player_subject->ListOfOrders->peek()->getName() << "\"";
-      std::cout << std::endl;
+      if (player_subject) {
+          std::shared_ptr<Order> temp = player_subject->ListOfOrders->peek();
+          if (temp != nullptr)
+              std::cout << ": " << player_subject->PID << " issued order \"" <<
+              temp->getName() << "\"" << std::endl;
+          else
+              std::cout << "None." << std::endl;
+      }
       break;
     case State_enum::EXECUTE_ORDERS_PHASE:
       std::cout << "[Phase Observer] Execute Orders Phase ";

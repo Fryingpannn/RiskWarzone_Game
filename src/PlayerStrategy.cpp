@@ -265,4 +265,10 @@ void BenevolentPlayerStrategy::createReinforcement(Player &p){}
 
 /*no orders issued for neutral player*/
 void NeutralPlayerStrategy::issueOrder(Player& p) { std::cout << "[Neutral Player] No orders issued." << std::endl; }
-
+std::vector<Territory*> NeutralPlayerStrategy::toAttack(Player& p) { return p.Territories; }
+std::vector<Territory*> NeutralPlayerStrategy::toDefend(Player& p) { return p.Territories; }
+void NeutralPlayerStrategy::createBomb(Player& p) {}
+void NeutralPlayerStrategy::createAirlift(Player& p) {}
+void NeutralPlayerStrategy::createBlockade(Player& p) {}
+void NeutralPlayerStrategy::createNegotiate(Player& p) {}
+void NeutralPlayerStrategy::createReinforcement(Player& p) {}

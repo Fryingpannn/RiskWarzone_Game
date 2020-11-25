@@ -526,24 +526,26 @@ void GameEngine::executeOrdersPhase() {
   std::cout << "\n\n--------------------------\n"
             << "BEGIN ORDER EXECUTION PHASE\n\n";
 
+  // -- peak() returns nullptr if ListOfOrders is empty --
+
   // Execute only deploy orders first
   auto ordersLeft = ListOfValidPlayers.size();
   while (ordersLeft > 0) {
     ordersLeft = ListOfValidPlayers.size();
     for (auto &player : ListOfValidPlayers) {
-      if (player->ListOfOrders->peek()->getName() == "DEPLOY") {
-        State new_phase_state;
-        new_phase_state.current_state = State_enum::EXECUTE_ORDERS_PHASE;
-        new_phase_state.executed_order_name =
-            player->ListOfOrders->peek()->getName();
-        std::cout << "\n\t" << player->PID << " executing DEPLOY order\n";
-        const bool success = player->ListOfOrders->pop()->execute();
-        new_phase_state.execute_order_success = success;
+        if (player->ListOfOrders->peek()->getName() == "DEPLOY") {
+            State new_phase_state;
+            new_phase_state.current_state = State_enum::EXECUTE_ORDERS_PHASE;
+            new_phase_state.executed_order_name =
+                player->ListOfOrders->peek()->getName();
+            std::cout << "\n\t" << player->PID << " executing DEPLOY order\n";
+            const bool success = player->ListOfOrders->pop()->execute();
+            new_phase_state.execute_order_success = success;
 
-        player->setState(new_phase_state);
-        player->Notify();
-
-      } else {
+            player->setState(new_phase_state);
+            player->Notify();
+        }
+     else {
         ordersLeft--;
       }
     }
