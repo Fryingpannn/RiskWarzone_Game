@@ -305,7 +305,7 @@ std::ostream &operator<<(std::ostream &output, const MapFile *map_file) {
  */
 MapFile::~MapFile() {
 	// Delete the territories
-3	for (unsigned int i = 0; i < this->map_territories.size(); i++) {
+	for (unsigned int i = 0; i < this->map_territories.size(); i++) {
 		delete this->map_territories[i];
 		this->map_territories[i] = nullptr;
 	}
