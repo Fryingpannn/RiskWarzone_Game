@@ -105,9 +105,13 @@ class Map {
 
   // This function return the list of adjacent countries by their ID
   std::vector<struct ::Territory *> ReturnListOfAdjacentCountriesByID(int ID);
-
+  std::vector<struct ::Territory *> ReturnListOfAdjacentCountriesByIDAndPlayer(
+      int TID, std::string PlayerName);
   std::vector<struct ::Territory *> ReturnListOfCountriesOwnedByPlayer(
       std::string PlayerName);
+  std::vector<struct ::Territory *>
+  ReturnListOfAdjacentCountriesByIDAndNotPlayer(int TID,
+                                                std::string PlayerName);
 
   std::vector<struct ::Territory *> ReturnListOfCountriesByContinent(
       std::string ContinentName);

@@ -47,6 +47,10 @@ class HumanStrategy : public PlayerStrategy {
   void createBlockade(Player &p);
   void createNegotiate(Player &p);
   void createReinforcement(Player &p);
+  Territory* findById(std::vector<Territory *> &list, int id);
+  int askUserForInt(std::string &message, int min, int max) const;
+  void askForAdvanceOrder(Player &p);
+  void displayVector(std::vector<Territory *>& list);
 };
 
 class AggresivePlayerStrategy : public PlayerStrategy {
