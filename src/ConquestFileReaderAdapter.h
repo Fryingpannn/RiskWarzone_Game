@@ -14,6 +14,8 @@ public:
 		Result<void> readMapFile();
 		Result<Continent> getContinentByName(std::string name);
 		Result<MapFileTerritory> getTerritoryByName(std::string name);
+		ConquestFileReaderAdapter(std::string file_name);
+		~ConquestFileReaderAdapter();
 };
 
 

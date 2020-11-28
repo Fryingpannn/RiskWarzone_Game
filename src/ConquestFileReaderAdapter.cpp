@@ -5,6 +5,10 @@
 #include "ConquestFileReaderAdapter.h"
 #include "MapLoader.hpp"
 
+ConquestFileReaderAdapter::ConquestFileReaderAdapter(std::string file_name) {
+	map_file_name = file_name;
+}
+
 Result<void> ConquestFileReaderAdapter::readMapFile() {
 	// Set the default return error
 	Result<void> returnResult;
@@ -34,7 +38,7 @@ Result<void> ConquestFileReaderAdapter::readMapFile() {
 		map_continents.push_back(newContient);
 	}
 
-	int territory_count = 0;
+	int territory_count = 1;
 	// Loop through the continents to add their territories to map_territories.
 	for (const std::shared_ptr<ConquestContinent> &c : conquestFileReader.cmap.continents) {
 		Result<Continent> tempContinent = getContinentByName(c->name);
@@ -88,7 +92,7 @@ Result<Continent> ConquestFileReaderAdapter::getContinentByName(std::string name
 	returnResult.returnValue = nullptr;
 
 	for (unsigned int i = 0; i < map_continents.size(); i++) {
-		if (toLowerCase(map_continents[i]->name) == name) {
+		if (toLowerCase(map_continents[i]->name) == toLowerCase(name)) {
 			returnResult.success = true;
 			returnResult.message = &"SUCCESS: Found continent at index "[i];
 			returnResult.returnValue = map_continents[i];
@@ -105,7 +109,7 @@ Result<MapFileTerritory> ConquestFileReaderAdapter::getTerritoryByName(std::stri
 	returnResult.returnValue = nullptr;
 
 	for (unsigned int i = 0; i < map_territories.size(); i++) {
-		if (toLowerCase(map_territories[i]->short_name) == name) {
+		if (toLowerCase(map_territories[i]->short_name) == toLowerCase(name)) {
 			returnResult.success = true;
 			returnResult.message = &"SUCCESS: Found territory at index "[i];
 			returnResult.returnValue = map_territories[i];
@@ -113,4 +117,7 @@ Result<MapFileTerritory> ConquestFileReaderAdapter::getTerritoryByName(std::stri
 		}
 	}
 	return returnResult;
+}
+
+ConquestFileReaderAdapter::~ConquestFileReaderAdapter() {
 }

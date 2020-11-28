@@ -77,6 +77,8 @@ public:
 		void processContinentLine(std::string line);
 
 		void readMapFile(std::string file_name);
+
+		~ConquestFileReader();
 };
 
 

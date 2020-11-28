@@ -139,6 +139,7 @@ std::ostream &operator<<(std::ostream &os, const ConquestMap &m) {
 void ConquestFileReader::readMapFile(std::string file_name) {
 	ConquestContinent::count = 0;
 	std::string current_section = "none";
+	cmap.name = file_name;
 
 	// Attempt to open the file.
 	std::ifstream inputfilestream(file_name);
@@ -225,7 +226,7 @@ void ConquestFileReader::processTerritoryLine(std::string line) {
 		// Validate the Continent it belongs to, and add it to that continent
 		bool found = false;
 		for (int i = 0; i < cmap.continents.size(), !found; i++) {
-			if (cmap.continents[i]->name == newTerritory->name) {
+			if (cmap.continents[i]->name == line_args[3]) {
 				found = true;
 				cmap.continents[i]->territories.push_back(newTerritory);
 			}
@@ -240,6 +241,9 @@ void ConquestFileReader::processTerritoryLine(std::string line) {
 
 }
 
+ConquestFileReader::~ConquestFileReader() {
+
+}
 
 /////////////////////////////////////////////////////////////////////////////////
 //
@@ -296,3 +300,4 @@ std::vector<std::string> cfr::split(std::string strToSplit, char delimiter) {
 	return splittedStrings;
 }
 ///////////////////
+

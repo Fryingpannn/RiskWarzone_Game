@@ -305,7 +305,7 @@ std::ostream &operator<<(std::ostream &output, const MapFile *map_file) {
  */
 MapFile::~MapFile() {
 	// Delete the territories
-	for (unsigned int i = 0; i < this->map_territories.size(); i++) {
+3	for (unsigned int i = 0; i < this->map_territories.size(); i++) {
 		delete this->map_territories[i];
 		this->map_territories[i] = nullptr;
 	}
@@ -694,7 +694,7 @@ Result<Continent> MapFile::getContinentByNumber(int continent_number) {
 	for (unsigned int i = 0; i < map_continents.size(); i++) {
 		if (map_territories[i]->number == continent_number) {
 			returnResult.success = true;
-			returnResult.message = &"SUCCESS: Found continent at index "[i];
+			returnResult.message = "SUCCESS: Found continent at index " + i;
 			returnResult.returnValue = map_continents[i];
 			return returnResult;
 		}
