@@ -789,7 +789,7 @@ Map *MapFile::generateMap() {
 			int inner_territory_id = map_territories[i]->borders[j] - 1;
 
 			// Add an edge from first to second
-			returnMap->AddEdges(*converted_territories.at(outer_territory_id),*converted_territories.at(inner_territory_id));
+			returnMap->AddEdges(*converted_territories.at(outer_territory_id), *converted_territories.at(inner_territory_id));
 
 		}
 		// delete firstTerritory;
