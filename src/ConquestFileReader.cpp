@@ -86,7 +86,10 @@ ConquestContinent &ConquestContinent::operator=(const ConquestContinent &c) {
 }
 
 ConquestContinent::~ConquestContinent() {
-	count--;
+	std::vector<std::shared_ptr<ConquestTerritory>>::iterator it;
+	for (it = territories.begin(); it != territories.end(); ) {
+		it = territories.erase(it);
+	}
 }
 
 std::ostream &operator<<(std::ostream &os, const ConquestContinent &c) {
@@ -122,7 +125,10 @@ ConquestMap &ConquestMap::operator=(const ConquestMap &m) {
 }
 
 ConquestMap::~ConquestMap() {
-
+	std::vector<std::shared_ptr<ConquestContinent>>::iterator it;
+	for (it = continents.begin(); it != continents.end(); ) {
+		it = continents.erase(it);
+	}
 }
 
 std::ostream &operator<<(std::ostream &os, const ConquestMap &m) {

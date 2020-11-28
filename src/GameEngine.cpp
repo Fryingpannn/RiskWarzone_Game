@@ -18,8 +18,20 @@ GameEngine::~GameEngine() {
     delete MainMap;
     MainMap = nullptr;
   }
-  delete MainFile;
-  MainFile = nullptr;
+
+	switch (map_choice) {
+  	case '1':
+			delete MainFile;
+			MainFile = nullptr;
+  		break;
+  	case '2':
+  		delete ConquestMainFile;
+  		ConquestMainFile = nullptr;
+  		break;
+	}
+
+
+
   for (Player *player : ListOfPlayers) {
     if (player != nullptr) {
       delete player;
@@ -99,30 +111,81 @@ void GameEngine::Init() {
             << " Number of Players\n ";
 
   std::string MapFolderBasePath = "./maps/";
-
+  std::string CmapFolderBasePath = "./cmaps/";
+	bool map_type_choice_made = false;
   while (InputMapNotSucceed) {
-    std::cout << "Now tell me the name of the map you want to load? (must be "
-                 "in the ./maps/ directory)\n ";
+  	while (!map_type_choice_made) {
+			std::cout << "1. Load a Warzone map" << std::endl;
+			std::cout << "2. Load a Conquest map" << std::endl;
+			std::cout << "Please enter your choice: ";
+			std::cin >> map_choice;
+			if (map_choice == '1' || map_choice == '2') {
+				map_type_choice_made = true;
+			} else {
+				std::cout << "Invalid choice.  Please try again." << std::endl;
+			}
+  	}
 
-    std::cin >> MapFileName;
+		Result<void> ReadMapFileResult;
+		switch (map_choice) {
+  		case '1':
+				std::cout << "Now tell me the name of the map you want to load? (must be "
+										 "in the ./maps/ directory)\n ";
 
-    trim(MapFileName);
-    MainFile = new MapFile(MapFolderBasePath + MapFileName);
-    Result<void> ReadMapFileResult = MainFile->readMapFile();
+				std::cin >> MapFileName;
+
+				trim(MapFileName);
+				MainFile = new MapFile(MapFolderBasePath + MapFileName);
+				ReadMapFileResult = MainFile->readMapFile();
+  			break;
+  		case '2':
+				std::cout << "Now tell me the name of the map you want to load? (must be "
+										 "in the ./cmaps/ directory)\n ";
+
+				std::cin >> MapFileName;
+
+				trim(MapFileName);
+				ConquestMainFile = new ConquestFileReaderAdapter(CmapFolderBasePath + MapFileName);
+				ReadMapFileResult = ConquestMainFile->readMapFile();
+  			break;
+		}
+
+
     if (ReadMapFileResult.success) {
-      std::cout << "Map file successfully read: " << MainFile->map_file_name
-                << std::endl;
 
-      // Validate what was read into testMapFile
-      Result<void> ValidateMapFile = MainFile->validate();
+			Result<void> ValidateMapFile;
+			switch (map_choice) {
+				case '1':
+					std::cout << "Map file successfully read: " << MainFile->map_file_name
+										<< std::endl;
+
+					// Validate what was read into testMapFile
+					ValidateMapFile = MainFile->validate();
+					break;
+				case '2':
+					std::cout << "Map file successfully read: " << ConquestMainFile->map_file_name
+										<< std::endl;
+
+					// Validate what was read into testMapFile
+					ValidateMapFile = ConquestMainFile->validate();
+					break;
+			}
+
       if (ValidateMapFile.success) {
         // Valid items in testMapFile
         // Generate a Map object
+				switch (map_choice) {
+					case '1':
+						MainMap = MainFile->generateMap();
+						break;
+					case '2':
+						MainMap = ConquestMainFile->generateMap();
+						break;
+				}
 
-        MainMap = MainFile->generateMap();
 
-        // Display the map
-        MainMap->Display();
+				// Display the map
+				MainMap->Display();
 
         // only when the map is valid then it will break through the loop
         if (MainMap->Validate()) {

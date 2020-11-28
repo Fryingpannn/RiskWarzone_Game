@@ -6,6 +6,7 @@
 #include "Map.h"
 #include "GameObservers.hpp"
 #include "PlayerStrategy.h"
+#include "ConquestFileReaderAdapter.h"
 
 class HumanStrategy;
 
@@ -15,6 +16,8 @@ class GameEngine : public Subject {
  public:
   // members of the GameEngine
   MapFile* MainFile;
+  ConquestFileReaderAdapter *ConquestMainFile;
+  char map_choice;
 
   Map* MainMap;
   Deck* DeckOfCards;
