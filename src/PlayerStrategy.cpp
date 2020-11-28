@@ -1,7 +1,7 @@
 #include "PlayerStrategy.h"
-#include <map>
-#include <ctime>
 
+#include <ctime>
+#include <map>
 
 std::vector<Territory *> HumanStrategy::toAttack(Player &p) {
   // Using a map to ensure unique values of territories
@@ -28,20 +28,10 @@ std::vector<Territory *> HumanStrategy::toAttack(Player &p) {
   for (auto &t : toAttackMap) {
     toAttack.push_back(t.second);
   }
-  std::cout << "\tCan attack:\n";
-  for (auto &t : toAttack) {
-    std::cout << "\t\t" << t->Name << " armies: " << t->Armies << "\n";
-  }
   return toAttack;
 }
 
 std::vector<Territory *> HumanStrategy::toDefend(Player &p) {
-  std::cout << "\tDefending\n";
-
-  for (auto &t : p.Territories) {
-    std::cout << "\t\t" << t->Name << " armies: " << t->Armies << "\n";
-  }
-
   return p.Territories;
 }
 
@@ -57,15 +47,10 @@ void HumanStrategy::issueOrder(Player &p) {
   } else if (!p.AdvanceOrderDone) {
     std::cout << "\t" << p.PID << " has no more armies left to deploy: "
               << p.ReinforcementPool - p.ReinforcementsDeployed << " armies\n";
-    srand(time(NULL));
-    std::cout << "\tIssuing advance order...\n";
-    // Make players more likely to attack than transfer to end game faster
-    if ((rand() % 100) > 70) {
-      this->advanceTransfer(p);
-    } else {
-      this->advanceAttack(p);
-    }
+    std::cout << "\tIssuing Advance: Attack OR Transfer order...\n";
+    this->askForAdvanceOrder(p);
     p.AdvanceOrderDone = true;
+
     // Play a card
   } else if (!p.CardPlayed) {
     std::cout << "\t" << p.PID << " already did deploy/advance order\n"
@@ -76,19 +61,28 @@ void HumanStrategy::issueOrder(Player &p) {
   // Else no orders left
 }
 
+/**
+ * Asks a human player where to deploy armies
+ * @param p The player object
+ */
 void HumanStrategy::createDeploy(Player &p) {
   auto ownedTerritories = p.toDefend();
+  std::cout << "Your territories are: \n";
+  this->displayVector(ownedTerritories);
 
-  // Chooses a random place to deploy a random amount of armies
-  srand(time(NULL));
-  auto *territoryToDeploy =
-      ownedTerritories.at(rand() % (ownedTerritories.size()));
+  std::string message_index =
+      "Pick the index of the territory you wish to reinforce: ";
+  const int territoryID =
+      askUserForInt(message_index, 0, p.MainMap->NumOfCountries());
+  auto *territoryToDeploy = findById(ownedTerritories, territoryID);
 
-  int armies = 0;
-  if (p.ReinforcementPool - p.ReinforcementsDeployed > 0) {
-    armies =
-        1 + rand() % (p.ReinforcementPool - p.ReinforcementsDeployed);
-  }
+  std::string message_armies =
+      "Chose a number of armies to reinforce " + territoryToDeploy->Name +
+      " with.\n You have " +
+      std::to_string(p.ReinforcementPool - p.ReinforcementsDeployed) +
+      " reinforcements left:";
+  const int armies = askUserForInt(
+      message_armies, 1, p.ReinforcementPool - p.ReinforcementsDeployed);
 
   // Perform the deploy order
   auto *order = new Deploy(p.PID, armies, territoryToDeploy, &p);
@@ -104,19 +98,43 @@ void HumanStrategy::createDeploy(Player &p) {
 void HumanStrategy::advanceAttack(Player &p) {
   auto toAttackTerritories = p.toAttack();
   auto ownedTerritories = p.toDefend();
+  std::cout << "You can attack with these territories: \n";
+  this->displayVector(ownedTerritories);
 
-  srand(time(NULL));
+  std::cout << "You can attack these territories: \n";
+  this->displayVector(toAttackTerritories);
 
-  // Chose a territory as a source of attack
-  Territory *src = ownedTerritories.at(rand() % (ownedTerritories.size()));
+  std::string msg_src =
+      "From your defense pool, pick a territory to attack with: ";
+  const int src_id =
+      this->askUserForInt(msg_src, 0, p.MainMap->NumOfCountries());
+  auto *src = this->findById(ownedTerritories, src_id);
 
-  // Chose any target from to attack pool even if not a neighbor, orders will
-  // validate
-  auto *target = toAttackTerritories.at(rand() % (toAttackTerritories.size()));
+  auto adjacentTerritories =
+      p.MainMap->ReturnListOfAdjacentCountriesByIDAndNotPlayer(src->TerritoryID,
+                                                               p.PID);
 
-  // Attack with all armies in that territory to speed up game play
-  auto *order = new Advance(p.PID, src->Armies, src, target, p.MainMap,
-                            &p, p.DeckOfCards);
+  std::cout << "You can attack these neighbors: \n";
+  this->displayVector(adjacentTerritories);
+
+  std::string msg_target =
+      "From your attack pool, pick a territory to attack: ";
+  const int target_id =
+      this->askUserForInt(msg_target, 0, p.MainMap->NumOfCountries());
+  auto *target = this->findById(adjacentTerritories, target_id);
+
+  int armies = 0;
+  if (src->Armies != 0) {
+    std::string msg_armies =
+        "How many armies do you want to attack with out of " +
+        std::to_string(src->Armies) + "? ";
+    armies = askUserForInt(msg_armies, 1, src->Armies);
+  } else {
+    std::cout << "\tNo armies on that territory!";
+  }
+
+  auto *order =
+      new Advance(p.PID, armies, src, target, p.MainMap, &p, p.DeckOfCards);
 
   std::cout << "\t" << p.PID << " attacks " << target->Name << " - "
             << target->Armies << " owned by " << target->OwnedBy << " with "
@@ -127,17 +145,40 @@ void HumanStrategy::advanceAttack(Player &p) {
 
 void HumanStrategy::advanceTransfer(Player &p) {
   auto ownedTerritories = p.toDefend();
+  std::cout << "You can transfer armies between these territories: \n";
+  this->displayVector(ownedTerritories);
 
-  srand(time(NULL));
-  auto *src = ownedTerritories.at(rand() % (ownedTerritories.size()));
-  auto *target = ownedTerritories.at(rand() % (ownedTerritories.size()));
+  std::string msg_src =
+      "From your defense pool, pick a territory to transfer armies from: ";
+  const int src_id =
+      this->askUserForInt(msg_src, 0, p.MainMap->NumOfCountries());
+  auto *src = this->findById(ownedTerritories, src_id);
+
+  auto adjacentTerritories =
+      p.MainMap->ReturnListOfAdjacentCountriesByIDAndPlayer(src->TerritoryID,
+                                                            p.PID);
+
+  std::cout << "You can transfer armies to it's neighbors: \n";
+  this->displayVector(adjacentTerritories);
+
+  std::string msg_target =
+      "From your adjacent territories, pick a territory to transfer to: ";
+  const int target_id =
+      this->askUserForInt(msg_target, 0, p.MainMap->NumOfCountries());
+  auto *target = this->findById(adjacentTerritories, target_id);
+
   int armies = 0;
-  if (src->Armies > 0) {
-    armies = 1 + rand() % src->Armies;
+  if (src->Armies != 0) {
+    std::string msg_armies =
+        "How many armies do you want to transfer with out of " +
+        std::to_string(src->Armies) + "? ";
+    armies = askUserForInt(msg_armies, 1, src->Armies);
+  } else {
+    std::cout << "\tNo armies on that territory!";
   }
 
-  auto *order = new Advance(p.PID, armies, src, target, p.MainMap, &p,
-                            p.DeckOfCards);
+  auto *order =
+      new Advance(p.PID, armies, src, target, p.MainMap, &p, p.DeckOfCards);
 
   std::cout << "\t" << p.PID << " transfers " << armies << " armies to "
             << target->Name << " - " << target->Armies << " from " << src->Name
@@ -146,17 +187,15 @@ void HumanStrategy::advanceTransfer(Player &p) {
 };
 
 void HumanStrategy::playCard(Player &p) {
-  srand(time(NULL));
-
   if (p.HandOfCards->size() == 0) {
     std::cout << "\tYou have no cards in your hand.\n";
   } else {
     // Display the cards in a player's hand.
     std::cout << "These are the card in your hand:\n";
     std::cout << *p.HandOfCards << std::endl;
-
-    auto cardToPlay =
-        p.HandOfCards->returnByPos(rand() % (p.HandOfCards->size()));
+    std::string msg = "Pick the card you wish to play: ";
+    const int card_index = askUserForInt(msg, 0, p.HandOfCards->size());
+    auto cardToPlay = p.HandOfCards->returnByPos(card_index);
     // Method inside cards class calls the correct player creation order
     // function
     std::cout << "Playing card: " << cardToPlay << "\n";
@@ -165,10 +204,13 @@ void HumanStrategy::playCard(Player &p) {
 };
 
 void HumanStrategy::createBomb(Player &p) {
-  srand(time(NULL));
+  auto allTerritories = p.MainMap->ReturnListOfCountries();
+  std::cout << "These are all the territories in the game: \n";
+  this->displayVector(allTerritories);
 
-  const auto pos = rand() % p.MainMap->NumOfCountries();
-  auto *target = p.MainMap->ReturnListOfCountries().at(pos);
+  std::string msg = "Choose any territories that you don't own to bomb: ";
+  const auto target_index = askUserForInt(msg, 0, p.MainMap->NumOfCountries());
+  auto *target = findById(allTerritories, target_index);
 
   auto *order = new Bomb(p.PID, target, &p);
 
@@ -178,21 +220,34 @@ void HumanStrategy::createBomb(Player &p) {
 };
 
 void HumanStrategy::createAirlift(Player &p) {
-  srand(time(NULL));
-
   auto ownedTerritories = p.toDefend();
-  auto *src = ownedTerritories.at(rand() % (ownedTerritories.size()));
+  std::cout << "These are the territories you can airlift from:\n";
+  displayVector(ownedTerritories);
 
-  const auto pos = rand() % p.MainMap->NumOfCountries();
-  auto *target = p.MainMap->ReturnListOfCountries().at(pos);
+  std::string msg_src = "Choose a source territory to airlift armies from: ";
+  const int src_index = askUserForInt(msg_src, 0, p.MainMap->NumOfCountries());
+  auto *src = findById(ownedTerritories, src_index);
+
+  auto allTerritories = p.MainMap->ReturnListOfCountries();
+  std::cout << "These are all the territories in the game: \n";
+  this->displayVector(allTerritories);
+
+  std::string msg_target = "Choose a target territory to airlift to: ";
+  const int target_id =
+      this->askUserForInt(msg_target, 0, p.MainMap->NumOfCountries());
+  auto *target = this->findById(allTerritories, target_id);
 
   int armies = 0;
-  if (src->Armies > 0) {
-    armies = 1 + rand() % src->Armies;
+  if (src->Armies != 0) {
+    std::string msg_armies =
+        "How many armies do you want to airlift with out of " +
+        std::to_string(src->Armies) + "? ";
+    armies = askUserForInt(msg_armies, 1, src->Armies);
+  } else {
+    std::cout << "\tNo armies on that territory!";
   }
 
-  auto *order =
-      new Airlift(p.PID, armies, src, target, &p, p.DeckOfCards);
+  auto *order = new Airlift(p.PID, armies, src, target, &p, p.DeckOfCards);
   std::cout << "\t" << p.PID << " airlifts " << armies << " armies to "
             << target->Name << " - " << target->Armies << " owned by "
             << target->OwnedBy << " from " << src->Name << " - " << src->Armies
@@ -201,11 +256,14 @@ void HumanStrategy::createAirlift(Player &p) {
 };
 
 void HumanStrategy::createBlockade(Player &p) {
-  srand(time(NULL));
-
+  std::cout << "These are the territories you can blockade:\n";
   auto ownedTerritories = p.toDefend();
+  displayVector(ownedTerritories);
 
-  auto *src = ownedTerritories.at(rand() % (ownedTerritories.size()));
+  std::string msg_src = "Choose a territory to blockade: ";
+  const int src_id =
+      this->askUserForInt(msg_src, 0, p.MainMap->NumOfCountries());
+  auto *src = this->findById(ownedTerritories, src_id);
 
   auto *order = new Blockade(p.PID, src);
   std::cout << "\t" << p.PID << " blockades " << src->Name << " - "
@@ -214,9 +272,35 @@ void HumanStrategy::createBlockade(Player &p) {
 };
 
 void HumanStrategy::createNegotiate(Player &p) {
-  srand(time(NULL));
+  std::cout << "These are the players in the game: ";
+  for (auto &player : p.ListOfPlayers) {
+    std::cout << player->PID << "\n";
+  }
 
-  Player *enemy = p.ListOfPlayers.at(rand() % (p.ListOfPlayers.size()));
+  Player *enemy = nullptr;
+
+  bool validInput{false};
+  std::string input{"x"};
+  while (!validInput) {
+    std::cout << "Pick a player name to negotiate with: ";
+    std::cin >> input;
+    std::cout << "\n";
+    if (std::cin.fail()) {
+      std::cin.clear();
+      std::string discard;
+      getline(std::cin, discard);
+      std::cout << "Enter a string value\n";
+    } else {
+      for (auto &player : p.ListOfPlayers) {
+        if (player->PID == input) {
+          validInput = true;
+          enemy = player;
+        }
+      }
+      std::cout << "That was not a valid input try again.\n";
+    }
+  }
+
   auto *order = new Negotiate(&p, enemy);
   std::cout << "\t" << p.PID << " negotiates with " << enemy->PID << " - "
             << '\n';
@@ -229,6 +313,76 @@ void HumanStrategy::createReinforcement(Player &p) {
       static_cast<std::shared_ptr<Order>>(new Reinforcement(&p)));
 };
 
+Territory *HumanStrategy::findById(std::vector<Territory *> &list, int id) {
+  for (auto &t : list) {
+    if (t->TerritoryID == id) {
+      return t;
+    }
+  }
+  return nullptr;
+}
+
+int HumanStrategy::askUserForInt(std::string &message, int min, int max) const {
+  int input{min - 1};
+  while (true) {
+    std::cout << message;
+    std::cin >> input;
+    std::cout << "\n";
+    if (std::cin.fail()) {
+      std::cin.clear();
+      std::string discard;
+      getline(std::cin, discard);
+      std::cout << "Enter an INTEGER value\n";
+    } else {
+      if (input < min || input > max) {
+        std::cout << input << " is not an acceptable input. Try again.";
+      } else {
+        return input;
+      }
+    }
+  }
+}
+
+void HumanStrategy::askForAdvanceOrder(Player &p) {
+  bool validInput{false};
+  std::string input{"x"};
+
+  while (!validInput) {
+    std::cout << "Pick [t] to transfer armies or [a] to attack: ";
+    std::cin >> input;
+    std::cout << "\n";
+    if (std::cin.fail()) {
+      std::cin.clear();
+      std::string discard;
+      getline(std::cin, discard);
+      std::cout << "Enter an INTEGER value\n";
+    } else {
+      if (input != "a" && input != "t") {
+        std::cout << "The input " << input << " is not valid. Try again.\n";
+      } else {
+        validInput = true;
+      }
+    }
+  }
+
+  if (input == "a") {
+    this->advanceAttack(p);
+  } else {
+    this->advanceTransfer(p);
+  }
+}
+
+void HumanStrategy::displayVector(std::vector<Territory *> &list) {
+  for (auto &t : list) {
+    std::cout << "\t\t[" << t->TerritoryID << "]: " << t->Name
+              << " - Armies: " << t->Armies << " - Owner: " << t->OwnedBy
+              << std::endl;
+  }
+}
+
+//-----------------------------------------------------------------
+// AGGRESSIVE PLAYER
+//-----------------------------------------------------------------
 std::vector<Territory *> AggresivePlayerStrategy::toAttack(Player &p) {
   return std::vector<Territory *>{};
 }
@@ -244,8 +398,11 @@ void AggresivePlayerStrategy::createBomb(Player &p) {}
 void AggresivePlayerStrategy::createAirlift(Player &p) {}
 void AggresivePlayerStrategy::createBlockade(Player &p) {}
 void AggresivePlayerStrategy::createNegotiate(Player &p) {}
-void AggresivePlayerStrategy::createReinforcement(Player &p){}
+void AggresivePlayerStrategy::createReinforcement(Player &p) {}
 
+//-----------------------------------------------------------------
+// BENEVOLENT PLAYER
+//-----------------------------------------------------------------
 std::vector<Territory *> BenevolentPlayerStrategy::toAttack(Player &p) {
   return std::vector<Territory *>{};
 }
@@ -253,22 +410,31 @@ std::vector<Territory *> BenevolentPlayerStrategy::toDefend(Player &p) {
   return std::vector<Territory *>{};
 }
 void BenevolentPlayerStrategy::issueOrder(Player &p) {}
-void BenevolentPlayerStrategy::createDeploy(Player &p){}
+void BenevolentPlayerStrategy::createDeploy(Player &p) {}
 void BenevolentPlayerStrategy::advanceAttack(Player &p) {}
 void BenevolentPlayerStrategy::advanceTransfer(Player &p) {}
 void BenevolentPlayerStrategy::playCard(Player &p) {}
-void BenevolentPlayerStrategy::createBomb(Player &p){}
-void BenevolentPlayerStrategy::createAirlift(Player &p){}
-void BenevolentPlayerStrategy::createBlockade(Player &p){}
-void BenevolentPlayerStrategy::createNegotiate(Player &p){}
-void BenevolentPlayerStrategy::createReinforcement(Player &p){}
+void BenevolentPlayerStrategy::createBomb(Player &p) {}
+void BenevolentPlayerStrategy::createAirlift(Player &p) {}
+void BenevolentPlayerStrategy::createBlockade(Player &p) {}
+void BenevolentPlayerStrategy::createNegotiate(Player &p) {}
+void BenevolentPlayerStrategy::createReinforcement(Player &p) {}
 
+//-----------------------------------------------------------------
+// NEUTRAL PLAYER
+//-----------------------------------------------------------------
 /*no orders issued for neutral player*/
-void NeutralPlayerStrategy::issueOrder(Player& p) { std::cout << "[Neutral Player] No orders issued." << std::endl; }
-std::vector<Territory*> NeutralPlayerStrategy::toAttack(Player& p) { return p.Territories; }
-std::vector<Territory*> NeutralPlayerStrategy::toDefend(Player& p) { return p.Territories; }
-void NeutralPlayerStrategy::createBomb(Player& p) {}
-void NeutralPlayerStrategy::createAirlift(Player& p) {}
-void NeutralPlayerStrategy::createBlockade(Player& p) {}
-void NeutralPlayerStrategy::createNegotiate(Player& p) {}
-void NeutralPlayerStrategy::createReinforcement(Player& p) {}
+void NeutralPlayerStrategy::issueOrder(Player &p) {
+  std::cout << "[Neutral Player] No orders issued." << std::endl;
+}
+std::vector<Territory *> NeutralPlayerStrategy::toAttack(Player &p) {
+  return p.Territories;
+}
+std::vector<Territory *> NeutralPlayerStrategy::toDefend(Player &p) {
+  return p.Territories;
+}
+void NeutralPlayerStrategy::createBomb(Player &p) {}
+void NeutralPlayerStrategy::createAirlift(Player &p) {}
+void NeutralPlayerStrategy::createBlockade(Player &p) {}
+void NeutralPlayerStrategy::createNegotiate(Player &p) {}
+void NeutralPlayerStrategy::createReinforcement(Player &p) {}
