@@ -168,8 +168,6 @@ void PhaseObserver::Update() {
           if (temp != nullptr)
               std::cout << ": " << player_subject->PID << " issued order \"" <<
               temp->getName() << "\"" << std::endl;
-          else
-              std::cout << "None." << std::endl;
       }
       break;
     case State_enum::EXECUTE_ORDERS_PHASE:
