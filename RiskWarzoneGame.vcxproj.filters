@@ -60,6 +60,15 @@
     <ClCompile Include="src\PlayerStrategy.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\ConquestFileReader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ConquestFileReaderAdapter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ConquestFileReaderDriver.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Cards.h">
@@ -101,5 +110,93 @@
     <ClInclude Include="src\PlayerStrategy.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\ConquestFileReader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ConquestFileReaderAdapter.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ConquestFileReaderDriver.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="README.md" />
+    <None Include=".gitignore" />
+    <None Include="a1_team26_26317987_40122814_40138253_40135588_26683320.zip" />
+    <None Include="CppProperties.json" />
+    <None Include="maps\bigeurope.cards" />
+    <None Include="maps\bigeurope.map" />
+    <None Include="maps\europass.cards" />
+    <None Include="maps\europass.map" />
+    <None Include="maps\europe.cards" />
+    <None Include="maps\europe.map" />
+    <None Include="maps\google.cards" />
+    <None Include="maps\google.map" />
+    <None Include="maps\invalid.cards" />
+    <None Include="maps\invalid.map" />
+    <None Include="maps\solar.cards" />
+    <None Include="maps\solar.map" />
+    <None Include="doc\valgrind.md" />
+    <None Include="doc\gameobserver.md" />
+    <None Include="doc\maploader.md" />
+    <None Include="cmaps\Canada.map" />
+    <None Include="cmaps\Canada1999.map" />
+    <None Include="cmaps\Europe.map" />
+    <None Include="cmaps\Solar System.map" />
+    <None Include="cmaps\South America.map" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="maps\solar_pic.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="maps\bigeurope_map.gif">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="maps\bigeurope_pic.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="maps\europass_map.gif">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="maps\europass_pic.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="maps\europe_map.gif">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="maps\europe_pic.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="maps\google_map.gif">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="maps\google_pic.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="maps\invalid.gif">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="maps\invalid.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="maps\solar_map.gif">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="cmaps\Canada.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="cmaps\Canada1999.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="cmaps\Europe.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="cmaps\Solar System.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="cmaps\South America.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
 </Project>
