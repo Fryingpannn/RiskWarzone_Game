@@ -278,8 +278,10 @@ Hand& Hand::operator=(const Hand& h) {
  * @param h The hand to print.
  */
 std::ostream& operator<<(std::ostream& out, const Hand& h) {
+  int count = 0;
   for (auto* i : h.hand) {
-    out << *i << ' ';
+    out <<"[" << count <<"] " << *i << ' ';
+    count++;
   }
   return out;
 }

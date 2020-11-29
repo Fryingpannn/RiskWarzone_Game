@@ -305,15 +305,15 @@ std::ostream &operator<<(std::ostream &output, const MapFile *map_file) {
  */
 MapFile::~MapFile() {
 	// Delete the territories
-	for (unsigned int i = 0; i < this->map_territories.size(); i++) {
-		delete this->map_territories[i];
-		this->map_territories[i] = nullptr;
+	for (unsigned int i = 0; i < map_territories.size(); i++) {
+		delete map_territories[i];
+		map_territories[i] = nullptr;
 	}
 
 	// Delete the continents
-	for (unsigned int i = 0; i < this->map_continents.size(); i++) {
-		delete this->map_continents[i];
-		this->map_continents[i] = nullptr;
+	for (unsigned int i = 0; i < map_continents.size(); i++) {
+		delete map_continents[i];
+		map_continents[i] = nullptr;
 	}
 }
 
@@ -694,7 +694,7 @@ Result<Continent> MapFile::getContinentByNumber(int continent_number) {
 	for (unsigned int i = 0; i < map_continents.size(); i++) {
 		if (map_territories[i]->number == continent_number) {
 			returnResult.success = true;
-			returnResult.message = &"SUCCESS: Found continent at index "[i];
+			returnResult.message = "SUCCESS: Found continent at index " + i;
 			returnResult.returnValue = map_continents[i];
 			return returnResult;
 		}
@@ -789,7 +789,7 @@ Map *MapFile::generateMap() {
 			int inner_territory_id = map_territories[i]->borders[j] - 1;
 
 			// Add an edge from first to second
-			returnMap->AddEdges(*converted_territories.at(outer_territory_id),*converted_territories.at(inner_territory_id));
+			returnMap->AddEdges(*converted_territories.at(outer_territory_id), *converted_territories.at(inner_territory_id));
 
 		}
 		// delete firstTerritory;

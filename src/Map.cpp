@@ -179,7 +179,6 @@ Map::Map(int size, std::string name) {
   for (int i = 0; i < 1000; i++)
     ListOfCountries[i] = new std::vector<struct ::Territory*>;
 
-
   MapName = new std::string(name);
 }
 
@@ -231,14 +230,14 @@ Map::~Map() {
   delete[] ListOfCountries;
 
   for (auto i = 0; i < AllContinents.size(); i++) {
-      delete AllContinents[i];
-      AllContinents[i] = nullptr;
+    delete AllContinents[i];
+    AllContinents[i] = nullptr;
   }
 
-//  AllContinents.clear();
+  //  AllContinents.clear();
 
   for (auto* countries : AllCountries) {
-      delete countries;
+    delete countries;
   }
 
   delete NumberOfCountries;
@@ -317,6 +316,30 @@ std::vector<struct ::Territory*> Map::ReturnListOfAdjacentCountriesByID(
   for (Territory* Temp : *ListOfCountries[ID]) {
     ReturnList.push_back(Temp);
     // Log(Temp->Name << std::endl);
+  }
+  return ReturnList;
+}
+
+std::vector<struct ::Territory*>
+Map::ReturnListOfAdjacentCountriesByIDAndPlayer(int TID,
+                                                std::string PlayerName) {
+  std::vector<Territory*> ReturnList;
+  for (Territory* Temp : *ListOfCountries[TID]) {
+    if (Temp->OwnedBy == PlayerName) {
+      ReturnList.push_back(Temp);
+    }
+  }
+  return ReturnList;
+}
+
+std::vector<struct ::Territory*>
+Map::ReturnListOfAdjacentCountriesByIDAndNotPlayer(int TID,
+                                                std::string PlayerName) {
+  std::vector<Territory*> ReturnList;
+  for (Territory* Temp : *ListOfCountries[TID]) {
+    if (Temp->OwnedBy != PlayerName) {
+      ReturnList.push_back(Temp);
+    }
   }
   return ReturnList;
 }
@@ -477,7 +500,6 @@ bool Map::Validate() {
 
   if (*this->NumberOfCountries == NULL) return false;
 
-
   for (int i = 0; i < *this->NumberOfCountries; i++) {
     for (int x = i + 1; x < *this->NumberOfCountries; x++) {
       if (i == *this->NumberOfCountries) {
@@ -496,7 +518,6 @@ bool Map::Validate() {
         }
       }
     }
-
 
     for (unsigned int j = 0; j < this->ListOfCountries[i]->size() - 1; j++) {
       // using my code, and how I design it. You don't even need to check
@@ -522,15 +543,10 @@ bool Map::Validate() {
         }
         if (ListOfCountries[i]->at(j)->Name ==
             ListOfCountries[i]->at(k)->Name) {
-
           return false;
         }
-
       }
     }
-
-
-
 
     std::cout << std::endl;
   }

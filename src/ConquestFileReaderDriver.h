@@ -1,0 +1,12 @@
+//
+// Created by stef on 2020-11-28.
+//
+
+#ifndef RISKWARZONE_GAME_CONQUESTFILEREADERDRIVER_H
+#define RISKWARZONE_GAME_CONQUESTFILEREADERDRIVER_H
+
+#include "MapLoader.hpp"
+
+void a3_part2_demo();
+
+#endif //RISKWARZONE_GAME_CONQUESTFILEREADERDRIVER_H
