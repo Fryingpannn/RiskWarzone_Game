@@ -278,7 +278,7 @@ void GameEngine::Init() {
     std::cout << "\t" << *p << "\n";
     // TODO implement correct strategies
     // TODO strategy delete is currently handled in player deconstructor
-    p->setStrategy(new HumanStrategy());
+    p->setStrategy(new NeutralPlayerStrategy());
   }
 
   std::cout << "[GAME START] The deck of cards has "
@@ -565,7 +565,16 @@ void GameEngine::issueOrdersPhase() {
         ordersLeft--;
       } else {
         std::cout << "\n\t" << player->PID << " issuing order...\n";
-        player->issueOrder();
+        //if neutral player, issue no order
+        auto tempo = dynamic_cast<NeutralPlayerStrategy*>(player->Strategy);
+        if (tempo == nullptr) {
+            player->issueOrder();
+        }
+        else {
+            player->AdvanceOrderDone = true;
+            player->CardPlayed = true;
+            std::cout << "\n\t" << player->PID << " is a neutral player. No orders issued.\n" << std::endl;
+        }
 
         if (!player->AdvanceOrderDone ||
             (player->AdvanceOrderDone && !player->CardPlayed) ||
@@ -596,7 +605,7 @@ void GameEngine::executeOrdersPhase() {
   while (ordersLeft > 0) {
     ordersLeft = ListOfValidPlayers.size();
     for (auto &player : ListOfValidPlayers) {
-        if (player->ListOfOrders->peek()->getName() == "DEPLOY") {
+        if (!player->ListOfOrders->empty() && player->ListOfOrders->peek()->getName() == "DEPLOY") {
             State new_phase_state;
             new_phase_state.current_state = State_enum::EXECUTE_ORDERS_PHASE;
             new_phase_state.executed_order_name =
