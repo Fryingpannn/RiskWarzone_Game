@@ -148,6 +148,9 @@
   <ItemGroup>
     <ClCompile Include="src\Cards.cpp" />
     <ClCompile Include="src\CardsDriver.cpp" />
+    <ClCompile Include="src\ConquestFileReader.cpp" />
+    <ClCompile Include="src\ConquestFileReaderAdapter.cpp" />
+    <ClCompile Include="src\ConquestFileReaderDriver.cpp" />
     <ClCompile Include="src\GameEngine.cpp" />
     <ClCompile Include="src\GameObservers.cpp" />
     <ClCompile Include="src\main.cpp" />
@@ -164,6 +167,9 @@
   <ItemGroup>
     <ClInclude Include="src\Cards.h" />
     <ClInclude Include="src\CardsDriver.h" />
+    <ClInclude Include="src\ConquestFileReader.h" />
+    <ClInclude Include="src\ConquestFileReaderAdapter.h" />
+    <ClInclude Include="src\ConquestFileReaderDriver.h" />
     <ClInclude Include="src\GameEngine.h" />
     <ClInclude Include="src\GameObservers.hpp" />
     <ClInclude Include="src\Map.h" />
@@ -175,6 +181,51 @@
     <ClInclude Include="src\Player.h" />
     <ClInclude Include="src\PlayerDriver.h" />
     <ClInclude Include="src\PlayerStrategy.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include=".gitignore" />
+    <None Include="a1_team26_26317987_40122814_40138253_40135588_26683320.zip" />
+    <None Include="cmaps\Canada.map" />
+    <None Include="cmaps\Canada1999.map" />
+    <None Include="cmaps\Europe.map" />
+    <None Include="cmaps\Solar System.map" />
+    <None Include="cmaps\South America.map" />
+    <None Include="CppProperties.json" />
+    <None Include="doc\gameobserver.md" />
+    <None Include="doc\maploader.md" />
+    <None Include="doc\valgrind.md" />
+    <None Include="maps\bigeurope.cards" />
+    <None Include="maps\bigeurope.map" />
+    <None Include="maps\europass.cards" />
+    <None Include="maps\europass.map" />
+    <None Include="maps\europe.cards" />
+    <None Include="maps\europe.map" />
+    <None Include="maps\google.cards" />
+    <None Include="maps\google.map" />
+    <None Include="maps\invalid.cards" />
+    <None Include="maps\invalid.map" />
+    <None Include="maps\solar.cards" />
+    <None Include="maps\solar.map" />
+    <None Include="README.md" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="cmaps\Canada.bmp" />
+    <Image Include="cmaps\Canada1999.bmp" />
+    <Image Include="cmaps\Europe.bmp" />
+    <Image Include="cmaps\Solar System.bmp" />
+    <Image Include="cmaps\South America.bmp" />
+    <Image Include="maps\bigeurope_map.gif" />
+    <Image Include="maps\bigeurope_pic.jpg" />
+    <Image Include="maps\europass_map.gif" />
+    <Image Include="maps\europass_pic.png" />
+    <Image Include="maps\europe_map.gif" />
+    <Image Include="maps\europe_pic.jpg" />
+    <Image Include="maps\google_map.gif" />
+    <Image Include="maps\google_pic.jpg" />
+    <Image Include="maps\invalid.gif" />
+    <Image Include="maps\invalid.jpg" />
+    <Image Include="maps\solar_map.gif" />
+    <Image Include="maps\solar_pic.jpg" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
