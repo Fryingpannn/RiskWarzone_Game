@@ -18,8 +18,8 @@ void a3_part2_demo() {
 	std::string map_folder_base_path;
 	std::string map_file_name;
 
-	MapFile *testMapFile;
-	ConquestFileReaderAdapter *testCmapFile;
+	MapFile *testMapFile = nullptr;
+	ConquestFileReaderAdapter *testCmapFile = nullptr;
 
 	bool choice_made = false;
 	char choice;
@@ -94,7 +94,7 @@ void a3_part2_demo() {
 			* Yes, this code is commented out.  For some unknown reason, testMap and
 			* testMapFile are instantly deleted and we cannot figure out why that's happening.
 			*/
-			Map *testMap;
+			Map *testMap = nullptr;
 			switch (choice) {
 				case '1':
 					testMap = testMapFile->generateMap();
