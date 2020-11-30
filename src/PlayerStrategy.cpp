@@ -657,7 +657,33 @@ std::vector<Territory *> BenevolentPlayerStrategy::toAttack(Player &p) {
 std::vector<Territory *> BenevolentPlayerStrategy::toDefend(Player &p) {
   return std::vector<Territory *>{};
 }
-void BenevolentPlayerStrategy::issueOrder(Player &p) {}
+void BenevolentPlayerStrategy::issueOrder(Player &p) {
+    // Deploy armies until nothing left in pool
+    if (p.ReinforcementPool - p.ReinforcementsDeployed > 0) {
+        std::cout << "\t" << p.PID << " has "
+            << p.ReinforcementPool - p.ReinforcementsDeployed
+            << " armies left to deploy.\n";
+        this->createDeploy(p);
+
+        // Perform an advance order that either attacks or transfers
+    }
+    else if (!p.AdvanceOrderDone) {
+        std::cout << "\t" << p.PID << " has no more armies left to deploy: "
+            << p.ReinforcementPool - p.ReinforcementsDeployed << " armies\n";
+        std::cout << "\tIssuing Advance: Attack OR Transfer order...\n";
+        this->advanceTransfer(p);
+        p.AdvanceOrderDone = true;
+
+        // Play a card
+    }
+    else if (!p.CardPlayed) {
+        std::cout << "\t" << p.PID << " already did deploy/advance order\n"
+            << "\tChoosing card\n";
+        this->playCard(p);
+        p.CardPlayed = true;
+    }
+    // Else no orders left
+}
 void BenevolentPlayerStrategy::createDeploy(Player &p) {}
 void BenevolentPlayerStrategy::advanceAttack(Player &p) {}
 void BenevolentPlayerStrategy::advanceTransfer(Player &p) {}
@@ -667,6 +693,24 @@ void BenevolentPlayerStrategy::createAirlift(Player &p) {}
 void BenevolentPlayerStrategy::createBlockade(Player &p) {}
 void BenevolentPlayerStrategy::createNegotiate(Player &p) {}
 void BenevolentPlayerStrategy::createReinforcement(Player &p) {}
+
+//iterate through the territories
+//compare each army
+//assign the first territory to the pointer
+Territory* BenevolentPlayerStrategy::weakestCountry(Player& p)
+{
+    Territory* returnTerritory;
+    for (auto* territory : p.Territories)
+    {
+        if (returnTerritory == nullptr)
+            returnTerritory = territory;
+        else {
+            if (territory->Armies < returnTerritory->Armies)
+                returnTerritory = territory;
+        }
+    }
+    return returnTerritory;
+}
 
 //-----------------------------------------------------------------
 // NEUTRAL PLAYER
