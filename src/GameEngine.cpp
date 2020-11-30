@@ -467,7 +467,10 @@ void GameEngine::mainGameLoop() {
         }
       }
     }
-
+    //update all players' list of players
+    for (unsigned int i = 0; i < ListOfValidPlayers.size(); i++) {
+        ListOfValidPlayers.at(i)->ListOfPlayers = ListOfValidPlayers;
+    }
     // CHECK: Do we have a winner?
     if (ListOfValidPlayers.size() == 1) {
       // TODO check this is in the right place
