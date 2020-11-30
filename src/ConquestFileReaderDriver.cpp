@@ -3,10 +3,8 @@
 //
 
 #include "ConquestFileReaderDriver.h"
-#include "ConquestFileReader.h"
 #include "MapLoader.hpp"
 #include "Map.h"
-#include "ConquestFileReaderAdapter.h"
 
 #include <iostream>
 #include <string>

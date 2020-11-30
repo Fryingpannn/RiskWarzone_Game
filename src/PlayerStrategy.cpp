@@ -452,7 +452,8 @@ void AggressivePlayerStrategy::issueOrder(Player& p) {
 	}
 }
 void AggressivePlayerStrategy::createDeploy(Player& p) {
-	auto* territoryToDeploy = p.toDefend().at(0);
+	auto ownedTerritories = p.toDefend();
+	auto* territoryToDeploy = ownedTerritories.at(0);
 
 	int armies = 0;
 	if (p.ReinforcementPool - p.ReinforcementsDeployed > 0) {
@@ -470,8 +471,11 @@ void AggressivePlayerStrategy::createDeploy(Player& p) {
 }
 void AggressivePlayerStrategy::advanceAttack(Player& p) {
 
-	auto* target = p.toAttack().at(rand() % (p.toAttack().size()));
-	auto* src = p.toDefend().at(0);
+	auto ownedTerritories = p.toDefend();
+	auto PossibleTargets = p.toAttack();
+
+	auto* target = PossibleTargets.at(rand() % (PossibleTargets.size()));
+	auto* src = ownedTerritories.at(0);
 
 	const int armies = src->Armies;
 
@@ -494,7 +498,8 @@ void AggressivePlayerStrategy::advanceAttack(Player& p) {
 }
 void AggressivePlayerStrategy::advanceTransfer(Player& p) {
 
-	auto* src = p.toDefend().at(0);
+	auto ownedTerritories = p.toDefend();
+	auto* src = ownedTerritories.at(0);
 	auto ListofAdj = p.MainMap->ReturnListOfAdjacentCountriesByIDAndByPlayer(src->TerritoryID, p.PID);
 
 	//pick a random adjacent territory
@@ -560,8 +565,8 @@ void AggressivePlayerStrategy::createBomb(Player& p) {
 
 void AggressivePlayerStrategy::createAirlift(Player& p) {
 
-
-	auto* src = p.toDefend().at(0);
+	auto ownedTerritories = p.toDefend();
+	auto* src = ownedTerritories.at(0);
 
 	int player_pos = 0;
 	for (int i = 0; i < p.ListOfPlayers.size(); i++) {
