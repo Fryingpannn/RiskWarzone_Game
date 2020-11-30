@@ -17,6 +17,8 @@
 
 #include <string>
 #include <vector>
+#include <memory>
+#include <iostream>
 #include "Map.h"
 
 
@@ -159,6 +161,122 @@ class MapFile {
 
     ~MapFile();
 };
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Assignment 3 - Part 2
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+////////////////////////////////////////
+//
+// Conquest Territory
+//
+////////////////////////////////////////
+class ConquestTerritory {
+public:
+		std::string name;
+		int x_coord;
+		int y_coord;
+		std::vector<std::string> adjacent_territories;
+
+		ConquestTerritory();
+
+		ConquestTerritory(std::string n, int x, int y);
+
+		ConquestTerritory(const ConquestTerritory &t);
+
+		ConquestTerritory &operator=(const ConquestTerritory &t);
+
+		friend std::ostream &operator<<(std::ostream &os, const ConquestTerritory &t);
+
+		~ConquestTerritory();
+};
+
+////////////////////////////////////////
+//
+// Conquest Continent
+//
+////////////////////////////////////////
+
+class ConquestContinent {
+public:
+		static int count;
+		std::string name;
+		int bonus_value;
+		std::vector<std::shared_ptr<ConquestTerritory>> territories;
+
+		ConquestContinent();
+
+		ConquestContinent(std::string n, int bv);
+
+		ConquestContinent(const ConquestContinent &c);
+
+		ConquestContinent &operator=(const ConquestContinent &c);
+
+		friend std::ostream &operator<<(std::ostream &os, const ConquestContinent &c);
+
+		~ConquestContinent();
+};
+
+////////////////////////////////////////
+//
+// Conquest Map
+//
+////////////////////////////////////////
+
+class ConquestMap {
+public:
+		std::string name;
+		std::vector<std::shared_ptr<ConquestContinent>> continents;
+
+		ConquestMap();
+
+		ConquestMap(std::string n);
+
+		ConquestMap(const ConquestMap &m);
+
+		ConquestMap &operator=(const ConquestMap &m);
+
+		friend std::ostream &operator<<(std::ostream &os, const ConquestMap &m);
+
+		~ConquestMap();
+};
+
+////////////////////////////////////////
+//
+// Conquest Territory
+//
+////////////////////////////////////////
+
+class ConquestFileReader {
+public:
+		ConquestMap cmap;
+
+		void processTerritoryLine(std::string line);
+
+		void processContinentLine(std::string line);
+
+		void readMapFile(std::string file_name);
+
+		~ConquestFileReader();
+};
+
+
+class ConquestFileReaderAdapter : public MapFile {
+public:
+		ConquestFileReader conquestFileReader;
+		Result<void> readMapFile();
+		Result<Continent> getContinentByName(std::string name);
+		Result<MapFileTerritory> getTerritoryByName(std::string name);
+		ConquestFileReaderAdapter(std::string file_name);
+		~ConquestFileReaderAdapter();
+};
+
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Misc string utility functions
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 std::string toLowerCase(const std::string toLower);
 

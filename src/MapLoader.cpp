@@ -28,6 +28,11 @@
 // Change me to true to enable debug message
 const bool DEBUG = false;
 
+/////////////////////////////
+// Globals
+/////////////////////////////
+std::string exceptionMessage;
+
 //////////////////////////////////////////////////////////////////////////////////////
 // Continent
 //////////////////////////////////////////////////////////////////////////////////////
@@ -870,6 +875,370 @@ Result<void> MapFile::validate() {
 	returnResult.success = true;
 	returnResult.message = "\nDEBUG: All mapfile validation tests passed.";
 	return returnResult;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Assignment 3 - Part 2
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/////////////////////////////
+// ConquestTerritory class
+/////////////////////////////
+
+ConquestTerritory::ConquestTerritory() {
+	name = "none";
+	x_coord = 0;
+	y_coord = 0;
+}
+
+ConquestTerritory::ConquestTerritory(std::string n, int x, int y) {
+	name = n;
+	x_coord = x;
+	y_coord = y;
+}
+
+ConquestTerritory::ConquestTerritory(const ConquestTerritory &t) {
+	name = t.name;
+	x_coord = t.x_coord;
+	y_coord = t.y_coord;
+	adjacent_territories = t.adjacent_territories;
+}
+
+ConquestTerritory &ConquestTerritory::operator=(const ConquestTerritory &t) {
+	name = t.name;
+	x_coord = t.x_coord;
+	y_coord = t.y_coord;
+	adjacent_territories = t.adjacent_territories;
+	return *this;
+}
+
+ConquestTerritory::~ConquestTerritory() {
+
+}
+
+std::ostream &operator<<(std::ostream &os, const ConquestTerritory &t) {
+	os << "Name: " << t.name << " (" << t.x_coord << "," << t.y_coord << ")";
+	return os;
+}
+
+/////////////////////////////
+// ConquestContinent class
+/////////////////////////////
+
+int ConquestContinent::count = 0;
+
+ConquestContinent::ConquestContinent() {
+	name = "none";
+	bonus_value = 0;
+	count++;
+}
+
+ConquestContinent::ConquestContinent(std::string n, int bv) {
+	name = n;
+	bonus_value = bv;
+	count++;
+}
+
+ConquestContinent::ConquestContinent(const ConquestContinent &c) {
+	name = c.name;
+	bonus_value = c.bonus_value;
+	territories = c.territories;
+	count++;
+}
+
+ConquestContinent &ConquestContinent::operator=(const ConquestContinent &c) {
+	name = c.name;
+	bonus_value = c.bonus_value;
+	territories = c.territories;
+	count++;
+	return *this;
+}
+
+ConquestContinent::~ConquestContinent() {
+	std::vector<std::shared_ptr<ConquestTerritory>>::iterator it;
+	for (it = territories.begin(); it != territories.end(); ) {
+		it = territories.erase(it);
+	}
+}
+
+std::ostream &operator<<(std::ostream &os, const ConquestContinent &c) {
+	os << "Name: " << c.name << ", Bonus Value: " << c.bonus_value << std::endl;
+	os << "\tTerritories: ";
+	for (std::shared_ptr<ConquestTerritory> t : c.territories)
+		os << t->name << ", ";
+	os << std::endl;
+	return os;
+}
+
+/////////////////////////////
+// ConquestMap class
+/////////////////////////////
+
+ConquestMap::ConquestMap() {
+	name = "none";
+}
+
+ConquestMap::ConquestMap(std::string n) {
+	name = n;
+}
+
+ConquestMap::ConquestMap(const ConquestMap &m) {
+	name = m.name;
+	continents = m.continents;
+}
+
+ConquestMap &ConquestMap::operator=(const ConquestMap &m) {
+	name = m.name;
+	continents = m.continents;
+	return *this;
+}
+
+ConquestMap::~ConquestMap() {
+	std::vector<std::shared_ptr<ConquestContinent>>::iterator it;
+	for (it = continents.begin(); it != continents.end(); ) {
+		it = continents.erase(it);
+	}
+}
+
+std::ostream &operator<<(std::ostream &os, const ConquestMap &m) {
+	os << "Name: " << m.name;
+	for (std::shared_ptr<ConquestContinent> c : m.continents)
+		os << c;
+	return os;
+}
+
+/////////////////////////////
+// ConquestFileReader class
+/////////////////////////////
+
+void ConquestFileReader::readMapFile(std::string file_name) {
+	ConquestContinent::count = 0;
+	std::string current_section = "none";
+	cmap.name = file_name;
+
+	// Attempt to open the file.
+	std::ifstream inputfilestream(file_name);
+	if (!inputfilestream.is_open()) {
+		exceptionMessage = "ERROR: Could not open file.";
+		throw exceptionMessage;
+	};
+
+	std::string line = "";
+	while (std::getline(inputfilestream, line)) {
+		if (!line.empty() && !isStringBlank(line)) {
+			trim(line);
+			if (line[0] == ';') {
+				// Do nothing, this is a commented line
+			} else if (line[0] == '[') {
+				std::size_t pos = line.find(']');
+				current_section = line.substr(1, pos - 1);
+				current_section = toLowerCase(current_section);
+			} else {
+				// Do things according to what section we're in
+				if (current_section == "map") {
+					// Do nothing with these values
+				} else if (current_section == "continents") {
+					processContinentLine(line);
+				} else if (current_section == "territories") {
+					processTerritoryLine(line);
+				}
+			}
+		}
+	}
+}
+
+void ConquestFileReader::processContinentLine(std::string line) {
+	std::vector<std::string> line_args;
+	line_args = split(line, '=');
+	if (line_args.size() == 2) {
+		int second_arg = 0;
+		try {
+			second_arg = std::stoi(line_args[1]);
+		} catch (const std::invalid_argument &ia) {
+			// invalid argument, not an integer
+			throw std::invalid_argument("Invalid continent line argument, bonus value is not an integer.");
+		} catch (const std::out_of_range &oor) {
+			// number is integer, but out of the range of int
+			throw std::range_error("Invalid continent line arguemnt: Range is outside of acceptable values for int.");
+		}
+
+		std::shared_ptr<ConquestContinent> newContinent(new ConquestContinent(line_args[0], second_arg));
+
+		cmap.continents.push_back(newContinent);
+	} else {
+		throw "invalid continents line exception - too many or too few arguments.";
+	}
+
+}
+
+void ConquestFileReader::processTerritoryLine(std::string line) {
+
+	std::vector<std::string> line_args = split(line, ',');
+
+	int arg1 = 0;
+	int arg2 = 0;
+
+	if (line_args.size() >= 4) {
+		try {
+			arg1 = std::stoi(line_args[1]);
+			arg2 = std::stoi(line_args[2]);
+		} catch (const std::invalid_argument &ia) {
+			// invalid argument, not an integer
+			throw std::invalid_argument("Invalid territory line argument, coordinate value is not an integer.");
+		} catch (const std::out_of_range &oor) {
+			// number is integer, but out of the range of int
+			throw std::range_error("Invalid territory line arguemnt: Range is outside of acceptable values for int.");
+		}
+
+		// Create the new territory
+		std::shared_ptr<ConquestTerritory> newTerritory(new ConquestTerritory(line_args[0], arg1, arg2));
+
+		// Add its adjacent territories to its adjacent list
+		for (unsigned int i = 4; i < line_args.size(); i++) {
+			newTerritory->adjacent_territories.push_back(line_args[i]);
+		}
+
+		// Validate the Continent it belongs to, and add it to that continent
+		bool found = false;
+		for (int i = 0; i < cmap.continents.size(), !found; i++) {
+			if (cmap.continents[i]->name == line_args[3]) {
+				found = true;
+				cmap.continents[i]->territories.push_back(newTerritory);
+			}
+		}
+		if (!found) {
+			throw "Invalid territory line exception: continent not found.";
+		}
+
+	} else {
+		throw "invalid territories exception - too few line args";
+	}
+
+}
+
+ConquestFileReader::~ConquestFileReader() {
+
+}
+
+/////////////////////////////
+// ConquestFileReaderAdapter class
+/////////////////////////////
+
+ConquestFileReaderAdapter::ConquestFileReaderAdapter(std::string file_name) {
+	map_file_name = file_name;
+}
+
+Result<void> ConquestFileReaderAdapter::readMapFile() {
+	// Set the default return error
+	Result<void> returnResult;
+	returnResult.success = false;
+	returnResult.message = "ERROR: Default failure message. This should not have happened. ConquestFileReaderAdapter::readMapFile()";
+
+	std::string conquest_file_name = map_file_name;
+	try {
+		conquestFileReader.readMapFile(conquest_file_name);
+	} catch (const char *msg) {
+		returnResult.success = false;
+		returnResult.message = msg;
+		return returnResult;
+	} catch (const std::invalid_argument &ia) {
+		returnResult.success = false;
+		returnResult.message = ia.what();
+	} catch (const std::out_of_range &oor) {
+		returnResult.success = false;
+		returnResult.message = oor.what();
+	}
+
+	// Create continents from cmap.continents
+	map_file_name = conquestFileReader.cmap.name;
+	Continent::count = 0;
+	for (std::shared_ptr<ConquestContinent> c : conquestFileReader.cmap.continents) {
+		Continent *newContient = new Continent(c->name, c->bonus_value, "green");
+		map_continents.push_back(newContient);
+	}
+
+	int territory_count = 1;
+	// Loop through the continents to add their territories to map_territories.
+	for (const std::shared_ptr<ConquestContinent> &c : conquestFileReader.cmap.continents) {
+		Result<Continent> tempContinent = getContinentByName(c->name);
+		if (tempContinent.success) {
+			int continent_number = tempContinent.returnValue->number;
+
+			for (std::shared_ptr<ConquestTerritory> t : c->territories) {
+				MapFileTerritory *tempTerritory = new MapFileTerritory(territory_count++, t->name, continent_number, 0, 0);
+				map_territories.push_back(tempTerritory);
+			}
+		} else {
+			returnResult.success = false;
+			returnResult.message = tempContinent.message;
+			return returnResult;
+		}
+	}
+
+	// Loop through continents again to process territory borders
+	for (const std::shared_ptr<ConquestContinent> &c : conquestFileReader.cmap.continents) {
+		for (const std::shared_ptr<ConquestTerritory> &t : c->territories) {
+			Result<MapFileTerritory> mainTerritory = getTerritoryByName(t->name);
+			if(mainTerritory.success) {
+				for (std::string adjacentTerritoryName : t->adjacent_territories) {
+					Result<MapFileTerritory> adjacentTerritory = getTerritoryByName(adjacentTerritoryName);
+					if (adjacentTerritory.success) {
+						mainTerritory.returnValue->borders.push_back(adjacentTerritory.returnValue->number);
+					} else {
+						returnResult.success = false;
+						returnResult.message = "ERROR: Invalid territory in conquestTerritories list.";
+						return returnResult;
+					}
+				}
+			} else {
+				returnResult.success = false;
+				returnResult.message = "ERROR: Invalid territory in conquestTerritories list.";
+				return returnResult;
+			}
+		}
+	}
+
+	returnResult.success = true;
+	returnResult.message = "Succesfully converted ConquestMapReader data to MapFile format data.";
+	return returnResult;
+}
+
+
+Result<Continent> ConquestFileReaderAdapter::getContinentByName(std::string name) {
+	Result<Continent> returnResult;
+	returnResult.success = false;
+	returnResult.message = "ERROR: No continent found with name \"" + name + "\"";
+	returnResult.returnValue = nullptr;
+
+	for (unsigned int i = 0; i < map_continents.size(); i++) {
+		if (toLowerCase(map_continents[i]->name) == toLowerCase(name)) {
+			returnResult.success = true;
+			returnResult.message = &"SUCCESS: Found continent at index "[i];
+			returnResult.returnValue = map_continents[i];
+			return returnResult;
+		}
+	}
+	return returnResult;
+}
+
+Result<MapFileTerritory> ConquestFileReaderAdapter::getTerritoryByName(std::string name) {
+	Result<MapFileTerritory> returnResult;
+	returnResult.success = false;
+	returnResult.message = "ERROR: No territory found with name \"" + name + "\"";
+	returnResult.returnValue = nullptr;
+
+	for (unsigned int i = 0; i < map_territories.size(); i++) {
+		if (toLowerCase(map_territories[i]->short_name) == toLowerCase(name)) {
+			returnResult.success = true;
+			returnResult.message = &"SUCCESS: Found territory at index "[i];
+			returnResult.returnValue = map_territories[i];
+			return returnResult;
+		}
+	}
+	return returnResult;
+}
+
+ConquestFileReaderAdapter::~ConquestFileReaderAdapter() {
 }
 
 /////////////////////////////////////////////////////////////////////////////////
