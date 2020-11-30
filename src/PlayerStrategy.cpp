@@ -155,8 +155,7 @@ void HumanStrategy::advanceTransfer(Player &p) {
   auto *src = this->findById(ownedTerritories, src_id);
 
   auto adjacentTerritories =
-      p.MainMap->ReturnListOfAdjacentCountriesByIDAndPlayer(src->TerritoryID,
-                                                            p.PID);
+      p.MainMap->ReturnListOfAdjacentCountriesByID(src->TerritoryID);
 
   std::cout << "You can transfer armies to it's neighbors: \n";
   this->displayVector(adjacentTerritories);
@@ -655,7 +654,7 @@ std::vector<Territory *> BenevolentPlayerStrategy::toAttack(Player &p) {
   return std::vector<Territory *>{};
 }
 std::vector<Territory *> BenevolentPlayerStrategy::toDefend(Player &p) {
-  return std::vector<Territory *>{};
+  return p.Territories;
 }
 void BenevolentPlayerStrategy::issueOrder(Player &p) {
     // Deploy armies until nothing left in pool
@@ -684,15 +683,211 @@ void BenevolentPlayerStrategy::issueOrder(Player &p) {
     }
     // Else no orders left
 }
-void BenevolentPlayerStrategy::createDeploy(Player &p) {}
-void BenevolentPlayerStrategy::advanceAttack(Player &p) {}
-void BenevolentPlayerStrategy::advanceTransfer(Player &p) {}
-void BenevolentPlayerStrategy::playCard(Player &p) {}
-void BenevolentPlayerStrategy::createBomb(Player &p) {}
-void BenevolentPlayerStrategy::createAirlift(Player &p) {}
-void BenevolentPlayerStrategy::createBlockade(Player &p) {}
-void BenevolentPlayerStrategy::createNegotiate(Player &p) {}
-void BenevolentPlayerStrategy::createReinforcement(Player &p) {}
+void BenevolentPlayerStrategy::createDeploy(Player &p) {
+    auto ownedTerritories = p.toDefend();
+    std::cout << "Your territories are: \n";
+    this->displayVector(ownedTerritories);
+
+    std::string message_index =
+        "Pick the index of the territory you wish to reinforce: ";
+    const int territoryID =
+        askUserForInt(message_index, 0, p.MainMap->NumOfCountries());
+    auto* territoryToDeploy = findById(ownedTerritories, territoryID);
+
+    std::string message_armies =
+        "Chose a number of armies to reinforce " + territoryToDeploy->Name +
+        " with.\n You have " +
+        std::to_string(p.ReinforcementPool - p.ReinforcementsDeployed) +
+        " reinforcements left:";
+    const int armies = askUserForInt(
+        message_armies, 1, p.ReinforcementPool - p.ReinforcementsDeployed);
+
+    // Perform the deploy order
+    auto* order = new Deploy(p.PID, armies, territoryToDeploy, &p);
+    std::cout << "\t" << p.PID << " deploy " << armies << " from ["
+        << p.ReinforcementPool - p.ReinforcementsDeployed
+        << "] reinforcement pool "
+        << "to " << territoryToDeploy->Name << "["
+        << territoryToDeploy->Armies << "]\n";
+    p.ListOfOrders->addToList(static_cast<std::shared_ptr<Order>>(order));
+    p.ReinforcementsDeployed += armies;
+}
+void BenevolentPlayerStrategy::advanceAttack(Player &p) {
+    std::cout << "Benevolent Player decides to stay in defensive mode and not attack" << std::endl;
+}
+void BenevolentPlayerStrategy::advanceTransfer(Player &p) {
+    auto ownedTerritories = p.toDefend();
+    std::cout << "You can transfer armies between these territories: \n";
+    this->displayVector(ownedTerritories);
+
+    std::string msg_src =
+        "From your defense pool, pick a territory to transfer armies from: ";
+    const int src_id =
+        this->askUserForInt(msg_src, 0, p.MainMap->NumOfCountries());
+    auto* src = this->findById(ownedTerritories, src_id);
+
+    auto adjacentTerritories =
+        p.MainMap->ReturnListOfAdjacentCountriesByID(src->TerritoryID);
+
+    std::cout << "You can transfer armies to it's neighbors: \n";
+    this->displayVector(adjacentTerritories);
+
+    std::string msg_target =
+        "From your adjacent territories, pick a territory to transfer to: ";
+    const int target_id =
+        this->askUserForInt(msg_target, 0, p.MainMap->NumOfCountries());
+    auto* target = this->findById(adjacentTerritories, target_id);
+
+    int armies = 0;
+    if (src->Armies != 0) {
+        std::string msg_armies =
+            "How many armies do you want to transfer with out of " +
+            std::to_string(src->Armies) + "? ";
+        armies = askUserForInt(msg_armies, 1, src->Armies);
+    }
+    else {
+        std::cout << "\tNo armies on that territory!";
+    }
+
+    auto* order =
+        new Advance(p.PID, armies, src, target, p.MainMap, &p, p.DeckOfCards);
+
+    std::cout << "\t" << p.PID << " transfers " << armies << " armies to "
+        << target->Name << " - " << target->Armies << " from " << src->Name
+        << " - " << src->Armies << " total armies " << '\n';
+    p.ListOfOrders->addToList(static_cast<std::shared_ptr<Order>>(order));
+}
+void BenevolentPlayerStrategy::playCard(Player &p) {
+    if (p.HandOfCards->size() == 0) {
+        std::cout << "\tYou have no cards in your hand.\n";
+    }
+    else {
+        // Display the cards in a player's hand.
+        std::cout << "These are the card in your hand:\n";
+        std::cout << *p.HandOfCards << std::endl;
+        std::string msg = "Pick the card you wish to play: ";
+        const int card_index = askUserForInt(msg, 0, p.HandOfCards->size());
+        auto cardToPlay = p.HandOfCards->returnByPos(card_index);
+        // Method inside cards class calls the correct player creation order
+        // function
+        std::cout << "Playing card: " << cardToPlay << "\n";
+        cardToPlay.Play(p, *p.HandOfCards, *p.DeckOfCards);
+    }
+}
+void BenevolentPlayerStrategy::createBomb(Player &p) {
+    auto allTerritories = p.MainMap->ReturnListOfCountries();
+    std::cout << "These are all the territories in the game: \n";
+    this->displayVector(allTerritories);
+
+    std::string msg = "Choose any territories that you don't own to bomb: ";
+    const auto target_index = askUserForInt(msg, 0, p.MainMap->NumOfCountries());
+    auto* target = findById(allTerritories, target_index);
+
+    auto* order = new Bomb(p.PID, target, &p);
+
+    std::cout << "\t" << p.PID << " bombs " << target->Name << " - "
+        << target->Armies << " owned by " << target->OwnedBy << '\n';
+    p.ListOfOrders->addToList(static_cast<std::shared_ptr<Order>>(order));
+}
+void BenevolentPlayerStrategy::createAirlift(Player &p) {
+    auto ownedTerritories = p.toDefend();
+    std::cout << "These are the territories you can airlift from:\n";
+    displayVector(ownedTerritories);
+
+    std::string msg_src = "Choose a source territory to airlift armies from: ";
+    const int src_index = askUserForInt(msg_src, 0, p.MainMap->NumOfCountries());
+    auto* src = findById(ownedTerritories, src_index);
+
+    auto allTerritories = p.MainMap->ReturnListOfCountries();
+    std::cout << "These are all the territories in the game: \n";
+    this->displayVector(allTerritories);
+
+    std::string msg_target = "Choose a target territory to airlift to: ";
+    const int target_id =
+        this->askUserForInt(msg_target, 0, p.MainMap->NumOfCountries());
+    auto* target = this->findById(allTerritories, target_id);
+
+    int armies = 0;
+    if (src->Armies != 0) {
+        std::string msg_armies =
+            "How many armies do you want to airlift with out of " +
+            std::to_string(src->Armies) + "? ";
+        armies = askUserForInt(msg_armies, 1, src->Armies);
+    }
+    else {
+        std::cout << "\tNo armies on that territory!";
+    }
+
+    auto* order = new Airlift(p.PID, armies, src, target, &p, p.DeckOfCards);
+    std::cout << "\t" << p.PID << " airlifts " << armies << " armies to "
+        << target->Name << " - " << target->Armies << " owned by "
+        << target->OwnedBy << " from " << src->Name << " - " << src->Armies
+        << " armies " << '\n';
+    p.ListOfOrders->addToList(static_cast<std::shared_ptr<Order>>(order));
+}
+void BenevolentPlayerStrategy::createBlockade(Player &p) {
+    std::cout << "These are the territories you can blockade:\n";
+    auto ownedTerritories = p.toDefend();
+    displayVector(ownedTerritories);
+
+    std::string msg_src = "Choose a territory to blockade: ";
+    const int src_id =
+        this->askUserForInt(msg_src, 0, p.MainMap->NumOfCountries());
+    auto* src = this->findById(ownedTerritories, src_id);
+
+    auto* order = new Blockade(p.PID, src);
+    std::cout << "\t" << p.PID << " blockades " << src->Name << " - "
+        << src->Armies << '\n';
+    p.ListOfOrders->addToList(static_cast<std::shared_ptr<Order>>(order));
+}
+
+void BenevolentPlayerStrategy::createNegotiate(Player& p) {
+
+    std::cout << "These are the players in the game: ";
+    for (auto& player : p.ListOfPlayers) {
+        std::cout << player->PID << "\n";
+    }
+
+    Player* enemy = nullptr;
+
+    bool validInput{ false };
+    std::string input{ "x" };
+    while (!validInput) {
+        std::cout << "Pick a player name to negotiate with: ";
+        std::cin >> input;
+        std::cout << "\n";
+        if (std::cin.fail()) {
+            std::cin.clear();
+            std::string discard;
+            getline(std::cin, discard);
+            std::cout << "Enter a string value\n";
+        }
+        else {
+            for (auto& player : p.ListOfPlayers) {
+                if (player->PID == input) {
+                    validInput = true;
+                    enemy = player;
+                }
+            }
+            std::cout << "That was not a valid input try again.\n";
+        }
+    }
+}
+void BenevolentPlayerStrategy::createReinforcement(Player & p) {
+
+        std::cout << "\t" << p.PID << " reinforces his pool\n";
+        p.ListOfOrders->addToList(
+            static_cast<std::shared_ptr<Order>>(new Reinforcement(&p)));
+}
+
+void BenevolentPlayerStrategy::displayVector(std::vector<Territory*>& list)
+{
+    for (auto& t : list) {
+        std::cout << "\t\t[" << t->TerritoryID << "]: " << t->Name
+            << " - Armies: " << t->Armies << " - Owner: " << t->OwnedBy
+            << std::endl;
+    }
+}
 
 //iterate through the territories
 //compare each army

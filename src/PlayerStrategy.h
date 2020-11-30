@@ -83,8 +83,9 @@ class BenevolentPlayerStrategy : public PlayerStrategy {
   void createBlockade(Player &p);
   void createNegotiate(Player &p);
   void createReinforcement(Player &p);
-
-  Territory weakestCountry(Player &p);
+  void createReinforcement(Player &p);
+  void displayVector(std::vector<Territory*>& list);
+  Territory* weakestCountry(Player &p);
 };
 
 // neutral player doesn't issue any order
