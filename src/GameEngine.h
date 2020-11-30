@@ -6,7 +6,6 @@
 #include "Map.h"
 #include "GameObservers.hpp"
 #include "PlayerStrategy.h"
-#include "ConquestFileReaderAdapter.h"
 
 class HumanStrategy;
 
