@@ -278,7 +278,7 @@ void GameEngine::Init() {
     std::cout << "\t" << *p << "\n";
     // TODO implement correct strategies
     // TODO strategy delete is currently handled in player deconstructor
-    p->setStrategy(new NeutralPlayerStrategy());
+    p->setStrategy(new AggressivePlayerStrategy());
   }
 
   std::cout << "[GAME START] The deck of cards has "
