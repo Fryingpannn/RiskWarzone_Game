@@ -53,7 +53,7 @@ class HumanStrategy : public PlayerStrategy {
   void displayVector(std::vector<Territory *>& list);
 };
 
-class AggresivePlayerStrategy : public PlayerStrategy {
+class AggressivePlayerStrategy : public PlayerStrategy {
  public:
   std::vector<Territory *> toAttack(Player &p);
   void issueOrder(Player &p);
@@ -83,6 +83,9 @@ class BenevolentPlayerStrategy : public PlayerStrategy {
   void createBlockade(Player &p);
   void createNegotiate(Player &p);
   void createReinforcement(Player &p);
+  void displayVector(std::vector<Territory*>& list);
+  Territory* weakestCountry(Player &p);
+  Territory* strongestCountry(Player &p);
 };
 
 // neutral player doesn't issue any order

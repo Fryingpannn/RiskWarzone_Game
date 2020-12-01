@@ -155,8 +155,7 @@ void HumanStrategy::advanceTransfer(Player &p) {
   auto *src = this->findById(ownedTerritories, src_id);
 
   auto adjacentTerritories =
-      p.MainMap->ReturnListOfAdjacentCountriesByIDAndPlayer(src->TerritoryID,
-                                                            p.PID);
+      p.MainMap->ReturnListOfAdjacentCountriesByID(src->TerritoryID);
 
   std::cout << "You can transfer armies to it's neighbors: \n";
   this->displayVector(adjacentTerritories);
@@ -383,42 +382,519 @@ void HumanStrategy::displayVector(std::vector<Territory *> &list) {
 //-----------------------------------------------------------------
 // AGGRESSIVE PLAYER
 //-----------------------------------------------------------------
-std::vector<Territory *> AggresivePlayerStrategy::toAttack(Player &p) {
-  return std::vector<Territory *>{};
+
+std::vector<Territory*> AggressivePlayerStrategy::toAttack(Player& p) {
+	// Using a map to ensure unique values of territories
+	std::map<int, Territory*> toAttackMap;
+	auto ownedTerritories = p.toDefend();
+
+	std::vector<Territory*> toAttack = p.MainMap->ReturnListOfAdjacentCountriesByIDAndNotPlayer(ownedTerritories.at(0)->TerritoryID, p.PID);
+
+	return toAttack;
 }
-std::vector<Territory *> AggresivePlayerStrategy::toDefend(Player &p) {
-  return std::vector<Territory *>{};
+std::vector<Territory*> AggressivePlayerStrategy::toDefend(Player& p) {
+
+	int maxArmiesInATerritory = 0;
+	int StrongestTerritoryIndex = 0;
+	std::vector<Territory*> toDefend = p.Territories;
+
+
+	for (int j = 0; j < p.Territories.size(); j++) {
+
+		StrongestTerritoryIndex = j;
+
+		for (int i = j; i < p.Territories.size(); i++) {
+			if (toDefend.at(i)->Armies > maxArmiesInATerritory) {
+				StrongestTerritoryIndex = i;
+				maxArmiesInATerritory = toDefend.at(i)->Armies;
+			}
+
+		}
+		auto* temp = toDefend.at(j);
+		toDefend.at(j) = toDefend.at(StrongestTerritoryIndex);
+		toDefend.at(StrongestTerritoryIndex) = temp;
+		maxArmiesInATerritory = 0;
+	}
+
+	return toDefend;
 }
-void AggresivePlayerStrategy::issueOrder(Player &p) {}
-void AggresivePlayerStrategy::createDeploy(Player &p) {}
-void AggresivePlayerStrategy::advanceAttack(Player &p) {}
-void AggresivePlayerStrategy::advanceTransfer(Player &p) {}
-void AggresivePlayerStrategy::playCard(Player &p) {}
-void AggresivePlayerStrategy::createBomb(Player &p) {}
-void AggresivePlayerStrategy::createAirlift(Player &p) {}
-void AggresivePlayerStrategy::createBlockade(Player &p) {}
-void AggresivePlayerStrategy::createNegotiate(Player &p) {}
-void AggresivePlayerStrategy::createReinforcement(Player &p) {}
+void AggressivePlayerStrategy::issueOrder(Player& p) {
+
+	if (p.ReinforcementPool - p.ReinforcementsDeployed > 0) {
+		std::cout << "\t" << p.PID << " has "
+			<< p.ReinforcementPool - p.ReinforcementsDeployed
+			<< " armies left to deploy.\n";
+		this->createDeploy(p);
+
+		// Perform an advance order that either attacks or transfers
+	}
+	else if (!p.AdvanceOrderDone) {
+		std::cout << "\t" << p.PID << " has no more armies left to deploy: "
+			<< p.ReinforcementPool - p.ReinforcementsDeployed << " armies\n";
+		srand(time(NULL));
+		std::cout << "\tIssuing advance order...\n";
+		if (toAttack(p).size() == 0) {
+			this->advanceTransfer(p);
+
+		}
+		else {
+			this->advanceAttack(p);
+		}
+		p.AdvanceOrderDone = true;
+		// Play a card
+	}
+	else if (!p.CardPlayed) {
+		std::cout << "\t" << p.PID << " already did deploy/advance order\n"
+			<< "\tChoosing card\n";
+		this->playCard(p);
+		p.CardPlayed = true;
+	}
+}
+void AggressivePlayerStrategy::createDeploy(Player& p) {
+	auto ownedTerritories = p.toDefend();
+	auto* territoryToDeploy = ownedTerritories.at(0);
+
+	int armies = 0;
+	if (p.ReinforcementPool - p.ReinforcementsDeployed > 0) {
+		armies = p.ReinforcementPool;
+	}
+	// Perform the deploy order
+	auto* order = new Deploy(p.PID, armies, territoryToDeploy, &p);
+	std::cout << "\t" << p.PID << " deploy " << armies << " from ["
+		<< p.ReinforcementPool - p.ReinforcementsDeployed
+		<< "] reinforcement pool "
+		<< "to " << territoryToDeploy->Name << "["
+		<< territoryToDeploy->Armies << "]\n";
+	p.ListOfOrders->addToList(static_cast<std::shared_ptr<Order>>(order));
+	p.ReinforcementsDeployed += armies;
+}
+void AggressivePlayerStrategy::advanceAttack(Player& p) {
+
+	auto ownedTerritories = p.toDefend();
+	auto PossibleTargets = p.toAttack();
+
+	auto* target = PossibleTargets.at(rand() % (PossibleTargets.size()));
+	auto* src = ownedTerritories.at(0);
+
+	const int armies = src->Armies;
+
+	if (armies == 0) {
+
+		std::cout << "\tNo armies on that territory!";
+	}
+
+
+	auto* order =
+		new Advance(p.PID, armies, src, target, p.MainMap, &p, p.DeckOfCards);
+
+
+	std::cout << "\t" << p.PID << " attacks " << target->Name << " - "
+		<< target->Armies << " owned by " << target->OwnedBy << " with "
+		<< src->Name << " - " << src->Armies << " armies " << '\n';
+
+	p.ListOfOrders->addToList(static_cast<std::shared_ptr<Order>>(order));
+
+}
+void AggressivePlayerStrategy::advanceTransfer(Player& p) {
+
+	auto ownedTerritories = p.toDefend();
+	auto* src = ownedTerritories.at(0);
+	auto ListofAdj = p.MainMap->ReturnListOfAdjacentCountriesByIDAndByPlayer(src->TerritoryID, p.PID);
+
+	//pick a random adjacent territory
+	auto* target = ListofAdj.at(rand() % (ListofAdj.size()));
+
+	//if possible, find an adjacent territory that has enemy adjacent territory
+	for (auto& i : ListofAdj) {
+		if (p.MainMap->ReturnListOfAdjacentCountriesByIDAndNotPlayer(i->TerritoryID, p.PID).size() > 0) {
+
+			target = i;
+		};
+	}
+	int armies = 0;
+	if (src->Armies > 0) {
+		armies = src->Armies;
+	}
+
+	auto* order = new Advance(p.PID, armies, src, target, p.MainMap, &p,
+		p.DeckOfCards);
+
+	std::cout << "\t" << p.PID << " transfers " << armies << " armies to "
+		<< target->Name << " - " << target->Armies << " from " << src->Name
+		<< " - " << src->Armies << " total armies " << '\n';
+	p.ListOfOrders->addToList(static_cast<std::shared_ptr<Order>>(order));
+
+}
+void AggressivePlayerStrategy::playCard(Player& p) {
+
+	if (p.HandOfCards->size() == 0) {
+		std::cout << "\tYou have no cards in your hand.\n";
+	}
+	else {
+		// Display the cards in a player's hand.
+		std::cout << "These are the card in your hand:\n";
+		std::cout << *p.HandOfCards << std::endl;
+
+		auto cardToPlay =
+			p.HandOfCards->returnByPos(rand() % (p.HandOfCards->size()));
+		// Method inside cards class calls the correct player creation order
+		// function
+		std::cout << "Playing card: " << cardToPlay << "\n";
+		cardToPlay.Play(p, *p.HandOfCards, *p.DeckOfCards);
+	}
+}
+void AggressivePlayerStrategy::createBomb(Player& p) {
+
+	auto ListofAdj = p.MainMap->ReturnListOfAdjacentCountriesByIDAndNotPlayer(p.Territories.at(rand() % (p.Territories.size()))->TerritoryID, p.PID);
+	if (ListofAdj.size() > 0) {
+		auto* target = ListofAdj.at(rand() % (ListofAdj.size()));
+
+
+		auto* order = new Bomb(p.PID, target, &p);
+
+		std::cout << "\t" << p.PID << " bombs " << target->Name << " - "
+			<< target->Armies << " owned by " << target->OwnedBy << '\n';
+		p.ListOfOrders->addToList(static_cast<std::shared_ptr<Order>>(order));
+	}
+	else {
+		std::cout << "No adjacent territory to bomb" << std::endl;
+	}
+};
+
+
+void AggressivePlayerStrategy::createAirlift(Player& p) {
+
+	auto ownedTerritories = p.toDefend();
+	auto* src = ownedTerritories.at(0);
+
+	int player_pos = 0;
+	for (int i = 0; i < p.ListOfPlayers.size(); i++) {
+		if (p.ListOfPlayers.at(i)->PID == p.PID) {
+			player_pos = i;
+		}
+
+	}
+
+
+	auto enemy_pos = rand() % p.ListOfPlayers.size();
+	//making sure the player himself is not chosen
+	if (enemy_pos == player_pos) {
+		if (player_pos == 0) {
+			enemy_pos += 1;
+		}
+		else {
+			enemy_pos -= 1;
+		}
+	}
+
+	auto listOfTargets = p.ListOfPlayers.at(enemy_pos)->Territories;
+	const auto pos = rand() % listOfTargets.size();
+	auto* target = listOfTargets.at(pos);
+
+	int armies = 0;
+	if (src->Armies > 0) {
+		armies = src->Armies;
+	}
+
+	auto* order =
+		new Airlift(p.PID, armies, src, target, &p, p.DeckOfCards);
+	std::cout << "\t" << p.PID << " airlifts " << armies << " armies to "
+		<< target->Name << " - " << target->Armies << " owned by "
+		<< target->OwnedBy << " from " << src->Name << " - " << src->Armies
+		<< " armies " << '\n';
+	p.ListOfOrders->addToList(static_cast<std::shared_ptr<Order>>(order));
+
+}
+void AggressivePlayerStrategy::createBlockade(Player& p) {
+
+	auto* src = p.Territories.at(rand() % (p.Territories.size()));
+
+	auto* order = new Blockade(p.PID, src);
+	std::cout << "\t" << p.PID << " blockades " << src->Name << " - "
+		<< src->Armies << '\n';
+	p.ListOfOrders->addToList(static_cast<std::shared_ptr<Order>>(order));
+}
+void AggressivePlayerStrategy::createNegotiate(Player& p) {
+
+	int player_pos = 0;
+	for (int i = 0; i < p.ListOfPlayers.size(); i++) {
+		if (p.ListOfPlayers.at(i)->PID == p.PID) {
+			player_pos = i;
+		}
+
+	}
+
+
+	auto enemy_pos = rand() % p.ListOfPlayers.size();
+	//making sure the player himself is not chosen
+	if (enemy_pos == player_pos) {
+		if (player_pos == 0) {
+			enemy_pos += 1;
+		}
+		else {
+			enemy_pos -= 1;
+		}
+	}
+	Player* enemy = p.ListOfPlayers.at(enemy_pos);
+	auto* order = new Negotiate(&p, enemy);
+	std::cout << "\t" << p.PID << " negotiates with " << enemy->PID << " - "
+		<< '\n';
+	p.ListOfOrders->addToList(static_cast<std::shared_ptr<Order>>(order));
+}
+void AggressivePlayerStrategy::createReinforcement(Player& p) {
+	std::cout << "\t" << p.PID << " reinforces his pool\n";
+	p.ListOfOrders->addToList(
+		static_cast<std::shared_ptr<Order>>(new Reinforcement(&p)));
+}
 
 //-----------------------------------------------------------------
 // BENEVOLENT PLAYER
 //-----------------------------------------------------------------
 std::vector<Territory *> BenevolentPlayerStrategy::toAttack(Player &p) {
-  return std::vector<Territory *>{};
+    // Using a map to ensure unique values of territories
+    std::map<int, Territory*> toAttackMap;
+    auto ownedTerritories = p.toDefend();
+
+    std::vector<Territory*> toAttack = p.MainMap->ReturnListOfAdjacentCountriesByIDAndNotPlayer(ownedTerritories.at(0)->TerritoryID, p.PID);
+
+    return toAttack;
 }
 std::vector<Territory *> BenevolentPlayerStrategy::toDefend(Player &p) {
-  return std::vector<Territory *>{};
+    std::cout << "DEBUG: DISPLAY ALL PLAYER TERRITORY\n";
+    displayVector(p.Territories);
+
+    if (weakestCountry(p) != nullptr) {
+        std::cout << "DEBUG: THERE IS WEAKEST COUNTRY AND ID = "<<weakestCountry(p)->TerritoryID<<"\n";
+        std::cout << "DEBUG: AND ITS ADJACENT TERRITORY\n";
+        std::vector<Territory*> toDefend = p.MainMap->ReturnListOfAdjacentCountriesByID(weakestCountry(p)->TerritoryID);
+
+        displayVector(toDefend);
+    }
+    std::vector<Territory*> toDefend = p.MainMap->ReturnListOfAdjacentCountriesByIDAndByPlayer(weakestCountry(p)->TerritoryID, p.PID);
+
+    std::cout << "DEBUG: DISPLAY DEFEND LIST\n";
+    displayVector(toDefend);
+    return toDefend;
 }
-void BenevolentPlayerStrategy::issueOrder(Player &p) {}
-void BenevolentPlayerStrategy::createDeploy(Player &p) {}
-void BenevolentPlayerStrategy::advanceAttack(Player &p) {}
-void BenevolentPlayerStrategy::advanceTransfer(Player &p) {}
-void BenevolentPlayerStrategy::playCard(Player &p) {}
-void BenevolentPlayerStrategy::createBomb(Player &p) {}
-void BenevolentPlayerStrategy::createAirlift(Player &p) {}
-void BenevolentPlayerStrategy::createBlockade(Player &p) {}
-void BenevolentPlayerStrategy::createNegotiate(Player &p) {}
-void BenevolentPlayerStrategy::createReinforcement(Player &p) {}
+void BenevolentPlayerStrategy::issueOrder(Player &p) {
+    if (p.ReinforcementPool - p.ReinforcementsDeployed > 0) {
+        std::cout << "\t" << p.PID << " has "
+            << p.ReinforcementPool - p.ReinforcementsDeployed
+            << " armies left to deploy.\n";
+        this->createDeploy(p);
+
+        // Perform an advance order that either attacks or transfers
+    }
+    else if (!p.AdvanceOrderDone) {
+        std::cout << "\t" << p.PID << " has no more armies left to deploy: "
+            << p.ReinforcementPool - p.ReinforcementsDeployed << " armies\n";
+        srand(time(NULL));
+        std::cout << "\tIssuing advance order...\n";
+        this->advanceTransfer(p);
+
+        
+        p.AdvanceOrderDone = true;
+        // Play a card
+    }
+    else if (!p.CardPlayed) {
+        std::cout << "\t" << p.PID << " already did deploy/advance order\n"
+            << "\tChoosing card\n";
+        this->playCard(p);
+        p.CardPlayed = true;
+    }
+}
+void BenevolentPlayerStrategy::createDeploy(Player &p) {
+    auto ownedTerritories = p.toDefend();
+    auto* territoryToDeploy = weakestCountry(p);
+
+    int armies = 0;
+    if (p.ReinforcementPool - p.ReinforcementsDeployed > 0) {
+        armies = p.ReinforcementPool;
+    }
+    // Perform the deploy order
+    auto* order = new Deploy(p.PID, armies, territoryToDeploy, &p);
+    std::cout << "\t" << p.PID << " deploy " << armies << " from ["
+        << p.ReinforcementPool - p.ReinforcementsDeployed
+        << "] reinforcement pool "
+        << "to " << territoryToDeploy->Name << "["
+        << territoryToDeploy->Armies << "]\n";
+    p.ListOfOrders->addToList(static_cast<std::shared_ptr<Order>>(order));
+    p.ReinforcementsDeployed += armies;
+}
+void BenevolentPlayerStrategy::advanceAttack(Player &p) {
+    std::cout << "Benevolent Player decides to stay in defensive mode and not attack" << std::endl;
+}
+void BenevolentPlayerStrategy::advanceTransfer(Player &p) {
+    auto ownedTerritories = p.toDefend();
+    std::cout << "DEBUG: PASSED toDEFEND()\n";
+    //if the adjacent countries doesn't have a country belong to player, nothing will be done
+    if (ownedTerritories.size() == 0) {
+        std::cout << "There is no adjacent countries for weakest country\n";
+        std::cout << "The transfer was cancelled\n";
+        return;
+    }
+    Territory* src = p.toDefend().at(0);
+    std::cout << "DEBUG: PASSED OwnedTerritory.at(0)\n";
+    //finding the strongest country among the adjacent country
+    
+    for (Territory* strongest : ownedTerritories)
+    {
+        if (src->Armies > strongest->Armies)
+            src = strongest;
+    }
+
+    auto ListofAdj = p.MainMap->ReturnListOfAdjacentCountriesByIDAndByPlayer(src->TerritoryID, p.PID);
+
+    //pick the weakest territory
+    auto* target = this->weakestCountry(p);
+
+    
+    int armies = 0;
+    if (src->Armies > 1) {
+        armies = src->Armies/2;
+    }
+
+    auto* order = new Advance(p.PID, armies, src, target, p.MainMap, &p,
+        p.DeckOfCards);
+
+    std::cout << "\t" << p.PID << " transfers " << armies << " armies to "
+        << target->Name << " - " << target->Armies << " from " << src->Name
+        << " - " << src->Armies << " total armies " << '\n';
+    p.ListOfOrders->addToList(static_cast<std::shared_ptr<Order>>(order));
+}
+void BenevolentPlayerStrategy::playCard(Player &p) {
+    if (p.HandOfCards->size() == 0) {
+        std::cout << "\tYou have no cards in your hand.\n";
+    }
+    else {
+        // Display the cards in a player's hand.
+        std::cout << "These are the card in your hand:\n";
+        std::cout << *p.HandOfCards << std::endl;
+
+        auto cardToPlay =
+            p.HandOfCards->returnByPos(rand() % (p.HandOfCards->size()));
+        // Method inside cards class calls the correct player creation order
+        // function
+        std::cout << "Playing card: " << cardToPlay << "\n";
+        cardToPlay.Play(p, *p.HandOfCards, *p.DeckOfCards);
+    }
+}
+void BenevolentPlayerStrategy::createBomb(Player &p) {
+    auto ListofAdj = p.MainMap->ReturnListOfAdjacentCountriesByIDAndNotPlayer(p.Territories.at(rand() % (p.Territories.size()))->TerritoryID, p.PID);
+    if (ListofAdj.size() > 0) {
+        auto* target = ListofAdj.at(rand() % (ListofAdj.size()));
+
+
+        auto* order = new Bomb(p.PID, target, &p);
+
+        std::cout << "\t" << p.PID << " bombs " << target->Name << " - "
+            << target->Armies << " owned by " << target->OwnedBy << '\n';
+        p.ListOfOrders->addToList(static_cast<std::shared_ptr<Order>>(order));
+    }
+    else {
+        std::cout << "No adjacent territory to bomb" << std::endl;
+    }
+}
+void BenevolentPlayerStrategy::createAirlift(Player &p) {
+    
+    auto* src = strongestCountry(p);
+
+    
+
+    
+    auto* target = weakestCountry(p);
+
+    int armies = 0;
+    if (src->Armies > 1) {
+        armies = src->Armies/2;
+    }
+
+    auto* order =
+        new Airlift(p.PID, armies, src, target, &p, p.DeckOfCards);
+    std::cout << "\t" << p.PID << " airlifts " << armies << " armies to "
+        << target->Name << " - " << target->Armies << " owned by "
+        << target->OwnedBy << " from " << src->Name << " - " << src->Armies
+        << " armies " << '\n';
+    p.ListOfOrders->addToList(static_cast<std::shared_ptr<Order>>(order));
+}
+void BenevolentPlayerStrategy::createBlockade(Player &p) {
+    auto* src = p.Territories.at(rand() % (p.Territories.size()));
+
+    auto* order = new Blockade(p.PID, src);
+    std::cout << "\t" << p.PID << " blockades " << src->Name << " - "
+        << src->Armies << '\n';
+    p.ListOfOrders->addToList(static_cast<std::shared_ptr<Order>>(order));
+}
+
+void BenevolentPlayerStrategy::createNegotiate(Player& p) {
+
+    int player_pos = 0;
+    for (int i = 0; i < p.ListOfPlayers.size(); i++) {
+        if (p.ListOfPlayers.at(i)->PID == p.PID) {
+            player_pos = i;
+        }
+
+    }
+
+
+    auto enemy_pos = rand() % p.ListOfPlayers.size();
+    //making sure the player himself is not chosen
+    if (enemy_pos == player_pos) {
+        if (player_pos == 0) {
+            enemy_pos += 1;
+        }
+        else {
+            enemy_pos -= 1;
+        }
+    }
+    Player* enemy = p.ListOfPlayers.at(enemy_pos);
+    auto* order = new Negotiate(&p, enemy);
+    std::cout << "\t" << p.PID << " negotiates with " << enemy->PID << " - "
+        << '\n';
+    p.ListOfOrders->addToList(static_cast<std::shared_ptr<Order>>(order));
+}
+void BenevolentPlayerStrategy::createReinforcement(Player & p) {
+
+    std::cout << "\t" << p.PID << " reinforces his pool\n";
+    p.ListOfOrders->addToList(
+        static_cast<std::shared_ptr<Order>>(new Reinforcement(&p)));
+}
+
+void BenevolentPlayerStrategy::displayVector(std::vector<Territory*>& list)
+{
+    for (auto& t : list) {
+        std::cout << "\t\t[" << t->TerritoryID << "]: " << t->Name
+            << " - Armies: " << t->Armies << " - Owner: " << t->OwnedBy
+            << std::endl;
+    }
+}
+
+//iterate through the territories
+//compare each army
+//assign the first territory to the pointer
+Territory* BenevolentPlayerStrategy::weakestCountry(Player& p)
+{
+    Territory* returnTerritory = p.Territories.at(0);
+    for (auto* territory : p.Territories)
+    {
+        if (territory->Armies < returnTerritory->Armies)
+            returnTerritory = territory;
+        
+    }
+    return returnTerritory;
+}
+
+Territory* BenevolentPlayerStrategy::strongestCountry(Player& p)
+{
+    Territory* returnTerritory = p.Territories.at(0);
+    for (auto* territory : p.Territories)
+    {
+        if (territory->Armies > returnTerritory->Armies)
+            returnTerritory = territory;
+        
+    }
+    return returnTerritory;
+}
 
 //-----------------------------------------------------------------
 // NEUTRAL PLAYER
@@ -438,3 +914,4 @@ void NeutralPlayerStrategy::createAirlift(Player &p) {}
 void NeutralPlayerStrategy::createBlockade(Player &p) {}
 void NeutralPlayerStrategy::createNegotiate(Player &p) {}
 void NeutralPlayerStrategy::createReinforcement(Player &p) {}
+

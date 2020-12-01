@@ -278,7 +278,7 @@ void GameEngine::Init() {
     std::cout << "\t" << *p << "\n";
     // TODO implement correct strategies
     // TODO strategy delete is currently handled in player deconstructor
-    p->setStrategy(new NeutralPlayerStrategy());
+    p->setStrategy(new AggressivePlayerStrategy());
   }
 
   std::cout << "[GAME START] The deck of cards has "
@@ -467,7 +467,10 @@ void GameEngine::mainGameLoop() {
         }
       }
     }
-
+    //update all players' list of players
+    for (unsigned int i = 0; i < ListOfValidPlayers.size(); i++) {
+        ListOfValidPlayers.at(i)->ListOfPlayers = ListOfValidPlayers;
+    }
     // CHECK: Do we have a winner?
     if (ListOfValidPlayers.size() == 1) {
       // TODO check this is in the right place
