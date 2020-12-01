@@ -331,17 +331,6 @@ Map::ReturnListOfAdjacentCountriesByIDAndPlayer(int TID,
   }
   return ReturnList;
 }
-//this one does not return the territory itself
-std::vector<struct ::Territory*> Map::ReturnListOfAdjacentCountriesByIDAndByPlayer(int TID,
-    std::string PlayerName) {
-    std::vector<Territory*> ReturnList;
-    for (Territory* Temp : *ListOfCountries[TID]) {
-        if (Temp->OwnedBy == PlayerName && Temp->TerritoryID != TID) {
-            ReturnList.push_back(Temp);
-        }
-    }
-    return ReturnList;
-}
 
 //this one does not return the territory itself
 std::vector<struct ::Territory*> Map::ReturnListOfAdjacentCountriesByIDAndByPlayer(int TID,

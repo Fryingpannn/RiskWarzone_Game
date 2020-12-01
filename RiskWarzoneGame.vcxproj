@@ -148,8 +148,6 @@
   <ItemGroup>
     <ClCompile Include="src\Cards.cpp" />
     <ClCompile Include="src\CardsDriver.cpp" />
-    <ClCompile Include="src\ConquestFileReader.cpp" />
-    <ClCompile Include="src\ConquestFileReaderAdapter.cpp" />
     <ClCompile Include="src\ConquestFileReaderDriver.cpp" />
     <ClCompile Include="src\GameEngine.cpp" />
     <ClCompile Include="src\GameObservers.cpp" />
@@ -167,8 +165,6 @@
   <ItemGroup>
     <ClInclude Include="src\Cards.h" />
     <ClInclude Include="src\CardsDriver.h" />
-    <ClInclude Include="src\ConquestFileReader.h" />
-    <ClInclude Include="src\ConquestFileReaderAdapter.h" />
     <ClInclude Include="src\ConquestFileReaderDriver.h" />
     <ClInclude Include="src\GameEngine.h" />
     <ClInclude Include="src\GameObservers.hpp" />
