@@ -903,24 +903,33 @@ std::string NeutralPlayerStrategy::iAm() { return "Neutral Player"; }
 
 /*no orders issued for neutral player*/
 void NeutralPlayerStrategy::issueOrder(Player &p) {
-  std::cout << "[Neutral Player] No orders issued." << std::endl;
+  p.AdvanceOrderDone = true;
+  p.CardPlayed = true;
+  std::cout << "\n\t" << p.PID << " is a neutral player. No orders to be issued.\n" << std::endl;
 }
 
+/*no territories need to be returned for neutral player*/
 std::vector<Territory *> NeutralPlayerStrategy::toAttack(Player &p) {
-  return p.Territories;
+    return {};
 }
 
+/*no territories need to be returned for neutral player*/
 std::vector<Territory *> NeutralPlayerStrategy::toDefend(Player &p) {
-  return p.Territories;
+    return {};
 }
 
+/*no bombs will be issued for neutral player*/
 void NeutralPlayerStrategy::createBomb(Player &p) {}
 
+/*no airlifts will be issued for neutral player*/
 void NeutralPlayerStrategy::createAirlift(Player &p) {}
 
+/*no blockades will be issued for neutral player*/
 void NeutralPlayerStrategy::createBlockade(Player &p) {}
 
+/*no negotiation will be issued for neutral player*/
 void NeutralPlayerStrategy::createNegotiate(Player &p) {}
 
+/*no reinforcements will be issued for neutral player*/
 void NeutralPlayerStrategy::createReinforcement(Player &p) {}
 
