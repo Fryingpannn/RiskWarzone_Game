@@ -274,10 +274,9 @@ void GameEngine::Init() {
 
   std::cout << "[GAME START] The following players were created: \n";
 
+  std::cout << "Setting default strategy for all players\n";
   for (auto &p : ListOfValidPlayers) {
     std::cout << "\t" << *p << "\n";
-    // TODO implement correct strategies
-    // TODO strategy delete is currently handled in player deconstructor
     p->setStrategy(new AggressivePlayerStrategy());
   }
 
@@ -439,6 +438,7 @@ void GameEngine::mainGameLoop() {
   // DEMO VARIABLE will end game after 10 turns
   bool simulateGameEnd{true};
   bool gameOver{false};
+  bool demoStrategies{true};
 
   unsigned long long int round_counter = 0;
   // Loop until a player owns all territories (aka wins the game)
@@ -487,6 +487,42 @@ void GameEngine::mainGameLoop() {
       this->Notify();
 
       break;
+    }
+
+    // Change strategies if demo strategy is true
+    if (demoStrategies) {
+      for (auto& p : ListOfPlayers) {
+        std::cout << "[UPDATE]" << p->PID <<"is: " << p->Strategy->iAm() <<"\n";
+
+        std::string input{"x"};
+        while (true) {
+          std::cout << "[UPDATE] - Choose human [h], aggressive [a], benevolent [b],"
+											 "neutral [n], or skip [x] ---> ";
+          std::cin >> input;
+          std::cout << "\n";
+          if (std::cin.fail()) {
+            std::cin.clear();
+            std::string discard;
+            getline(std::cin, discard);
+            std::cout << "Enter a string value\n";
+          } else {
+            // Select 
+            if (input == "h" || input == "H") {
+              p->setStrategy(new HumanStrategy());
+            } else if (input == "a" || input == "A") {
+              p->setStrategy(new AggressivePlayerStrategy());
+            } else if (input == "b" || input == "B") {
+              p->setStrategy(new BenevolentPlayerStrategy());
+            } else if (input == "n" || input == "N") {
+              p->setStrategy(new NeutralPlayerStrategy());
+            } else {
+              // does not change strategy
+            }
+            break;
+          }
+        }
+      }
+      
     }
 
     // ----------------------------------
