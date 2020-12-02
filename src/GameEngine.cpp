@@ -438,7 +438,7 @@ void GameEngine::mainGameLoop() {
   // DEMO VARIABLE will end game after 10 turns
   bool simulateGameEnd{true};
   bool gameOver{false};
-  bool demoStrategies{false};
+  bool demoStrategies{true};
 
   unsigned long long int round_counter = 0;
   // Loop until a player owns all territories (aka wins the game)
@@ -496,8 +496,8 @@ void GameEngine::mainGameLoop() {
 
         std::string input{"x"};
         while (true) {
-          std::cout << "[UPDATE] - Choose human [h], aggressive [a], benevolent [b] or "
-                       "neutral [n] ---> ";
+          std::cout << "[UPDATE] - Choose human [h], aggressive [a], benevolent [b],"
+											 "neutral [n], or skip [x] ---> ";
           std::cin >> input;
           std::cout << "\n";
           if (std::cin.fail()) {
