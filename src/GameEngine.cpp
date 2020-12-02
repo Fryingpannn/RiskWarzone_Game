@@ -604,16 +604,7 @@ void GameEngine::issueOrdersPhase() {
         ordersLeft--;
       } else {
         std::cout << "\n\t" << player->PID << " issuing order...\n";
-        //if neutral player, issue no order
-        auto tempo = dynamic_cast<NeutralPlayerStrategy*>(player->Strategy);
-        if (tempo == nullptr) {
-            player->issueOrder();
-        }
-        else {
-            player->AdvanceOrderDone = true;
-            player->CardPlayed = true;
-            std::cout << "\n\t" << player->PID << " is a neutral player. No orders issued.\n" << std::endl;
-        }
+        player->issueOrder();
 
         if (!player->AdvanceOrderDone ||
             (player->AdvanceOrderDone && !player->CardPlayed) ||
