@@ -252,5 +252,6 @@ std::vector<Territory *> Player::toAttack() {
 void Player::issueOrder() { this->Strategy->issueOrder(*this); }
 
 void Player::setStrategy(PlayerStrategy *strategy) {
+	delete this->Strategy;
   this->Strategy = strategy;
 }

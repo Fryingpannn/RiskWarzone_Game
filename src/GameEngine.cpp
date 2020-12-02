@@ -61,6 +61,10 @@ void GameEngine::Init() {
   std::string InputObserver;
   bool InputObserverNotSucceed = true;
 
+  // Variables for strategy selection
+  char stratChoice;
+  char stratMenuChoice;
+
   // the main menu for player to setup how many players and the map they want
   // to use :O
   std::cout << "Hey there you little filty general! Welcome to Warzone where "
@@ -109,6 +113,63 @@ void GameEngine::Init() {
 
   std::cout << "Successfully added" << NumberOfPlayers
             << " Number of Players\n ";
+
+	std::cout << "Setting default strategy for all players (Default: Aggressive)\n";
+	for (auto &p : ListOfValidPlayers) {
+		p->setStrategy(new AggressivePlayerStrategy());
+	}
+
+	std::cout << "\nWould you like to change player strategies? (y/n): ";
+	std::cin >> stratMenuChoice;
+
+	if (stratMenuChoice == 'y' || stratMenuChoice == 'Y') {
+		for (auto &p : ListOfValidPlayers) {
+			std::cout << "-------------------------------" << std::endl;
+			std::cout << "Player: " << p->PID << " - Current Strategy: " << p->Strategy->iAm() << std::endl;
+			std::cout << "Change (y/n): ";
+			stratMenuChoice = NULL;
+			std::cin >> stratMenuChoice;
+			if (stratMenuChoice == 'y' || stratMenuChoice == 'Y') {
+				bool validStrategyChoice = false;
+				while (!validStrategyChoice) {
+					stratMenuChoice = NULL;
+					std::cout << "Select Strategy: " << std::endl;
+					std::cout << "1. Human Player" << std::endl;
+					std::cout << "2. Aggressive Player" << std::endl;
+					std::cout << "3. Benevolent Player" << std::endl;
+					std::cout << "4. Neutral Player" << std::endl;
+					std::cout << "Enter choice (1-4): ";
+					std::cin >> stratMenuChoice;
+					switch (stratMenuChoice) {
+						case '1':
+							p->setStrategy(new HumanStrategy());
+							validStrategyChoice = true;
+							break;
+						case '2':
+							p->setStrategy(new AggressivePlayerStrategy());
+							validStrategyChoice = true;
+							break;
+						case '3':
+							p->setStrategy(new BenevolentPlayerStrategy());
+							validStrategyChoice = true;
+							break;
+						case '4':
+							p->setStrategy(new NeutralPlayerStrategy());
+							validStrategyChoice = true;
+							break;
+						default:
+							std::cout << "Invalid selection.  Please try again." << std::endl;
+							break;
+					}
+				}
+			}
+		}
+	}
+
+	for (auto &p : ListOfValidPlayers) {
+		std::cout << "Player: " << p->PID << " - Current Strategy: " << p->Strategy->iAm() << std::endl;
+		std::cout << "\t" << *p << "\n";
+	}
 
   std::string MapFolderBasePath = "./maps/";
   std::string CmapFolderBasePath = "./cmaps/";
@@ -274,11 +335,7 @@ void GameEngine::Init() {
 
   std::cout << "[GAME START] The following players were created: \n";
 
-  std::cout << "Setting default strategy for all players\n";
-  for (auto &p : ListOfValidPlayers) {
-    std::cout << "\t" << *p << "\n";
-    p->setStrategy(new AggressivePlayerStrategy());
-  }
+
 
   std::cout << "[GAME START] The deck of cards has "
             << this->DeckOfCards->GetSize() << " cards\n";
@@ -435,10 +492,10 @@ void GameEngine::startupPhase() {
  * phases. Decides who the winner is.
  */
 void GameEngine::mainGameLoop() {
-  // DEMO VARIABLE will end game after 10 turns
-  bool simulateGameEnd{true};
+  // DEMO VARIABLE will end game after 30 turns
+  bool simulateGameEnd{false};
   bool gameOver{false};
-  bool demoStrategies{true};
+  bool demoStrategies{false};
 
   unsigned long long int round_counter = 0;
   // Loop until a player owns all territories (aka wins the game)
