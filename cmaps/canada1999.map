@@ -1,0 +1,99 @@
+[Map]
+author=Kim Anthony Gentes
+image=Canada1999.bmp
+wrap=yes
+scroll=none
+warn=yes
+
+[Continents]
+British Columbia=3
+Alberta=4
+Saskatchewan=3
+Manitoba=3
+Ontario=5
+Quebec=6
+Newfoundland=3
+Prince Edward Island=1
+Nova Scotia=2
+New Brunswick=2
+Yukon=2
+Northwest Territories=4
+Nunavut=6
+
+[Territories]
+Vancouver Island,52,444,British Columbia,Mainland BC
+Queen Charlotte Islands,30,366,British Columbia,Stikine
+Stikine,77,327,British Columbia,Kluane,White Horse,Mainland BC,Queen Charlotte Islands
+Mainland BC,106,359,British Columbia,Fort Simpson,White Horse,Stikine,Vancouver Island,Okanagan,Tar Sands,Rocky Mountains
+Okanagan,123,455,British Columbia,Mainland BC,Rocky Mountains,Lethbridge,Calgary
+Iqualuit,503,266,Nunavut,South Baffin Isle,Salluit
+South Baffin Isle,475,222,Nunavut,North Baffin Isle,Iqualuit,Prince Charles Isle
+North Baffin Isle,438,197,Nunavut,Devon Island,Arctic Bay,South Baffin Isle,Prince Charles Isle,Igloolik
+Prince Charles Isle,444,235,Nunavut,North Baffin Isle,South Baffin Isle,Igloolik
+Igloolik,402,248,Nunavut,Prince Charles Isle,North Baffin Isle,Coral Harbor,Kivalliq,Kitikmeot,Somerset Island,Prince of Wales Isle
+Coral Harbor,404,293,Nunavut,Igloolik
+Arctic Bay,372,182,Nunavut,Devon Island,Somerset Island,North Baffin Isle
+Devon Island,374,141,Nunavut,Grise Flord,Somerset Island,Arctic Bay,North Baffin Isle
+Somerset Island,346,165,Nunavut,Devon Island,Prince of Wales Isle,Arctic Bay,Igloolik
+Prince of Wales Isle,324,183,Nunavut,Somerset Island,East Victoria Island,Igloolik
+Grise Flord,376,110,Nunavut,South Ellesmere,Devon Island
+South Ellesmere,384,88,Nunavut,Ellesmere Isle,Grise Flord
+Ellesmere Isle,380,27,Nunavut,Axel Heilberg,South Ellesmere
+Axel Heilberg,348,69,Nunavut,Ellesmere Isle
+East Victoria Island,284,209,Nunavut,Prince of Wales Isle,Kitikmeot,West Victoria Island
+Kitikmeot,278,262,Nunavut,East Victoria Island,Igloolik,Kivalliq,Yellowknife,West Victoria Island,Fort Smith
+Kivalliq,320,311,Nunavut,Igloolik,Kitikmeot,Fort Smith,Flin Flon
+Fort Smith,272,341,Northwest Territories,Kivalliq,Yellowknife,Tar Sands,Western Plains,La Ronge,Fort Simpson,Kitikmeot
+Yellowknife,227,294,Northwest Territories,Tulita,Fort Smith,Kitikmeot,Inuvik,Banks Island
+Tulita,187,294,Northwest Territories,Yellowknife
+Fort Simpson,144,278,Northwest Territories,Inuvik,White Horse,Mainland BC,Tar Sands,Fort Smith
+Inuvik,139,237,Northwest Territories,Yellowknife,Dawson,Kluane,White Horse,Fort Simpson
+West Victoria Island,254,182,Northwest Territories,East Victoria Island,Banks Island,Melville Island,Kitikmeot
+Banks Island,229,150,Northwest Territories,West Victoria Island,Yellowknife,Melville Island
+Melville Island,274,126,Northwest Territories,West Victoria Island,Prince Patrick Island,Banks Island
+Prince Patrick Island,264,100,Northwest Territories,Melville Island
+White Horse,106,279,Yukon,Kluane,Inuvik,Fort Simpson,Stikine,Mainland BC
+Kluane,84,235,Yukon,Dawson,Inuvik,White Horse,Stikine
+Dawson,108,180,Yukon,Inuvik,Kluane
+Isle of Newfoundland,699,417,Newfoundland,Goose Bay,Mutton Bay,Sydney
+Goose Bay,656,377,Newfoundland,Labrador,Mutton Bay,Isle of Newfoundland
+Labrador,598,385,Newfoundland,Kuujjuaq,Saguenay,Goose Bay,Mutton Bay
+Prince Edward Is.,662,485,Prince Edward Island,Sydney,Halifax,Fredericton
+Halifax,673,503,Nova Scotia,Sydney,Prince Edward Is.,Fredericton
+Sydney,684,473,Nova Scotia,Isle of Newfoundland,Prince Edward Is.,Halifax
+Fredericton,633,505,New Brunswick,Halifax,Prince Edward Is.,Appalachian Range
+Appalachian Range,624,492,New Brunswick,Fredericton,Bas St.Laurent-Gaspesie
+Mutton Bay,638,420,Quebec,Saguenay,Labrador,Goose Bay,Isle of Newfoundland
+Bas St.Laurent-Gaspesie,615,469,Quebec,Appalachian Range,Montreal
+Montreal,582,532,Quebec,Toronto,Quebec City,Bas St.Laurent-Gaspesie
+Chicoutimi,576,501,Quebec,Quebec City,Sept Iles
+Quebec City,553,517,Quebec,Toronto,Trois Rivieres,Matagami,Montreal,Chicoutimi,Sept Iles,Saguenay
+Sept Iles,572,471,Quebec,Quebec City,Saguenay,Chicoutimi
+Matagami,515,498,Quebec,Timiskaming,Nipissing,Quebec City,Waskaganish,Saguenay
+Trois Rivieres,520,536,Quebec,Parry Sound,Toronto,Quebec City
+Waskaganish,519,453,Quebec,Matagami,Saguenay,Inukjuak
+Saguenay,552,427,Quebec,Matagami,Quebec City,Waskaganish,Sept Iles,Kuujjuaq,Inukjuak,Mutton Bay,Labrador
+Kuujjuaq,560,371,Quebec,Saguenay,Inukjuak,Labrador,Salluit
+Inukjuak,503,364,Quebec,Waskaganish,Saguenay,Salluit,Kuujjuaq
+Salluit,488,330,Quebec,Inukjuak,Kuujjuaq,Iqualuit
+Toronto,517,571,Ontario,Parry Sound,Trois Rivieres,Montreal,Quebec City
+Parry Sound,477,533,Ontario,Toronto,Nipissing,Algoma,Trois Rivieres
+Algoma,454,542,Ontario,Thunder Bay,Cochrane,Parry Sound,Timiskaming,Nipissing,Kenora
+Nipissing,481,512,Ontario,Timiskaming,Parry Sound,Algoma,Matagami
+Timiskaming,475,490,Ontario,Nipissing,Algoma,Matagami
+Cochrane,435,448,Ontario,Kenora,Algoma
+Kenora,392,462,Ontario,Interlake,Eastman,Rainy River,Cochrane,Algoma,Thunder Bay
+Thunder Bay,372,519,Ontario,Winnipeg,Rainy River,Algoma,Kenora
+Rainy River,350,486,Ontario,Winnipeg,Interlake,Kenora,Thunder Bay
+Interlake,339,448,Manitoba,Winnipeg,Eastman,Kenora,Rainy River
+Eastman,367,432,Manitoba,Interlake,Kenora,Flin Flon
+Flin Flon,304,392,Manitoba,Kivalliq,La Ronge,Winnipeg,Eastman,Regina
+Winnipeg,294,507,Manitoba,Regina,Flin Flon,Interlake,Rainy River,Thunder Bay
+Regina,263,483,Saskatchewan,Western Plains,La Ronge,Winnipeg,Flin Flon
+La Ronge,273,421,Saskatchewan,Fort Smith,Western Plains,Regina,Flin Flon
+Western Plains,241,415,Saskatchewan,Fort Smith,Tar Sands,Edmonton,Calgary,Lethbridge,Regina,La Ronge
+Lethbridge,182,496,Alberta,Calgary,Okanagan,Western Plains
+Calgary,180,462,Alberta,Rocky Mountains,Edmonton,Lethbridge,Okanagan,Western Plains
+Rocky Mountains,140,409,Alberta,Mainland BC,Tar Sands,Okanagan,Calgary,Edmonton
+Edmonton,177,407,Alberta,Tar Sands,Rocky Mountains,Calgary,Western Plains
+Tar Sands,182,376,Alberta,Fort Simpson,Fort Smith,Mainland BC,Edmonton,Rocky Mountains,Western Plains
