@@ -1100,7 +1100,7 @@ void ConquestFileReader::processTerritoryLine(std::string line) {
 
 		// Validate the Continent it belongs to, and add it to that continent
 		bool found = false;
-		for (int i = 0; i < cmap.continents.size(), !found; i++) {
+		for (int i = 0; i < cmap.continents.size() && !found; i++) {
 			if (cmap.continents[i]->name == line_args[3]) {
 				found = true;
 				cmap.continents[i]->territories.push_back(newTerritory);
