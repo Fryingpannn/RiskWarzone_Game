@@ -644,7 +644,7 @@ void AggressivePlayerStrategy::createReinforcement(Player &p) {
 // BENEVOLENT PLAYER
 //-----------------------------------------------------------------
 BenevolentPlayerStrategy::BenevolentPlayerStrategy() {
-  std::cout << "\t[UPDATE] - I am an BENEVOLENT PLAYER\n";
+  std::cout << "\t[UPDATE] - I am a BENEVOLENT PLAYER\n";
 }
 
 std::string BenevolentPlayerStrategy::iAm() { return "Benevolent Player"; }
@@ -896,7 +896,7 @@ Territory *BenevolentPlayerStrategy::strongestCountry(Player &p) {
 //-----------------------------------------------------------------
 
 NeutralPlayerStrategy::NeutralPlayerStrategy() {
-  std::cout << "\t[UPDATE] - I am an NEUTRAL PLAYER\n";
+  std::cout << "\t[UPDATE] - I am a NEUTRAL PLAYER\n";
 }
 
 std::string NeutralPlayerStrategy::iAm() { return "Neutral Player"; }
